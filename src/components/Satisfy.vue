@@ -42,63 +42,79 @@ export default {
       reached: 3,
       selected: [],
       options: [],
+      graphConfig: {
+        layout: {
+          hierarchical: {
+            direction: "UD",
+            sortMethod: "directed",
+          },
+        },
+        edges: {
+          smooth: {
+            type: "continuous",
+          },
+        },
+        nodes: {
+          physics: true,
+        },
+      }
     };
   },
   methods: {
     confirm() {
-      const params = {};
+      let params = {};
       this.options.forEach(o => params[o] = false);
       this.selected.forEach(s => params[s] = true);
-
-      alert(this.t.evaluate(params) ? "Correct!" : "Nope");
+      if(this.tree.evaluate(params)){
+        this.level++
+        this.generateExercise()
+        alert("Correct!")
+      }else{
+        if(this.reached > 1){
+          this.reached--
+          alert("nope")
+        }else{
+          this.reached = 3
+          this.level = 1
+          this.generateExercise()
+          alert("Game Over!")
+        }
+      }
     },
+    generateExercise() {
+      let t = randomTree();
+      this.tree = t;
+      this.options = t.vars.map(v => {
+        return {text: v, value: v};
+      });
+      let obj = t.to("obj");
+      let nodes = [];
+      let edges = [];
+      let id_counter = 0;
+
+      function graph(node, depth = 0, parent = 0) {
+        if (depth !== parent) {
+          edges.push({from: parent, to: depth});
+        }
+        nodes.push({id: depth, label: node.name || node});
+
+        if (Array.isArray(node.children)) {
+          node.children.forEach(n => graph(n, ++id_counter, depth));
+        }
+      }
+
+      graph(obj);
+
+      let data = {
+        nodes: new vis.DataSet(nodes),
+        edges: new vis.DataSet(edges),
+      };
+      new vis.Network(this.$refs.tree, data, this.graphConfig);
+      katex.render("\\phi =" + t.to("tex"), this.$refs.el);
+    }
   },
   mounted() {
-    const t = randomTree();
-    this.t = t;
-    this.options = t.vars.map(v => {
-      return {text: v, value: v};
-    });
-    const obj = t.to("obj");
-    const nodes = [];
-    const edges = [];
-    let id_counter = 0;
-
-    function graph(node, depth = 0, parent = 0) {
-      if (depth !== parent) {
-        edges.push({from: parent, to: depth});
-      }
-      nodes.push({id: depth, label: node.name || node});
-
-      if (Array.isArray(node.children)) {
-        node.children.forEach(n => graph(n, ++id_counter, depth));
-      }
-    }
-
-    graph(obj);
-
-    const data = {
-      nodes: new vis.DataSet(nodes),
-      edges: new vis.DataSet(edges),
-    };
-    const options = {
-      layout: {
-        hierarchical: {
-          direction: "UD",
-          sortMethod: "directed",
-        },
-      },
-      edges: {
-        smooth: {
-          type: "continuous",
-        },
-      },
-      nodes: {
-        physics: false,
-      },
-    };
-    new vis.Network(this.$refs.tree, data, options);
-    katex.render("\\phi =" + t.to("tex"), this.$refs.el);
+    this.generateExercise()
   },
 };
 </script>
