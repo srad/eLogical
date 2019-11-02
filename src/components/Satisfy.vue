@@ -29,33 +29,26 @@
 
 <script>
 import katex from "katex";
-import {randomTree} from "@/core/generator";
+import {randomTree} from "@/lib/compiler/frontend";
 import vis from "vis-network";
 
 export default {
-  name: "HelloWorld",
-  props: {
-    msg: String,
-  },
+  name: "Satisfy",
+  props: {},
   data() {
     return {
       level: 1,
       max: 5,
       reached: 3,
-      selected: [], // Must be an array reference!
+      selected: [],
       options: [],
     };
   },
   methods: {
     confirm() {
       const params = {};
-
-      this.options.forEach(o => {
-        params[0] = false;
-      });
-      this.selected.forEach(s => {
-        params[s] = true;
-      });
+      this.options.forEach(o => params[o] = false);
+      this.selected.forEach(s => params[s] = true);
 
       alert(this.t.evaluate(params) ? "Correct!" : "Nope");
     },
@@ -64,7 +57,7 @@ export default {
     const t = randomTree();
     this.t = t;
     this.options = t.vars.map(v => {
-      return { text: v, value: v };
+      return {text: v, value: v};
     });
     const obj = t.to("obj");
     const nodes = [];
@@ -73,9 +66,9 @@ export default {
 
     function graph(node, depth = 0, parent = 0) {
       if (depth !== parent) {
-        edges.push({ from: parent, to: depth });
+        edges.push({from: parent, to: depth});
       }
-      nodes.push({ id: depth, label: node.name || node });
+      nodes.push({id: depth, label: node.name || node});
 
       if (Array.isArray(node.children)) {
         node.children.forEach(n => graph(n, ++id_counter, depth));
@@ -110,7 +103,6 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 @import "~katex/dist/katex.min.css";
 

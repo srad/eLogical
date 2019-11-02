@@ -3,14 +3,14 @@ class FnWrapper {
    * @param {Function} param.fn
    * @param {Number} param.arity
    * @param {String} param.name
-   * @param {Object} param.serialize
+   * @param {Object} param.template
    * @constructor
    */
   constructor(param) {
     this.fn = param.fn;
     this.arity = param.arity;
     this.name = param.name;
-    this.serialize = param.serialize;
+    this.template = param.template;
   }
 }
 
@@ -26,7 +26,7 @@ class Node {
     this.fn = param.fw.fn;
     this.vars = param.vars;
     this.name = param.fw.name;
-    this.serialize = param.fw.serialize;
+    this.template = param.fw.template;
     this.children = param.children || [];
   }
 
@@ -36,28 +36,36 @@ class Node {
   }
 
   /**
-   * Serialize to a certain format
+   * Generate code based on the function wrapper template's language.
    * @param [type]
    * @returns {*}
    */
   to(type = "str") {
     const results = this.children.map(node => node.to(type));
-    return this.serialize[type](results, this.vars);
+    return this.template[type](results, this.vars);
   }
 
   /**
    * Just write the AST to the log.
-   * @param indent
+   * @param {Number} depth
+   * @param {Number} indent
    */
-  display(indent) {
-    indent = (indent || 1);
-    const space = new Array(indent).join(" ");
+  display(depth = 0, indent = 2) {
+    const space = new Array((depth + 1) * indent).join(" ");
+
+    if (depth === 0) {
+      console.log("(defn expresion [" + this.vars + "]");
+    }
 
     console.log(space + "(" + this.name);
     this.children.forEach((node) => {
-      node.display(indent + 1);
+      node.display(depth + 1, indent);
     });
     console.log(space + ")");
+
+    if (depth === 0) {
+      console.log(")");
+    }
   }
 }
 
@@ -75,8 +83,8 @@ class ConstNode {
     return values[this.v];
   }
 
-  display(indent) {
-    console.log(new Array(indent || 0).join(" ") + this.v);
+  display(depth = 0, indent = 2) {
+    console.log(new Array((depth + 1) * indent).join(" ") + this.v);
   }
 
   to() {

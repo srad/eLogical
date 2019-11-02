@@ -7,7 +7,7 @@
 
       <b-collapse id="nav-text-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-text>Navbar text</b-nav-text>
+          <!-- put items here -->
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>

@@ -1,5 +1,5 @@
 import {expect} from "chai";
-import {randomTree} from "@/core/generator";
+import {randomTree} from "@/lib/compiler/frontend";
 
 describe("generator.js", () => {
   it("genrate tree of xyz", () => {
