@@ -38,8 +38,19 @@ class Node extends TreeNode {
     this.type = "node";
   }
 
-  evaluate(input) {
-    const results = this.children.map(node => node.evaluate(input));
+  /**
+   * @param {Object|Array} args
+   * @returns {*}
+   */
+  evaluate(args) {
+    // In case a array of booleans is passed, convert them to a hash for lookup
+    // [false, true, ...] => {v0: false, v1: true, ...}
+    if (Array.isArray(args)) {
+      const params = {};
+      args.forEach((val, index) => params["v" + index] = args[index]);
+      args = params;
+    }
+    const results = this.children.map(node => node.evaluate(args));
     return this.fn(results);
   }
 
@@ -48,9 +59,9 @@ class Node extends TreeNode {
    * @param [type]
    * @returns {*}
    */
-  to(type = "str") {
-    const results = this.children.map(node => node.to(type));
-    return this.template[type](results, this.vars);
+  to(type = "str", depth = -1) {
+    const results = this.children.map(node => node.to(type, depth + 1));
+    return this.template[type](results, this.vars, depth, this.children);
   }
 
   /**
@@ -104,7 +115,7 @@ class Node extends TreeNode {
       }
     }
 
-    graph(this.to("obj"));
+    graph(this.children[0].to("obj"));
 
     return {nodes, edges};
   }
