@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <b-container>
     <b-row>
       <b-col>
         <h4><strong>Level {{level}}</strong></h4>
@@ -11,6 +11,7 @@
     </b-row>
 
     <hr/>
+<<<<<<< HEAD
     <tex v-bind:expression="expression"></tex>
     <tree v-bind:treeData="treeData" class="tree"></tree>
     <hr/>
@@ -56,6 +57,58 @@
       </b-row>
     </b-modal>
   </div>
+=======
+    <b-row class="text-center">
+      <b-col>
+        <div ref="el" style="z-index: 1"></div>
+      </b-col>
+    </b-row>
+    <hr/>
+    <b-row>
+      <b-col>
+        <div ref="tree" class="tree"></div>
+      </b-col>
+    </b-row>
+    <b-row class="text-center">
+      <b-col>
+        <b-form-group label="Set the values">
+          <b-form-checkbox-group
+              v-model="selected"
+              :options="options"
+              switches
+          ></b-form-checkbox-group>
+        </b-form-group>
+      </b-col>
+    </b-row>
+    <b-row class="text-center">
+      <b-col>
+          <b-button variant="primary" size="sm" v-on:click="confirm">Confirm</b-button>
+      </b-col>
+    </b-row>
+    
+
+
+    <b-modal ref="modal" :title="modalText" hide-header-close hide-footer no-close-on-backdrop no-close-on-esc>
+    <b-container>
+      <b-row align-h="center" block v-if="modalText === 'Game Over!'">
+        <b-col cols="6">
+          <b-button variant="primary" size="lg" block v-on:click="resetGame">Try Again</b-button>
+        </b-col>
+      </b-row>
+      <b-row align-h="center" v-if="modalText === 'Game Over!'">
+        <b-col cols="6">
+          <b-button variant="primary" size="lg" block v-on:click="printMessage('functionality not yet implemented')">Leaderboard</b-button>
+        </b-col>
+      </b-row>
+      <b-row align-h="center" v-if="modalText === 'Correct!'">
+        <b-col cols="6">
+          <b-button variant="primary" size="lg" block v-on:click="loadNextStage">Next Level</b-button>
+        </b-col>
+      </b-row>
+    </b-container>
+    </b-modal>
+  </b-container>
+>>>>>>> 179d8d0774a6696b9c19e777cda03b691559dae9
 
 </template>
 
@@ -78,8 +131,28 @@ export default {
       },
       selected: [],
       options: [],
+<<<<<<< HEAD
       expression: "",
       treeData: {nodes: [], edges: []},
+=======
+      modalText: '',
+      graphConfig: {
+        layout: {
+          hierarchical: {
+            direction: "UD",
+            sortMethod: "directed",
+          },
+        },
+        edges: {
+          smooth: {
+            type: "continuous",
+          },
+        },
+        nodes: {
+          physics: false,
+        },
+      }
+>>>>>>> 179d8d0774a6696b9c19e777cda03b691559dae9
     };
   },
   computed: {
@@ -87,6 +160,7 @@ export default {
       let params = {};
       this.options.forEach(o => params[o] = false);
       this.selected.forEach(s => params[s] = true);
+<<<<<<< HEAD
       return params;
     },
     vars() {
@@ -111,6 +185,31 @@ export default {
         }
         this.$bvModal.show("wrong");
       }
+=======
+      if(this.tree.evaluate(params)){
+        this.level++
+        this.modalText = "Correct!"
+        this.$refs['modal'].show()
+      }else{
+        this.reached--
+        if(this.reached === 0){
+          this.modalText = 'Game Over!'
+          this.$refs['modal'].show()
+        }
+      }
+    },
+    resetGame() {
+          this.reached = 3
+          this.level = 1
+          this.generateExercise()
+          this.modalText = ''
+          this.$refs['modal'].hide()
+    },
+    loadNextStage() {
+          this.generateExercise()
+          this.modalText = ''
+          this.$refs['modal'].hide()
+>>>>>>> 179d8d0774a6696b9c19e777cda03b691559dae9
     },
     generateExercise() {
       this.selected = [];
@@ -121,12 +220,25 @@ export default {
         return {text: v, value: v};
       });
 
+<<<<<<< HEAD
       const {nodes, edges} = this.tree.toGraph();
       this.treeData = {nodes, edges};
       this.expression = "\\phi =" + this.tree.to("tex");
       const treeNodes = new Set(nodes.filter(node => typeof node.type === "string").map(node => node.label));
       this.options = Array.from(treeNodes).sort((a, b) => a - b);
     },
+=======
+      let data = {
+        nodes: new vis.DataSet(nodes),
+        edges: new vis.DataSet(edges),
+      };
+      new vis.Network(this.$refs.tree, data, this.graphConfig);
+      katex.render("\\phi =" + t.to("tex"), this.$refs.el);
+    },
+    printMessage(msg){
+      alert(msg)
+    }
+>>>>>>> 179d8d0774a6696b9c19e777cda03b691559dae9
   },
   mounted() {
     this.generateExercise();
@@ -136,10 +248,14 @@ export default {
 
 <style>
 .tree {
+<<<<<<< HEAD
   position: absolute;
   left: 5%;
   right: 5%;
   bottom: 9%;
   top: 30%;
+=======
+  height: 30em;
+>>>>>>> 179d8d0774a6696b9c19e777cda03b691559dae9
 }
 </style>
