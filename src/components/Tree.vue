@@ -38,7 +38,7 @@ export default {
         },
         nodes: {
           physics: true,
-          borderWidth: 1, font: {bold:true, size: 18, color:"white"}, color: {},
+          borderWidth: 1, font: {size: 18, color:"white"}, color: {},
         },
       },
     };
