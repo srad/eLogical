@@ -1,4 +1,4 @@
-import {FnWrapper} from "./ast";
+import {FnWrapper} from "./tree";
 
 const fnOr = new FnWrapper({
   name: "or",
@@ -32,7 +32,6 @@ const fnNot = new FnWrapper({
   fn: (l) => !l[0],
   template: {
     tex: (l, vars) => {
-      console.log(l);
       // Tree rendering optimization: Don't create redundant looking parens.
       // Mathematically they are correct and will be retained in the evaluation, but this is visualization.
       if (vars.indexOf(l[0]) !== -1 || l[0][0] === "(") {

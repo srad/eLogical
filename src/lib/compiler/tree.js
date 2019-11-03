@@ -14,7 +14,13 @@ class FnWrapper {
   }
 }
 
-class Node {
+class TreeNode {
+  output(...args) {
+    console.log(...args);
+  }
+}
+
+class Node extends TreeNode {
   /**
    * @param {FnWrapper} param.fw Function wrapper
    * @param {Array} [param.children]
@@ -23,11 +29,13 @@ class Node {
    * @constructor
    */
   constructor(param) {
+    super();
     this.fn = param.fw.fn;
     this.vars = param.vars;
     this.name = param.fw.name;
     this.template = param.fw.template;
     this.children = param.children || [];
+    this.type = "node";
   }
 
   evaluate(input) {
@@ -54,29 +62,56 @@ class Node {
     const space = new Array((depth + 1) * indent).join(" ");
 
     if (depth === 0) {
-      console.log("(defn expresion [" + this.vars + "]");
+      this.output("(defn expresion [" + this.vars + "]");
     }
 
-    console.log(space + "(" + this.name);
+    this.output(space + "(" + this.name);
     this.children.forEach((node) => {
       node.display(depth + 1, indent);
     });
-    console.log(space + ")");
+    this.output(space + ")");
 
     if (depth === 0) {
-      console.log(")");
+      this.output(")");
     }
+  }
+
+  /**
+   * Create node and edges list from tree structure recursively from this node onwards.
+   * @returns {{nodes: Array, edges: Array}}
+   */
+  toGraph() {
+    let nodes = [];
+    let edges = [];
+    let id_counter = 0;
+
+    function graph(node, depth = 0, parent = 0) {
+      if (depth !== parent) {
+        edges.push({from: parent, to: depth});
+      }
+      nodes.push({id: depth, label: node.name || node, type: node});
+
+      if (Array.isArray(node.children)) {
+        node.children.forEach(n => graph(n, ++id_counter, depth));
+      }
+    }
+
+    graph(this.to("obj"));
+
+    return {nodes, edges};
   }
 }
 
-class ConstNode {
+class ConstNode extends TreeNode {
   /**
    * Literal.
    * @param {String|Number} v
    * @constructor
    */
   constructor(v) {
+    super();
     this.v = v;
+    this.type = "literal";
   }
 
   evaluate(values) {
@@ -84,10 +119,14 @@ class ConstNode {
   }
 
   display(depth = 0, indent = 2) {
-    console.log(new Array((depth + 1) * indent).join(" ") + this.v);
+    this.output(new Array((depth + 1) * indent).join(" ") + this.v);
   }
 
-  to() {
+  to(type) {
+    if (type === "tex") {
+      const text = this.v.slice(1);
+      return `v_{${text}}`;
+    }
     return this.v;
   }
 }
