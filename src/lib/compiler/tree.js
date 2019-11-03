@@ -84,12 +84,20 @@ class Node extends TreeNode {
     let nodes = [];
     let edges = [];
     let id_counter = 0;
+    const colors = [
+      "#845EC2",
+      "#D65DB1",
+      "#FF6F91",
+      "#FF9671",
+      "#FFC75F",
+    ];
 
     function graph(node, depth = 0, parent = 0) {
+      const color = colors[depth % colors.length];
       if (depth !== parent) {
         edges.push({from: parent, to: depth});
       }
-      nodes.push({id: depth, label: node.name || node, type: node});
+      nodes.push({id: depth, label: node.name || node, type: node, color: {background: color}});
 
       if (Array.isArray(node.children)) {
         node.children.forEach(n => graph(n, ++id_counter, depth));
@@ -124,8 +132,7 @@ class ConstNode extends TreeNode {
 
   to(type) {
     if (type === "tex") {
-      const text = this.v.slice(1);
-      return `v_{${text}}`;
+      return `v_{${this.v.match(/\d+/)[0]}}`;
     }
     return this.v;
   }

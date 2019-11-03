@@ -30,12 +30,15 @@ export default {
           },
         },
         edges: {
+          width: 2,
           smooth: {
+            roundness: 0.1,
             type: "continuous",
           },
         },
         nodes: {
           physics: true,
+          borderWidth: 1, font: {bold:true, size: 18, color:"white"}, color: {},
         },
       },
     };

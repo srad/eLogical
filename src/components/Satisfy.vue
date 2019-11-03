@@ -11,11 +11,22 @@
     </b-row>
 
     <hr/>
-    <tex v-bind:expression="expression"></tex>
-    <tree v-bind:treeData="treeData" class="tree"></tree>
+
+    <b-row>
+      <b-col>
+        <tex v-bind:expression="expression"></tex>
+      </b-col>
+    </b-row>
+
     <hr/>
 
-    <b-form-group label="Set the values">
+    <b-row>
+      <b-col>
+        <tree v-bind:treeData="treeData" class="tree h-100"></tree>
+      </b-col>
+    </b-row>
+
+    <b-form-group label="Make the function true" class="user-input">
       <b-form-checkbox-group
           v-model="selected"
           :options="options"
@@ -71,10 +82,10 @@ export default {
   props: {},
   data() {
     return {
-      level: 1,
+      level: 4,
       progress: {
         max: 5,
-        current: 0,
+        current: 4,
       },
       selected: [],
       options: [],
@@ -125,7 +136,7 @@ export default {
       this.treeData = {nodes, edges};
       this.expression = "\\phi =" + this.tree.to("tex");
       const treeNodes = new Set(nodes.filter(node => typeof node.type === "string").map(node => node.label));
-      this.options = Array.from(treeNodes).sort((a, b) => a - b);
+      this.options = Array.from(treeNodes).sort();
     },
   },
   mounted() {
@@ -136,10 +147,15 @@ export default {
 
 <style>
 .tree {
-  position: absolute;
+  min-height: 20em;
+}
+
+.user-input {
+  z-index: 1;
   left: 5%;
-  right: 5%;
-  bottom: 9%;
-  top: 30%;
+  bottom: 4%;
+  position: absolute;
+  font-size: 1.2em;
+  line-height: 1.2em
 }
 </style>
