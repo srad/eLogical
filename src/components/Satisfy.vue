@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <b-container>
     <b-row>
       <b-col>
         <h4><strong>Level {{level}}</strong></h4>
@@ -10,20 +10,56 @@
       </b-col>
     </b-row>
     <hr/>
-    <div ref="el" style="z-index: 1"></div>
-    <div ref="tree" class="tree"></div>
+    <b-row class="text-center">
+      <b-col>
+        <div ref="el" style="z-index: 1"></div>
+      </b-col>
+    </b-row>
     <hr/>
-    <b-form-group label="Set the values">
-      <b-form-checkbox-group
-          v-model="selected"
-          :options="options"
-          switches
-          stacked
-      ></b-form-checkbox-group>
-    </b-form-group>
+    <b-row>
+      <b-col>
+        <div ref="tree" class="tree"></div>
+      </b-col>
+    </b-row>
+    <b-row class="text-center">
+      <b-col>
+        <b-form-group label="Set the values">
+          <b-form-checkbox-group
+              v-model="selected"
+              :options="options"
+              switches
+          ></b-form-checkbox-group>
+        </b-form-group>
+      </b-col>
+    </b-row>
+    <b-row class="text-center">
+      <b-col>
+          <b-button variant="primary" size="sm" v-on:click="confirm">Confirm</b-button>
+      </b-col>
+    </b-row>
+    
 
-    <b-button variant="primary" size="lg" style="bottom: 3%;position: fixed; right: 5%;" v-on:click="confirm">Confirm</b-button>
-  </div>
+
+    <b-modal ref="modal" :title="modalText" hide-header-close hide-footer no-close-on-backdrop no-close-on-esc>
+    <b-container>
+      <b-row align-h="center" block v-if="modalText === 'Game Over!'">
+        <b-col cols="6">
+          <b-button variant="primary" size="lg" block v-on:click="resetGame">Try Again</b-button>
+        </b-col>
+      </b-row>
+      <b-row align-h="center" v-if="modalText === 'Game Over!'">
+        <b-col cols="6">
+          <b-button variant="primary" size="lg" block v-on:click="printMessage('functionality not yet implemented')">Leaderboard</b-button>
+        </b-col>
+      </b-row>
+      <b-row align-h="center" v-if="modalText === 'Correct!'">
+        <b-col cols="6">
+          <b-button variant="primary" size="lg" block v-on:click="loadNextStage">Next Level</b-button>
+        </b-col>
+      </b-row>
+    </b-container>
+    </b-modal>
+  </b-container>
 
 </template>
 
@@ -42,6 +78,7 @@ export default {
       reached: 3,
       selected: [],
       options: [],
+      modalText: '',
       graphConfig: {
         layout: {
           hierarchical: {
@@ -55,7 +92,7 @@ export default {
           },
         },
         nodes: {
-          physics: true,
+          physics: false,
         },
       }
     };
@@ -67,19 +104,27 @@ export default {
       this.selected.forEach(s => params[s] = true);
       if(this.tree.evaluate(params)){
         this.level++
-        this.generateExercise()
-        alert("Correct!")
+        this.modalText = "Correct!"
+        this.$refs['modal'].show()
       }else{
-        if(this.reached > 1){
-          this.reached--
-          alert("nope")
-        }else{
+        this.reached--
+        if(this.reached === 0){
+          this.modalText = 'Game Over!'
+          this.$refs['modal'].show()
+        }
+      }
+    },
+    resetGame() {
           this.reached = 3
           this.level = 1
           this.generateExercise()
-          alert("Game Over!")
-        }
-      }
+          this.modalText = ''
+          this.$refs['modal'].hide()
+    },
+    loadNextStage() {
+          this.generateExercise()
+          this.modalText = ''
+          this.$refs['modal'].hide()
     },
     generateExercise() {
       let t = randomTree();
@@ -111,6 +156,9 @@ export default {
       };
       new vis.Network(this.$refs.tree, data, this.graphConfig);
       katex.render("\\phi =" + t.to("tex"), this.$refs.el);
+    },
+    printMessage(msg){
+      alert(msg)
     }
   },
   mounted() {
@@ -127,10 +175,6 @@ export default {
 }
 
 .tree {
-  position: absolute;
-  left: 5%;
-  right: 5%;
-  bottom: 5%;
-  top: 25%;
+  height: 30em;
 }
 </style>
