@@ -35,22 +35,33 @@ class Node extends TreeNode {
     this.name = param.fw.name;
     this.template = param.fw.template;
     this.children = param.children || [];
-    this.type = "node";
   }
 
-  evaluate(input) {
-    const results = this.children.map(node => node.evaluate(input));
+  /**
+   * @param {Object|Array} args
+   * @returns {*}
+   */
+  evaluate(args) {
+    // In case a array of booleans is passed, convert them to a hash for lookup
+    // [false, true, ...] => {v0: false, v1: true, ...}
+    if (Array.isArray(args)) {
+      const params = {};
+      args.forEach((val, index) => params["v" + index] = args[index]);
+      args = params;
+    }
+    const results = this.children.map(node => node.evaluate(args));
     return this.fn(results);
   }
 
   /**
    * Generate code based on the function wrapper template's language.
-   * @param [type]
+   * @param {String} type
+   * @param {Number} depth
    * @returns {*}
    */
-  to(type = "str") {
-    const results = this.children.map(node => node.to(type));
-    return this.template[type](results, this.vars);
+  to(type = "str", depth = -1) {
+    const results = this.children.map(node => node.to(type, depth + 1));
+    return this.template[type]({l: results, vars: this.vars, depth, children: this.children});
   }
 
   /**
@@ -66,9 +77,7 @@ class Node extends TreeNode {
     }
 
     this.output(space + "(" + this.name);
-    this.children.forEach((node) => {
-      node.display(depth + 1, indent);
-    });
+    this.children.forEach((node) => node.display(depth + 1, indent));
     this.output(space + ")");
 
     if (depth === 0) {
@@ -78,25 +87,33 @@ class Node extends TreeNode {
 
   /**
    * Create node and edges list from tree structure recursively from this node onwards.
-   * @returns {{nodes: Array, edges: Array}}
+   * @returns {{nodes: Array<{id: Number, label: String, type: Node, color: {background: String}}>, edges: Array<{from: Number, to: Number}>}}
    */
   toGraph() {
     let nodes = [];
     let edges = [];
     let id_counter = 0;
+    const colors = [
+      "#845EC2",
+      "#D65DB1",
+      "#FF6F91",
+      "#FF9671",
+      "#FFC75F",
+    ];
 
     function graph(node, depth = 0, parent = 0) {
+      const color = colors[depth % colors.length];
       if (depth !== parent) {
         edges.push({from: parent, to: depth});
       }
-      nodes.push({id: depth, label: node.name || node, type: node});
+      nodes.push({id: depth, label: node.name || node, type: node, color: {background: color}});
 
       if (Array.isArray(node.children)) {
         node.children.forEach(n => graph(n, ++id_counter, depth));
       }
     }
 
-    graph(this.to("obj"));
+    graph(this.children[0].to("obj"));
 
     return {nodes, edges};
   }
@@ -104,28 +121,33 @@ class Node extends TreeNode {
 
 class ConstNode extends TreeNode {
   /**
-   * Literal.
-   * @param {String|Number} v
+   * Literal, this is a leaf in any tree an doesn't have any children.
+   * @param {String} Allowed node values:  ^[a-z]\d*
    * @constructor
    */
   constructor(v) {
     super();
+    if (!/^[a-z]\d*$/i.test(v)) {
+      throw new Error("Invalid ConstNode value");
+    }
     this.v = v;
-    this.type = "literal";
   }
 
-  evaluate(values) {
-    return values[this.v];
+  evaluate(environment) {
+    return environment[this.v];
   }
 
   display(depth = 0, indent = 2) {
     this.output(new Array((depth + 1) * indent).join(" ") + this.v);
   }
 
-  to(type) {
+  /**
+   * @param {String} [type] Convert to what.
+   * @returns {*}
+   */
+  to(type = "") {
     if (type === "tex") {
-      const text = this.v.slice(1);
-      return `v_{${text}}`;
+      return `v_{${this.v.match(/\d+/)[0]}}`;
     }
     return this.v;
   }

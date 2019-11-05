@@ -1,5 +1,5 @@
 <template>
-  <b-container>
+  <div class="pt-4 pr-3 pl-3">
     <b-row>
       <b-col>
         <h4><strong>Level {{progress.currLevel}} / {{progress.maxLevel}}</strong> difficulty: {{progress.difficulty}}</h4>
@@ -40,27 +40,26 @@
       </b-col>
     </b-row>
 
-<b-modal ref="modal" :title="modalText" hide-header-close hide-footer no-close-on-backdrop no-close-on-esc>
-    <b-container>
-      <b-row align-h="center" block v-if="modalText === 'Game Over!'">
-        <b-col cols="6">
-          <b-button variant="primary" size="lg" block v-on:click="resetGame">Try Again</b-button>
-        </b-col>
-      </b-row>
-      <b-row align-h="center" v-if="modalText === 'Game Over!'">
-        <b-col cols="6">
-          <b-button variant="primary" size="lg" block v-on:click="printMessage('functionality not yet implemented')">Leaderboard</b-button>
-        </b-col>
-      </b-row>
-      <b-row align-h="center" v-if="modalText === 'Correct!'">
-        <b-col cols="6">
-          <b-button variant="primary" size="lg" block v-on:click="loadNextStage">Next Level</b-button>
-        </b-col>
-      </b-row>
-    </b-container>
-  </b-modal>
-  </b-container>
-
+    <b-modal ref="modal" :title="modalText" hide-header-close hide-footer no-close-on-backdrop no-close-on-esc>
+      <b-container>
+        <b-row align-h="center" block v-if="modalText === 'Game Over!'">
+          <b-col cols="6">
+            <b-button variant="primary" size="lg" block v-on:click="resetGame">Try Again</b-button>
+          </b-col>
+        </b-row>
+        <b-row align-h="center" v-if="modalText === 'Game Over!'">
+          <b-col cols="6">
+            <b-button variant="primary" size="lg" block v-on:click="printMessage('functionality not yet implemented')">Leaderboard</b-button>
+          </b-col>
+        </b-row>
+        <b-row align-h="center" v-if="modalText === 'Correct!'">
+          <b-col cols="6">
+            <b-button variant="primary" size="lg" block v-on:click="loadNextStage">Next Level</b-button>
+          </b-col>
+        </b-row>
+      </b-container>
+    </b-modal>
+  </div>
 </template>
 
 <script>
@@ -78,7 +77,7 @@ export default {
       progress: {
         difficulty: 1,
         currLevel: 1,
-        maxLevel: 5
+        maxLevel: 5,
       },
       health: {
         max: 5,
@@ -87,7 +86,7 @@ export default {
       selected: [],
       options: [],
       expression: "",
-      modalText: '',
+      modalText: "",
       treeData: {nodes: [], edges: []},
     };
   },
@@ -108,16 +107,16 @@ export default {
       if (isAnswerCorrect) {
         if (this.progress.currLevel === this.progress.maxLevel) {
           this.progress.currLevel = 1;
-          this.progress.difficulty++
-        }else{
-          this.progress.currLevel++
+          this.progress.difficulty++;
+        } else {
+          this.progress.currLevel++;
         }
-        this.generateExercise()
+        this.generateExercise();
       } else {
-        this.health.current--
+        this.health.current--;
         if (this.health.current === 0) {
-          this.modalText = 'Game Over!'
-          this.$refs['modal'].show()
+          this.modalText = "Game Over!";
+          this.$refs["modal"].show();
         }
       }
     },
@@ -137,15 +136,15 @@ export default {
       this.options = Array.from(treeNodes).sort((a, b) => a - b);
     },
     resetGame() {
-          this.generateExercise()
-          this.modalText = ''
-          this.$refs['modal'].hide()
-          this.progress.currLevel = 1
-          this.health.current = this.health.max
+      this.generateExercise();
+      this.modalText = "";
+      this.$refs["modal"].hide();
+      this.progress.currLevel = 1;
+      this.health.current = this.health.max;
     },
-    printMessage(msg){
-      alert(msg)
-    }
+    printMessage(msg) {
+      alert(msg);
+    },
   },
   mounted() {
     this.generateExercise();
@@ -155,6 +154,6 @@ export default {
 
 <style>
 .tree {
-  height: 60vh;
+  height: 35vh;
 }
 </style>

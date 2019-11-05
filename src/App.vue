@@ -1,26 +1,32 @@
 <template>
   <div id="app">
-    <b-navbar toggleable="sm" type="light" variant="light">
+    <b-navbar toggleable="sm" type="dark" variant="dark">
       <b-navbar-toggle target="nav-text-collapse"></b-navbar-toggle>
 
       <b-navbar-brand class="font-weight-bold">
         eLogical
+        <font-awesome-icon icon="robot" class="ml-3 text-white"/>
       </b-navbar-brand>
 
       <b-collapse id="nav-text-collapse" is-nav>
         <b-navbar-nav>
-          <!-- put items here -->
+          <b-nav-item>
+            <router-link to="/" class="btn btn-dark btn-block text-left">Test 1</router-link>
+          </b-nav-item>
+          <b-nav-item>
+            <router-link to="tree" class="btn btn-dark btn-block text-left">Test 2</router-link>
+          </b-nav-item>
+          <b-nav-item>
+            <router-link to="about" class="btn btn-dark btn-block text-left">About</router-link>
+          </b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
-    <div class="container-fluid">
+    <b-container fluid>
       <router-view/>
-    </div>
+    </b-container>
   </div>
 </template>
 
 <style>
-.container-fluid {
-  padding-top: 1rem;
-}
 </style>

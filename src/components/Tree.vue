@@ -30,12 +30,19 @@ export default {
           },
         },
         edges: {
+          width: 2,
           smooth: {
+            roundness: 0.1,
             type: "continuous",
           },
         },
+        interaction: {
+          dragNodes: false,
+          dragView: true,
+        },
         nodes: {
           physics: true,
+          borderWidth: 1, font: {size: 19, color: "white"}, color: {},
         },
       },
     };
