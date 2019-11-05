@@ -36,9 +36,13 @@ export default {
             type: "continuous",
           },
         },
+        interaction: {
+          dragNodes: false,
+          dragView: true,
+        },
         nodes: {
           physics: true,
-          borderWidth: 1, font: {size: 18, color:"white"}, color: {},
+          borderWidth: 1, font: {size: 19, color: "white"}, color: {},
         },
       },
     };
