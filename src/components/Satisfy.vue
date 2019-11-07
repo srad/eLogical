@@ -19,7 +19,9 @@
         <tex v-bind:expression="expression"></tex>
       </b-col>
     </b-row>
+    <hr/>
 
+    <tree v-bind:treeData="treeData" class="tree"></tree>
     <b-row class="text-center">
       <b-col>
         <b-form-group label="Set the values">
@@ -31,7 +33,6 @@
         </b-form-group>
       </b-col>
     </b-row>
-    <hr/>
 
     <b-row class="text-center">
       <b-col>
