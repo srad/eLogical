@@ -130,6 +130,10 @@ export default {
       texOptions: [],
       expression: "",
       treeData: {nodes: [], edges: []},
+      difficultySettings: {
+        1: ["and","or", "not", "true", "false"],
+        2: ["and", "not", "true", "false", "xor"]
+      }
     };
   },
   computed: {
@@ -145,6 +149,13 @@ export default {
     vars() {
       return new Array(this.progress.current + 1).fill(0).map((_, index) => "v" + index);
     },
+    functions() {
+      if(this.level <= 3) {
+        return this.difficultySettings[this.level]
+      } else {
+        return ["and","or", "not", "true", "false", "xor", "implication", "eq"]
+      }
+    }
   },
   methods: {
     confirm() {
@@ -178,7 +189,7 @@ export default {
     },
     generateExercise() {
       this.selected = [];
-      const {tree, solution} = randBoolExpr({setSize: 2, maxDepth: this.level, vars: this.vars});
+      const {tree, solution} = randBoolExpr({setSize: 2, maxDepth: this.level, vars: this.vars, functions: this.functions});
       console.log(solution);
       this.tree = tree;
 

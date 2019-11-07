@@ -10,19 +10,20 @@ const fnList = [fnAnd, fnNot, fnOr, fnTrue, fnXor, fnImpl, fnFalse, fnEq];
  * @param {Number} maxDepth
  * @param {Number} fpr
  * @param {Array|String} vars
+ * @param {Array<String>} [functions]
  * @returns {Node|ConstNode}
  */
-function randTree({depth = 0, maxDepth = 3, vars, fpr = 1.0} = {}) {
+function randTree({depth = 0, maxDepth = 3, vars, fpr = 1.0, functions = ['and', 'not', 'true', 'false']} = {}) {
   if (depth >= maxDepth) {
     return new ConstNode(pick(vars));
   }
 
   // Root, start language.
   if (depth === 0) {
-    return new Node({fw: fnStart, children: [randTree({depth: depth + 1, maxDepth, vars, fpr})], vars});
+    return new Node({fw: fnStart, children: [randTree({depth: depth + 1, maxDepth, vars, fpr, functions})], vars});
   }
   if (depth === 1 || Math.random() < fpr) {
-    const rand_f = pick(fnList.filter(f => {
+    const rand_f = pick(fnList.filter(f => {return functions.indexOf(f.name) > -1}).filter(f => {
       if (depth === 1) {
         return f.arity > 0
       }
@@ -31,7 +32,7 @@ function randTree({depth = 0, maxDepth = 3, vars, fpr = 1.0} = {}) {
     const children = [];
 
     for (let i = 0; i < rand_f.arity; i++) {
-      children.push(randTree({depth: depth + 1, maxDepth, vars, fpr}));
+      children.push(randTree({depth: depth + 1, maxDepth, vars, fpr, functions}));
     }
 
     const isInnerNode = depth > 1 && children.length > 0;
@@ -50,15 +51,16 @@ function randTree({depth = 0, maxDepth = 3, vars, fpr = 1.0} = {}) {
  * @param {Number} [setSize]
  * @param {Number} [maxDepth]
  * @param {Array<String>} [vars]
+ * @param {Array<String>} [functions]
  * @returns {{tree: (Node), solution: Array<boolean>}}
  */
-function randBoolExpr({setSize = 2, maxDepth = 1, vars = ["v0", "v1", "v2"]} = {}) {
+function randBoolExpr({setSize = 2, maxDepth = 1, vars = ["v0", "v1", "v2"], functions = ['and', 'not', 'true', 'false']} = {}) {
   const table = Object.freeze(truthTable(setSize, vars.length));
 
   // Keep generating until a satisfiable function is found.
   for (; ;) {
     // maxDepth + 1 because the root node is the start symbol.
-    const tree = randTree({depth: 0, maxDepth: maxDepth + 1, vars});
+    const tree = randTree({depth: 0, maxDepth: maxDepth + 1, vars, functions});
     // Check for every generated function it is satisfiable.
     for (let i = 0; i < table.length; i++) {
       const row = table[i];
