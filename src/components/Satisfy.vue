@@ -4,6 +4,9 @@
       <b-col>
         <h4><strong>Level {{progress.currLevel}} / {{progress.maxLevel}}</strong> difficulty: {{progress.difficulty}}</h4>
       </b-col>
+      <b-col v-if="progress.currLevel === progress.maxLevel">
+        <stopwatch ref="stopwatch" :time="stopwatchTime" :countingDown="true" :showIcon="false" v-on:timer-stopped="gameOver"></stopwatch>
+      </b-col>
 
       <b-col class="text-right">
         <healthbar v-bind:max="health.max" v-bind:current="health.current"/>
@@ -67,10 +70,11 @@ import {randBoolExpr} from "@/lib/compiler/generator";
 import Tree from "./Tree";
 import Tex from "./Tex";
 import Healthbar from "./Healthbar";
+import Stopwatch from "./Stopwatch";
 
 export default {
   name: "Satisfy",
-  components: {Tree, Tex, Healthbar},
+  components: {Tree, Tex, Healthbar, Stopwatch},
   props: {},
   data() {
     return {
@@ -88,6 +92,10 @@ export default {
       expression: "",
       modalText: "",
       treeData: {nodes: [], edges: []},
+      difficultySettings: {
+        1: ["and","or", "not", "True", "False"],
+        2: ["and", "not", "True", "False", "xor"]
+      }
     };
   },
   computed: {
@@ -98,8 +106,22 @@ export default {
       return params;
     },
     vars() {
-      return new Array(this.progress.difficulty + 1).fill(0).map((_, index) => "v" + index);
+      return new Array(this.progress.currLevel + 1).fill(0).map((_, index) => "v" + index);
     },
+    functions() {
+      if(this.progress.difficulty <= 3) {
+        return this.difficultySettings[this.progress.difficulty]
+      } else {
+        return ["and","or", "not", "true", "false", "xor", "implication", "eq"]
+      }
+    },
+    stopwatchTime() {
+      let minutesPerDifficulty = 0.5,
+          totalSecs = minutesPerDifficulty * 60 * this.progress.difficulty,
+          mins = Math.floor(totalSecs/60),
+          secs = totalSecs - (mins*60)
+      return mins + ":" + secs
+    }
   },
   methods: {
     confirm() {
@@ -115,14 +137,13 @@ export default {
       } else {
         this.health.current--;
         if (this.health.current === 0) {
-          this.modalText = "Game Over!";
-          this.$refs["modal"].show();
+          this.gameOver()
         }
       }
     },
     generateExercise() {
       this.selected = [];
-      const {tree, solution} = randBoolExpr(2, this.progress.difficulty, this.vars);
+      const {tree, solution} = randBoolExpr({setSize: 2, maxDepth: this.progress.difficulty, vars: this.vars, functions: this.functions});
       console.log(solution);
       this.tree = tree;
       this.options = this.tree.vars.map(v => {
@@ -140,7 +161,12 @@ export default {
       this.modalText = "";
       this.$refs["modal"].hide();
       this.progress.currLevel = 1;
+      this.progress.difficulty = 1;
       this.health.current = this.health.max;
+    },
+    gameOver(){
+      this.modalText = "Game Over!";
+      this.$refs["modal"].show();
     },
     printMessage(msg) {
       alert(msg);
