@@ -5,7 +5,7 @@
         <h4><strong>Level {{progress.currLevel}} / {{progress.maxLevel}}</strong> difficulty: {{progress.difficulty}}</h4>
       </b-col>
       <b-col v-if="progress.currLevel === progress.maxLevel">
-        <stopwatch ref="stopwatch" time="0:20" :countingDown="true" :showIcon="false" v-on:timer-stopped="gameOver"></stopwatch>
+        <stopwatch ref="stopwatch" :time="stopwatchTime" :countingDown="true" :showIcon="false" v-on:timer-stopped="gameOver"></stopwatch>
       </b-col>
 
       <b-col class="text-right">
@@ -114,6 +114,13 @@ export default {
       } else {
         return ["and","or", "not", "true", "false", "xor", "implication", "eq"]
       }
+    },
+    stopwatchTime() {
+      let minutesPerDifficulty = 0.5,
+          totalSecs = minutesPerDifficulty * 60 * this.progress.difficulty,
+          mins = Math.floor(totalSecs/60),
+          secs = totalSecs - (mins*60)
+      return mins + ":" + secs
     }
   },
   methods: {
@@ -154,6 +161,7 @@ export default {
       this.modalText = "";
       this.$refs["modal"].hide();
       this.progress.currLevel = 1;
+      this.progress.difficulty = 1;
       this.health.current = this.health.max;
     },
     gameOver(){
