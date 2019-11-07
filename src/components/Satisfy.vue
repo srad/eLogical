@@ -19,9 +19,7 @@
         <tex v-bind:expression="expression"></tex>
       </b-col>
     </b-row>
-    <hr/>
 
-    <tree v-bind:treeData="treeData" class="tree"></tree>
     <b-row class="text-center">
       <b-col>
         <b-form-group label="Set the values">
@@ -33,6 +31,7 @@
         </b-form-group>
       </b-col>
     </b-row>
+    <hr/>
 
     <b-row class="text-center">
       <b-col>
@@ -93,8 +92,8 @@ export default {
       modalText: "",
       treeData: {nodes: [], edges: []},
       difficultySettings: {
-        1: ["and","or", "not", "true", "false"],
-        2: ["and", "not", "true", "false", "xor"]
+        1: ["and","or", "not", "True", "False"],
+        2: ["and", "not", "True", "False", "xor"]
       }
     };
   },

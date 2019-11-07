@@ -131,8 +131,8 @@ export default {
       expression: "",
       treeData: {nodes: [], edges: []},
       difficultySettings: {
-        1: ["and","or", "not", "true", "false"],
-        2: ["and", "not", "true", "false", "xor"]
+        1: ["and","or", "not", "True", "False"],
+        2: ["and", "not", "True", "False", "xor"]
       }
     };
   },
