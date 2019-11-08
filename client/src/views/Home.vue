@@ -1,9 +1,6 @@
 <template>
   <div class="home">
-    <b-row align-v="center" style="height: 100vh">
-      <b-col>
-        <b-container>
-    <b-row>
+    <b-row class="mt-5">
       <b-col class="text-center">
         <h1>Welcome to</h1>
       </b-col>
@@ -30,9 +27,6 @@
         </router-link>
       </b-col>
     </b-row>
-        </b-container>
-      </b-col>
-    </b-row>
   </div>
 </template>
 
@@ -46,7 +40,4 @@ export default {
 </script>
 
 <style>
-.home {
-  height: 100vh;
-}
 </style>

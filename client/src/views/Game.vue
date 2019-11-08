@@ -120,9 +120,9 @@ export default {
     },
     stopwatchTime() {
       let minutesPerDifficulty = 0.5,
-          totalSecs = minutesPerDifficulty * 60 * this.progress.difficulty,
-          mins = Math.floor(totalSecs/60),
-          secs = totalSecs - (mins*60)
+        totalSecs = minutesPerDifficulty * 60 * this.progress.difficulty,
+        mins = Math.floor(totalSecs/60),
+        secs = totalSecs - (mins*60)
       return mins + ":" + secs
     }
   },
