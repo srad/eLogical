@@ -17,6 +17,9 @@
             <router-link to="tree" class="btn btn-dark btn-block text-left">Test 2</router-link>
           </b-nav-item>
           <b-nav-item>
+            <router-link to="help" class="btn btn-dark btn-block text-left">Help</router-link>
+          </b-nav-item>
+          <b-nav-item>
             <router-link to="about" class="btn btn-dark btn-block text-left">About</router-link>
           </b-nav-item>
         </b-navbar-nav>
@@ -28,5 +31,6 @@
   </div>
 </template>
 
-<style>
+<style lang="scss">
+@import "assets/main.scss";
 </style>
