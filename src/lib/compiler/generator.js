@@ -10,7 +10,7 @@ const fnList = [fnAnd, fnNot, fnOr, fnTrue, fnXor, fnImpl, fnFalse, fnEq];
  * @param {Number} maxDepth
  * @param {Number} fpr
  * @param {Array|String} vars
- * @returns {Node|ConstNode}
+ * @returns {TreeNode}
  */
 function randTree({depth = 0, maxDepth = 3, vars, fpr = 1.0} = {}) {
   if (depth >= maxDepth) {
@@ -35,8 +35,9 @@ function randTree({depth = 0, maxDepth = 3, vars, fpr = 1.0} = {}) {
     }
 
     const isInnerNode = depth > 1 && children.length > 0;
+    const addParens = isInnerNode && rand_f.arity > 1;
     const node = new Node({fw: rand_f, children: children, vars});
-    if (isInnerNode && rand_f.name !== "not") {
+    if (addParens) {
       return new Node({fw: fnParens, children: [node], vars});
     }
     return node;
