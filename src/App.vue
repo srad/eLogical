@@ -11,10 +11,10 @@
       <b-collapse id="nav-text-collapse" is-nav>
         <b-navbar-nav>
           <b-nav-item>
-            <router-link to="/" class="btn btn-dark btn-block text-left">Test 1</router-link>
-          </b-nav-item>
+            <router-link to="/" class="btn btn-dark btn-block text-left">Home</router-link>
+          </b-nav-item>      
           <b-nav-item>
-            <router-link to="tree" class="btn btn-dark btn-block text-left">Test 2</router-link>
+            <router-link to="leaderboard" class="btn btn-dark btn-block text-left">Leaderboard</router-link>
           </b-nav-item>
           <b-nav-item>
             <router-link to="about" class="btn btn-dark btn-block text-left">About</router-link>

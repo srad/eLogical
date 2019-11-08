@@ -67,13 +67,13 @@
 
 <script>
 import {randBoolExpr} from "@/lib/compiler/generator";
-import Tree from "./Tree";
-import Tex from "./Tex";
-import Healthbar from "./Healthbar";
-import Stopwatch from "./Stopwatch";
+import Tree from "../components/Tree";
+import Tex from "../components/Tex";
+import Healthbar from "../components/Healthbar";
+import Stopwatch from "../components/Stopwatch";
 
 export default {
-  name: "Satisfy",
+  name: "Game",
   components: {Tree, Tex, Healthbar, Stopwatch},
   props: {},
   data() {
