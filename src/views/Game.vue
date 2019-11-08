@@ -45,14 +45,17 @@
 
     <b-modal ref="modal" :title="modalText" hide-header-close hide-footer no-close-on-backdrop no-close-on-esc>
       <b-container>
-        <b-row align-h="center" block v-if="modalText === 'Game Over!'">
+        <b-row align-h="center" block v-if="modalText === 'Game Over!'" class="mb-3">
           <b-col cols="6">
             <b-button variant="primary" size="lg" block v-on:click="resetGame">Try Again</b-button>
           </b-col>
         </b-row>
         <b-row align-h="center" v-if="modalText === 'Game Over!'">
           <b-col cols="6">
-            <b-button variant="primary" size="lg" block v-on:click="printMessage('functionality not yet implemented')">Leaderboard</b-button>
+            <!-- <b-button variant="primary" size="lg" block v-on:click="printMessage('functionality not yet implemented')">Leaderboard</b-button> -->
+            <router-link to="/leaderboard">
+              <b-button variant="primary" size="lg" block >Leaderboard</b-button>
+            </router-link>
           </b-col>
         </b-row>
         <b-row align-h="center" v-if="modalText === 'Correct!'">
