@@ -2,7 +2,7 @@
   <div class="pt-4 pr-3 pl-3">
     <b-row>
       <b-col>
-        <h4><strong>Level {{progress.currLevel}} / {{progress.maxLevel}}</strong> difficulty: {{progress.difficulty}}</h4>
+        <h4><strong>Stage {{progress.difficulty}}-{{progress.currLevel}}</strong></h4>
       </b-col>
       <b-col v-if="progress.currLevel === progress.maxLevel">
         <stopwatch ref="stopwatch" :time="stopwatchTime" :countingDown="true" :showIcon="false" v-on:timer-stopped="gameOver"></stopwatch>
@@ -154,7 +154,7 @@ export default {
       this.treeData = {nodes, edges};
       this.expression = "\\phi =" + this.tree.to("tex");
       const treeNodes = new Set(nodes.filter(node => typeof node.type === "string").map(node => node.label));
-      this.options = Array.from(treeNodes).sort((a, b) => a - b);
+      this.options = Array.from(treeNodes).sort((a, b) => a.split("v")[1] - b.split("v")[1]);
     },
     resetGame() {
       this.generateExercise();
