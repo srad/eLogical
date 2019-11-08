@@ -30,9 +30,10 @@ export default {
           },
         },
         edges: {
-          width: 2,
+          width: 3,
+          color: "dimgrey",
           smooth: {
-            roundness: 0.1,
+            roundness: 0.05,
             type: "continuous",
           },
         },
@@ -42,7 +43,7 @@ export default {
         },
         nodes: {
           physics: true,
-          borderWidth: 1, font: {size: 19, color: "white"}, color: {},
+          borderWidth: 0, font: {size: 19, color: "white"}, color: {border: "dimgrey"},
         },
       },
     };
