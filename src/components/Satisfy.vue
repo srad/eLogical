@@ -2,14 +2,25 @@
   <div class="pt-4 pr-3 pl-3">
     <b-row>
       <b-col>
-        <h4><strong>Level {{progress.currLevel}} / {{progress.maxLevel}}</strong> difficulty: {{progress.difficulty}}</h4>
+        <h4>Stage {{progress.difficulty}} - {{progress.currLevel}}</h4>
       </b-col>
       <b-col v-if="progress.currLevel === progress.maxLevel">
         <stopwatch ref="stopwatch" :time="stopwatchTime" :countingDown="true" :showIcon="false" v-on:timer-stopped="gameOver"></stopwatch>
       </b-col>
 
-      <b-col class="text-right">
-        <healthbar v-bind:max="health.max" v-bind:current="health.current"/>
+      <b-col>
+        <b-container>
+          <b-row>
+            <b-col class="text-right">
+              <healthbar v-bind:max="health.max" v-bind:current="health.current"/>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col class="text-right">
+              <rerolls :current="rerolls" v-on:reroll-consumed="rerollExpression"/>
+            </b-col>
+          </b-row>
+        </b-container>
       </b-col>
     </b-row>
 
@@ -22,24 +33,15 @@
     <hr/>
 
     <tree v-bind:treeData="treeData" class="tree"></tree>
-    <b-row class="text-center">
-      <b-col>
-        <b-form-group label="Set the values">
-          <b-form-checkbox-group
-              v-model="selected"
-              :options="options"
-              switches
-          ></b-form-checkbox-group>
-        </b-form-group>
+    <b-row align-h="center">
+      <b-col cols="6" md="2" sm="3" :key="v" v-for="v in options" class="text-center">
+          <button v-on:click="toggleVariable(v)" class="selector false" :ref="v">{{v}}</button>
       </b-col>
     </b-row>
 
-    <b-row class="text-center">
+    <b-row class="text-center" style="margin-top: 2em;">
       <b-col>
-        <b-button-group>
-          <b-button variant="secondary" size="lg" v-on:click="selected=[]">Reset</b-button>
           <b-button variant="primary" size="lg" v-on:click="confirm">Confirm</b-button>
-        </b-button-group>
       </b-col>
     </b-row>
 
@@ -71,10 +73,11 @@ import Tree from "./Tree";
 import Tex from "./Tex";
 import Healthbar from "./Healthbar";
 import Stopwatch from "./Stopwatch";
+import Rerolls from "./Rerolls"
 
 export default {
   name: "Satisfy",
-  components: {Tree, Tex, Healthbar, Stopwatch},
+  components: {Tree, Tex, Healthbar, Stopwatch, Rerolls},
   props: {},
   data() {
     return {
@@ -87,6 +90,7 @@ export default {
         max: 5,
         current: 3,
       },
+      rerolls: 3,
       selected: [],
       options: [],
       expression: "",
@@ -124,6 +128,29 @@ export default {
     }
   },
   methods: {
+    toggleVariable(value) {
+      let pos = this.selected.indexOf(value)
+      this.$refs[value][0].classList.add("toggle-selector")
+      if (pos > -1){
+        this.selected.splice(pos,1)
+        setTimeout(() => {
+          this.$refs[value][0].classList.remove("true")
+          this.$refs[value][0].classList.add("false")
+          this.$refs[value][0].classList.remove("toggle-selector")
+        }, 500);
+      }else{
+        this.selected.push(value)
+        setTimeout(() => {
+          this.$refs[value][0].classList.remove("false")
+          this.$refs[value][0].classList.add("true")
+          this.$refs[value][0].classList.remove("toggle-selector")
+        }, 500);
+      }
+    },
+    rerollExpression() {
+      this.rerolls--
+      this.generateExercise()
+    },
     confirm() {
       const isAnswerCorrect = this.tree.evaluate(this.selection);
       if (isAnswerCorrect) {
@@ -133,6 +160,11 @@ export default {
         } else {
           this.progress.currLevel++;
         }
+        this.options.forEach(opt =>{
+          this.$refs[opt][0].classList.remove("true")
+          this.$refs[opt][0].classList.remove("false")
+          this.$refs[opt][0].classList.add("false")
+        })
         this.generateExercise();
       } else {
         this.health.current--;
@@ -150,11 +182,16 @@ export default {
         return {text: v, value: v};
       });
 
-      const {nodes, edges} = this.tree.toGraph();
+      const {nodes, edges, leafs} = this.tree.toGraph();
       this.treeData = {nodes, edges};
       this.expression = "\\phi =" + this.tree.to("tex");
-      const treeNodes = new Set(nodes.filter(node => typeof node.type === "string").map(node => node.label));
-      this.options = Array.from(treeNodes).sort((a, b) => a - b);
+      if (leafs.length === 0) {
+        // TODO: Only a binary answer needed here. Toggle UI.
+      } else {
+        const str = leafs.map(node => node.v);
+        this.options = Array.from(str).sort();
+        this.texOptions = leafs.map(node => node.to("tex")).sort();
+      }
     },
     resetGame() {
       this.generateExercise();
@@ -181,5 +218,53 @@ export default {
 <style>
 .tree {
   height: 35vh;
+}
+.selector {
+  width: 15vh;
+  height: 15vh;
+  color: white;
+  border-radius: 2px;
+  border-color: transparent;
+}
+.toggle-selector {
+  animation: spin 0.5s;
+}
+.true{
+  background-color: #28a745;
+  box-shadow: 0 0 5px #05ec3b;
+}
+.true:hover {
+  background-color: #1e7e34;
+  color: white;
+}
+.false{
+  background-color: #dc3545;
+  box-shadow: 0 0 5px #f1031b;
+}
+.false:hover {
+  background-color: #c82333;
+  color: white;
+}
+.text-reroll {
+  animation: textReroll 0.5s;
+  animation-iteration-count: 1;
+}
+@keyframes textReroll {
+  0% { transform: translate(1px, 1px) rotate(0deg);color: transparent; text-shadow: 0 0 0px rgba(0,0,0,0.5)}
+  10% { transform: translate(-1px, -2px) rotate(-1deg); color: transparent; text-shadow: 0 0 1px rgba(0,0,0,0.5)}
+  20% { transform: translate(-3px, 0px) rotate(1deg); color: transparent; text-shadow: 0 0 2px rgba(0,0,0,0.5)}
+  30% { transform: translate(3px, 2px) rotate(0deg); color: transparent; text-shadow: 0 0 3px rgba(0,0,0,0.5)}
+  40% { transform: translate(1px, -1px) rotate(1deg); color: transparent; text-shadow: 0 0 4px rgba(0,0,0,0.5)}
+  50% { transform: translate(-1px, 2px) rotate(-1deg); color: transparent; text-shadow: 0 0 5px rgba(0,0,0,0.5)}
+  60% { transform: translate(-3px, 1px) rotate(0deg); color: transparent; text-shadow: 0 0 4px rgba(0,0,0,0.5)}
+  70% { transform: translate(3px, 1px) rotate(-1deg); color: transparent; text-shadow: 0 0 3px rgba(0,0,0,0.5)}
+  80% { transform: translate(-1px, -1px) rotate(1deg); color: transparent; text-shadow: 0 0 2px rgba(0,0,0,0.5)}
+  90% { transform: translate(1px, 2px) rotate(0deg); color: transparent; text-shadow: 0 0 1px rgba(0,0,0,0.5)}
+  100% { transform: translate(1px, -2px) rotate(-1deg); color: black; text-shadow: 0 0 0px rgba(0,0,0,0.5)}
+}
+
+@keyframes spin {
+  0% {transform: rotate3d(0,1,0, 0deg)}
+  100% {transform: rotate3d(0,1,0, 360deg)}
 }
 </style>
