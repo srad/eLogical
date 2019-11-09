@@ -1,28 +1,24 @@
 <template>
   <div>
-    <b-row class="pt-3 pb-2 bg-light p-0 mb-3 border-bottom">
+    <b-row class="pt-3 pb-2 bg-white p-0 mb-3 border-bottom shadow-sm">
       <b-col cols="4">
-        <h5><strong>Level {{level}}</strong></h5>
+        <h5><strong>Level {{level.current}}/{{level.max}}</strong></h5>
       </b-col>
 
-      <b-col class="text-center p-0 mr-3 pb-2 pt-1" cols="4">
+      <b-col class="text-center p-0 mr-3 pb-2 pt-0" cols="4">
         <b-progress class="bg-secondary h-100 shadow-sm" :value="progress.current" :max="progress.max">
           <b-progress-bar class="text-dark font-weight-bold" :key="index" v-for="(n, index) in progress.current" :value="1" :label="(index+1)+'/'+progress.max" :style="{backgroundColor: colors[index]}"></b-progress-bar>
         </b-progress>
       </b-col>
 
-      <b-col class="p-0 pt-1 text-right" cols="3">
+      <b-col class="p-0 pt-0 text-right" cols="3">
         <progresser icon="heart" color="darkred" v-bind:max="life.max" v-bind:current="life.current"/>
-      </b-col>
-
-      <b-col cols="4" class="p-0" hidden>
-        <progresser icon="trophy" color="goldenrod" v-bind:max="progress.max" v-bind:current="progress.current"/>
       </b-col>
     </b-row>
 
     <b-row>
       <b-col>
-        <b-card body-class="p-2 pl-3" header="Make this formula true" header-bg-variant="dark" header-text-variant="light" header-class="p-2 text-center" class="shadow-sm border-dark">
+        <b-card body-class="p-2 pl-3 bg-white" header="Make this formula true" header-bg-variant="dark" header-text-variant="light" header-class="p-2 text-center" class="shadow-sm border-dark">
           <b-card-text class="p-0 m-0">
             <tex v-bind:expression="expression"></tex>
           </b-card-text>
@@ -30,31 +26,26 @@
       </b-col>
     </b-row>
 
-    <b-row>
-      <b-col class="text-center p-3">
-        <b-card body-class="p-1" header="Tree representation of expression" header-bg-variant="dark" header-text-variant="light" header-class="p-2 text-center" class="shadow-sm border-dark">
-          <b-card-text>
-            <tree v-bind:treeData="treeData" style="height: 12em"></tree>
-          </b-card-text>
-        </b-card>
-      </b-col>
-    </b-row>
+    <router-link class="btn btn-warning float-right mt-3 position-absolute" tag="button" style="right: 15px; z-index: 10" to="help">
+      <strong>?</strong>
+    </router-link>
+    <tree v-bind:treeData="treeData" style="height: 45vh"></tree>
 
-    <b-row>
+    <b-row class="position-absolute w-100 " style="bottom: 17px">
       <b-col cols="9" class="m-0 p-0 pl-3">
         <b-card no-body header-bg-variant="dark" header-text-variant="light" header-class="p-2 text-center shadow-sm">
           <table class="table-dark table-bordered p-0 m-0 table table-sm text-center">
             <thead>
-            <th class="text-white w-25">Name</th>
-            <th class="text-white" :key="v" v-for="v in options">
+            <td class="text-white bg-dark w-25">Name</td>
+            <td class="text-white bg-dark" :key="v" v-for="v in options">
               {{v}}
-            </th>
+            </td>
             </thead>
             <tbody>
             <tr>
-              <th class="bg-dark text-white">
+              <td class="bg-dark text-white">
                 Value
-              </th>
+              </td>
               <td class="bg-white" :key="v" v-for="v in options">
                 <b-form-checkbox v-model="tableSelected" v-bind:value="v" switch/>
               </td>
@@ -102,7 +93,6 @@
 
 <script>
 import {randBoolExpr} from "@/lib/compiler/generator";
-import {ConstNode} from "@/lib/compiler/tree";
 import Tree from "./Tree";
 import Tex from "./Tex";
 import Progresser from "./Progresser";
@@ -115,7 +105,10 @@ export default {
   data() {
     return {
       colors: colors.gradient.purple,
-      level: 3,
+      level: {
+        current: 3,
+        max: 4,
+      },
       progress: {
         max: 4,
         current: 3,
@@ -131,9 +124,9 @@ export default {
       expression: "",
       treeData: {nodes: [], edges: []},
       difficultySettings: {
-        1: ["and","or", "not", "True", "False"],
-        2: ["and", "not", "True", "False", "xor"]
-      }
+        1: ["and", "or", "not", "True", "False"],
+        2: ["and", "not", "True", "False", "xor"],
+      },
     };
   },
   computed: {
@@ -150,20 +143,20 @@ export default {
       return new Array(this.progress.current + 1).fill(0).map((_, index) => "v" + index);
     },
     functions() {
-      if(this.level <= 3) {
-        return this.difficultySettings[this.level]
+      if (this.level.current <= 3) {
+        return this.difficultySettings[this.level.current];
       } else {
-        return ["and","or", "not", "true", "false", "xor", "implication", "eq"]
+        return ["and", "or", "not", "true", "false", "xor", "implication", "eq"];
       }
-    }
+    },
   },
   methods: {
     confirm() {
       const isAnswerCorrect = this.tree.evaluate(this.selection);
       if (isAnswerCorrect) {
-        if (this.progress.current === (this.progress.max - 1)) {
+        if (this.progress.current === this.progress.max) {
           this.progress.current = 0;
-          this.level += 1;
+          this.level.current += 1;
           this.life.current = Math.min(this.life.current + 1, this.life.max);
         } else {
           this.progress.current += 1;
@@ -175,10 +168,10 @@ export default {
       // wrong
       this.progress.current = Math.max(this.progress.current - 1, 0);
       if (this.progress.current === 0) {
-        if (this.level > 1) {
-          this.progress.current = this.progress.max;
+        if (this.level.current > 1) {
+          this.progress.current = this.progress.max - 1;
         }
-        this.level = Math.max(this.level - 1, 1);
+        this.level.current = Math.max(this.level.current - 1, 1);
       }
       this.life.current = Math.max(this.life.current - 1, 0);
       if (this.life.current < 0) {
@@ -189,16 +182,21 @@ export default {
     },
     generateExercise() {
       this.selected = [];
-      const {tree, solution} = randBoolExpr({setSize: 2, maxDepth: this.level, vars: this.vars, functions: this.functions});
+      const {tree, solution} = randBoolExpr({setSize: 2, maxDepth: this.level.current, vars: this.vars, functions: this.functions});
       console.log(solution);
       this.tree = tree;
 
-      const {nodes, edges} = this.tree.toGraph();
+      const {nodes, edges, leafs} = this.tree.toGraph();
       this.treeData = {nodes, edges};
       this.expression = "\\phi =" + this.tree.to("tex");
-      const treeNodes = new Set(nodes.filter(node => typeof node.type === "string").map(node => node.label));
-      this.options = Array.from(treeNodes).sort();
-      this.texOptions = Array.from(treeNodes).map(v => new ConstNode(v).to("tex")).sort();
+
+      if (leafs.length === 0) {
+        // TODO: Only a binary answer needed here. Toggle UI.
+      } else {
+        const str = leafs.map(node => node.v);
+        this.options = Array.from(str).sort();
+        this.texOptions = leafs.map(node => node.to("tex")).sort();
+      }
     },
   },
   mounted() {

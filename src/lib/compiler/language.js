@@ -97,14 +97,7 @@ const fnNot = new FnWrapper({
   arity: 1,
   fn: (l) => !l[0],
   template: {
-    tex: ({l, vars, depth, children}) => {
-      // Tree rendering optimization: Don't create redundant parens.
-      // Mathematically the parens are correct and will be retained in the evaluation, but this is only for visualization in tex.
-      if (children.length === 1) {
-        return `\\neg ${l[0]}`;
-      }
-      return `\\neg(${l[0]})`;
-    },
+    tex: ({l, vars, depth, children}) => `\\neg ${l[0]}`,
     str: ({l}) => `!(${l[0]})`,
     obj: ({l}) => ({name: "\u00AC", children: l}),
     py: ({l}) => `(not ${l[0]}`,

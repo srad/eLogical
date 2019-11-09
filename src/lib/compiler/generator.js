@@ -11,9 +11,9 @@ const fnList = [fnAnd, fnNot, fnOr, fnTrue, fnXor, fnImpl, fnFalse, fnEq];
  * @param {Number} fpr
  * @param {Array|String} vars
  * @param {Array<String>} [functions]
- * @returns {Node|ConstNode}
+ * @returns {TreeNode}
  */
-function randTree({depth = 0, maxDepth = 3, vars, fpr = 1.0, functions = ['and', 'not', 'true', 'false']} = {}) {
+function randTree({depth = 0, maxDepth = 3, vars, fpr = 1.0, functions = ["and", "not", "true", "false"]} = {}) {
   if (depth >= maxDepth) {
     return new ConstNode(pick(vars));
   }
@@ -23,9 +23,9 @@ function randTree({depth = 0, maxDepth = 3, vars, fpr = 1.0, functions = ['and',
     return new Node({fw: fnStart, children: [randTree({depth: depth + 1, maxDepth, vars, fpr, functions})], vars});
   }
   if (depth === 1 || Math.random() < fpr) {
-    const rand_f = pick(fnList.filter(f => {return functions.indexOf(f.name) > -1}).filter(f => {
+    const rand_f = pick(fnList.filter(f => functions.indexOf(f.name) > -1).filter(f => {
       if (depth === 1) {
-        return f.arity > 0
+        return f.arity > 0;
       }
       return true;
     }));
@@ -36,8 +36,9 @@ function randTree({depth = 0, maxDepth = 3, vars, fpr = 1.0, functions = ['and',
     }
 
     const isInnerNode = depth > 1 && children.length > 0;
+    const addParens = isInnerNode && rand_f.arity > 1;
     const node = new Node({fw: rand_f, children: children, vars});
-    if (isInnerNode && rand_f.name !== "not") {
+    if (addParens) {
       return new Node({fw: fnParens, children: [node], vars});
     }
     return node;
@@ -54,7 +55,7 @@ function randTree({depth = 0, maxDepth = 3, vars, fpr = 1.0, functions = ['and',
  * @param {Array<String>} [functions]
  * @returns {{tree: (Node), solution: Array<boolean>}}
  */
-function randBoolExpr({setSize = 2, maxDepth = 1, vars = ["v0", "v1", "v2"], functions = ['and', 'not', 'true', 'false']} = {}) {
+function randBoolExpr({setSize = 2, maxDepth = 1, vars = ["v0", "v1", "v2"], functions = ["and", "not", "true", "false"]} = {}) {
   const table = Object.freeze(truthTable(setSize, vars.length));
 
   // Keep generating until a satisfiable function is found.

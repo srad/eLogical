@@ -1,0 +1,11 @@
+// Your variable overrides
+$dark: #212121;
+$secondary: #9e9e9e;
+$light: #eeeeee;
+$body-bg: #fafafa;
+$border-radius: 2px;
+
+// Bootstrap and its default variables
+@import '~bootstrap/scss/bootstrap';
+// BootstrapVue and its default variables
+@import '~bootstrap-vue/src/index.scss';
