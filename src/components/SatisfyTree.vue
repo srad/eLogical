@@ -199,6 +199,10 @@ export default {
       }
     },
   },
+  beforeCreate() {
+    fetch("https://elogical-api.azurewebsites.net/client")
+      .then(req => req.json().then(json => console.log(json)))
+  },
   mounted() {
     this.generateExercise();
   },
