@@ -74,6 +74,7 @@ import Tree from "../components/Tree";
 import Tex from "../components/Tex";
 import Healthbar from "../components/Healthbar";
 import Stopwatch from "../components/Stopwatch";
+import APIService from "../services/APIService";
 
 export default {
   name: "Game",
@@ -170,10 +171,19 @@ export default {
     gameOver(){
       this.modalText = "Game Over!";
       this.$refs["modal"].show();
+      this.addLeaderboardEntry("player1", this.calculatePoints());
     },
     printMessage(msg) {
       alert(msg);
     },
+    addLeaderboardEntry(name, points){
+      APIService.addLeaderboardEntries(name, points);
+    },
+    calculatePoints(){
+      var points = (this.progress.difficulty-1)*5+this.progress.currLevel-1;
+      console.log("Points: "+points);
+      return points;
+    }
   },
   mounted() {
     this.generateExercise();
