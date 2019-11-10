@@ -1,5 +1,7 @@
 <template>
   <div class="pt-4 pr-3 pl-3">
+    <h1 ref="difficultyTitle" class="title-difficulty">Chapter {{progress.difficulty}}</h1>
+    <h1 ref="levelTitle" class="title-level">Level {{progress.currLevel}}</h1>
     <b-row>
       <b-col>
         <h4>Stage {{progress.difficulty}} - {{progress.currLevel}}</h4>
@@ -12,7 +14,7 @@
         <b-container>
           <b-row>
             <b-col class="text-right">
-              <healthbar v-bind:max="health.max" v-bind:current="health.current"/>
+              <healthbar ref="healthbar" v-bind:current="health"/>
             </b-col>
           </b-row>
           <b-row>
@@ -27,7 +29,7 @@
     <hr/>
     <b-row>
       <b-col class="text-center">
-        <tex v-bind:expression="expression"></tex>
+        <tex v-bind:expression="expression" ref="tex"></tex>
       </b-col>
     </b-row>
     <hr/>
@@ -86,10 +88,7 @@ export default {
         currLevel: 1,
         maxLevel: 5,
       },
-      health: {
-        max: 5,
-        current: 3,
-      },
+      health: 3,
       rerolls: 3,
       selected: [],
       options: [],
@@ -148,8 +147,14 @@ export default {
       }
     },
     rerollExpression() {
-      this.rerolls--
-      this.generateExercise()
+      this.$refs["tex"].$el.classList.add("text-reroll")
+      setTimeout(()=> {
+        this.generateExercise()
+      },500)
+      setTimeout(() => {
+        this.rerolls--
+        this.$refs["tex"].$el.classList.remove("text-reroll")
+      },1000)
     },
     confirm() {
       const isAnswerCorrect = this.tree.evaluate(this.selection);
@@ -167,10 +172,16 @@ export default {
         })
         this.generateExercise();
       } else {
-        this.health.current--;
-        if (this.health.current === 0) {
-          this.gameOver()
+        if(navigator.vibrate){
+          navigator.vibrate(250)
         }
+        this.$refs["healthbar"].despawnLife()
+        setTimeout(() => {
+          this.health--
+          if (this.health === 0) {
+            this.gameOver()
+        }
+        }, 1000);
       }
     },
     generateExercise() {
@@ -192,6 +203,12 @@ export default {
         this.options = Array.from(str).sort();
         this.texOptions = leafs.map(node => node.to("tex")).sort();
       }
+      this.$refs["difficultyTitle"].classList.add("scroll-to-right")
+      this.$refs["levelTitle"].classList.add("scroll-to-left")
+      setTimeout(()=> {
+        this.$refs["difficultyTitle"].classList.remove("scroll-to-right")
+        this.$refs["levelTitle"].classList.remove("scroll-to-left")
+      },2000)
     },
     resetGame() {
       this.generateExercise();
@@ -199,7 +216,7 @@ export default {
       this.$refs["modal"].hide();
       this.progress.currLevel = 1;
       this.progress.difficulty = 1;
-      this.health.current = this.health.max;
+      this.health = 3;
     },
     gameOver(){
       this.modalText = "Game Over!";
@@ -246,8 +263,32 @@ export default {
   color: white;
 }
 .text-reroll {
-  animation: textReroll 0.5s;
+  animation: textReroll 1s;
   animation-iteration-count: 1;
+}
+.title-level{
+  z-index: 999;
+  font-size: 4em;
+  position: fixed;
+  top: 50vh;
+  right: -5em;
+}
+.title-difficulty{
+  z-index: 999;
+  font-size: 4em;
+  position: fixed;
+  top: 30vh;
+  left: -5em;
+}
+.scroll-to-left {
+  animation-name: scrollToLeft;
+  animation-duration: 1.5s;
+  animation-timing-function: cubic-bezier(.11,1.23,.98,.01)
+}
+.scroll-to-right {
+  animation-name: scrollToRight;
+  animation-duration: 1.5s;
+  animation-timing-function: cubic-bezier(.11,1.23,.98,.01)
 }
 @keyframes textReroll {
   0% { transform: translate(1px, 1px) rotate(0deg);color: transparent; text-shadow: 0 0 0px rgba(0,0,0,0.5)}
@@ -266,5 +307,13 @@ export default {
 @keyframes spin {
   0% {transform: rotate3d(0,1,0, 0deg)}
   100% {transform: rotate3d(0,1,0, 360deg)}
+}
+@keyframes scrollToLeft {
+  0% {transform: translateX(0)}
+  100% {transform: translateX(-155vw)}
+}
+@keyframes scrollToRight {
+  0% {transform: translateX(0)}
+  100% {transform: translateX(150vw)}
 }
 </style>
