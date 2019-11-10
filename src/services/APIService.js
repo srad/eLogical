@@ -1,14 +1,26 @@
 import axios from "axios"
 
-const API_URL = "http://localhost:4000";
+var API_URL = process.env.SERVER_IP || "http://localhost:3000"; // TODO: env not working
+
+
+var axiosOptions = {
+  headers: {
+    Authentication: `Bearer ${window.localStorage.getItem("JWT")}`,
+  }}
 
 export class APIService{
   constructor(){}
 
+  
+
+  requestToken(){
+    const url = `${API_URL}/client/token`;
+    axios.get(url, ).then(response => window.localStorage.setItem("JWT", response.data));
+  }
+
   getLeaderboardEntries(){
-    const url = `${API_URL}/leaderboard`;
-    console.log("Debug3");
-    return axios.get(url).then(response => response.data);
+    const url = `${API_URL}/client/leaderboard`;
+    return  axios.get(url, axiosOptions).then(response => response.data);
   }
 
   addLeaderboardEntries(namePar, pointsPar){
@@ -21,11 +33,3 @@ export class APIService{
 }
 
 export default new APIService;
-
-
-
-// export default() => {
-//   return axios.create({
-//     baseURL: `http://localhost:4000`
-//   })
-// }

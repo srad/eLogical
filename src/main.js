@@ -1,3 +1,4 @@
+require("dotenv").config();
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
@@ -15,6 +16,9 @@ library.add(faHeart, faAward, faStar, faCheck, faRobot, faTimes, faMedal, faLaug
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
 Vue.config.productionTip = false;
+
+import APIService from "./services/APIService";
+APIService.requestToken;
 
 new Vue({
   router,
