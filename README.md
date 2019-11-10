@@ -1,4 +1,6 @@
-# elogical
+# eLogical
+
+[![Build Status](https://srad.visualstudio.com/elogical-node/_apis/build/status/elogical-node%20-%20CI?branchName=master)](https://srad.visualstudio.com/elogical-node/_build/latest?definitionId=2&branchName=master)
 
 ## Project setup
 ```

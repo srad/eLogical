@@ -1,16 +1,17 @@
 class FnWrapper {
   /**
-   * @param {Function} param.fn
-   * @param {Number} param.arity
-   * @param {String} param.name
-   * @param {Object} param.template
+   * @param {String} name
+   * @param {Number} arity
+   * @param {Function} fn
+   * @param {Object} template
+   * but can be used for tree rendering optimization.
    * @constructor
    */
-  constructor(param) {
-    this.fn = param.fn;
-    this.arity = param.arity;
-    this.name = param.name;
-    this.template = param.template;
+  constructor({name, arity, fn, template} = {}) {
+    this.name = name;
+    this.arity = arity;
+    this.fn = fn;
+    this.template = template;
   }
 }
 
@@ -30,10 +31,8 @@ class Node extends TreeNode {
    */
   constructor(param) {
     super();
-    this.fn = param.fw.fn;
+    this.fw = param.fw;
     this.vars = param.vars;
-    this.name = param.fw.name;
-    this.template = param.fw.template;
     this.children = param.children || [];
   }
 
@@ -50,7 +49,7 @@ class Node extends TreeNode {
       args = params;
     }
     const results = this.children.map(node => node.evaluate(args));
-    return this.fn(results);
+    return this.fw.fn(results);
   }
 
   /**
@@ -61,7 +60,7 @@ class Node extends TreeNode {
    */
   to(type = "str", depth = -1) {
     const results = this.children.map(node => node.to(type, depth + 1));
-    return this.template[type]({l: results, vars: this.vars, depth, children: this.children});
+    return this.fw.template[type]({l: results, vars: this.vars, depth, children: this.children});
   }
 
   /**
@@ -90,9 +89,13 @@ class Node extends TreeNode {
    * @returns {{nodes: Array<{id: Number, label: String, type: Node, color: {background: String}}>, edges: Array<{from: Number, to: Number}>}}
    */
   toGraph() {
-    let nodes = [];
-    let edges = [];
+    const nodes = [];
+    const edges = [];
+    const leafs = [];
+    const lookupLeaf = {};
+
     let id_counter = 0;
+
     const colors = [
       "#845EC2",
       "#D65DB1",
@@ -103,19 +106,27 @@ class Node extends TreeNode {
 
     function graph(node, depth = 0, parent = 0) {
       const color = colors[depth % colors.length];
+      if (node instanceof ConstNode && !lookupLeaf[node.to()]) {
+        leafs.push(node);
+        lookupLeaf[node.to()] = true;
+      }
       if (depth !== parent) {
         edges.push({from: parent, to: depth});
       }
-      nodes.push({id: depth, label: node.name || node, type: node, color: {background: color}});
+      // Don't draw parents
+      if (!(node instanceof ConstNode) && node.fw.name === "parens") {
+        node = node.children[0];
+      }
+      nodes.push({id: depth, label: node.to("obj").name || node.v, type: node, color: {background: color}});
 
       if (Array.isArray(node.children)) {
         node.children.forEach(n => graph(n, ++id_counter, depth));
       }
     }
 
-    graph(this.children[0].to("obj"));
+    graph(this.children[0]);
 
-    return {nodes, edges};
+    return {nodes, edges, leafs: Array.from(leafs)};
   }
 }
 
