@@ -93,13 +93,13 @@
 
 <script>
 import {randBoolExpr} from "@/lib/compiler/generator";
-import Tree from "./Tree";
-import Tex from "./Tex";
-import Progresser from "./Progresser";
+import Tree from "../components/Tree";
+import Tex from "../components/Tex";
+import Progresser from "../components/Progresser";
 import colors from "@/lib/colors";
 
 export default {
-  name: "SatisfyTree",
+  name: "Game2",
   components: {Tree, Tex, Progresser},
   props: {},
   data() {

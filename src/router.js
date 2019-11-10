@@ -1,16 +1,20 @@
 import Vue from "vue";
 import Router from "vue-router";
+import Game from "./views/Game.vue";
+import Game2 from "./views/Game2.vue";
 import Home from "./views/Home.vue";
-import Tree from "./views/Tree";
 import Help from "./views/Help";
+import Leaderboard from "./views/Leaderboard.vue";
 
 Vue.use(Router);
 
 export default new Router({
   routes: [
     {path: "/", name: "home", component: Home},
+    {path: "/game", name: "game", component: Game},
+    {path: "/game2", name: "game2", component: Game2},
+    {path: "/leaderboard", name: "leaderboard", component: Leaderboard},
     {path: "/help", name: "help", component: Help},
-    {path: "/tree", name: "tree", component: Tree},
     {
       path: "/about",
       name: "about",
