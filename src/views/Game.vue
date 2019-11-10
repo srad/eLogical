@@ -3,17 +3,8 @@
     <h1 ref="difficultyTitle" class="title-difficulty">Chapter {{progress.difficulty}}</h1>
     <h1 ref="levelTitle" class="title-level">Level {{progress.currLevel}}</h1>
     <b-row>
-      <b-col>
+      <b-col cols="3">
         <h4>Stage {{progress.difficulty}} - {{progress.currLevel}}</h4>
-      </b-col>
-      <b-col v-if="progress.currLevel === progress.maxLevel">
-        <stopwatch
-          ref="stopwatch"
-          :time="stopwatchTime"
-          :countingDown="true"
-          :showIcon="false"
-          v-on:timer-stopped="gameOver"
-        ></stopwatch>
       </b-col>
 
       <b-col>
@@ -39,10 +30,18 @@
       </b-col>
     </b-row>
     <hr />
+      <stopwatch
+      v-if="progress.currLevel === progress.maxLevel"
+          ref="stopwatch"
+          :time="stopwatchTime"
+          :countingDown="true"
+          :showIcon="false"
+          v-on:timer-stopped="gameOver"
+      ></stopwatch>
 
     <tree v-bind:treeData="treeData" class="tree"></tree>
     <b-row align-h="center">
-      <b-col cols="6" md="2" sm="3" :key="v" v-for="v in options" class="text-center">
+      <b-col cols="6" sm="4" lg="2" :key="v" v-for="v in options" class="text-center">
         <button v-on:click="toggleVariable(v)" class="selector false" :ref="v">{{v}}</button>
       </b-col>
     </b-row>
@@ -274,6 +273,7 @@ export default {
   color: white;
   border-radius: 2px;
   border-color: transparent;
+  margin-bottom: 1em;
 }
 .toggle-selector {
   animation: spin 0.5s;
@@ -379,7 +379,6 @@ export default {
     text-shadow: 0 0 0px rgba(0, 0, 0, 0.5);
   }
 }
-
 @keyframes spin {
   0% {
     transform: rotate3d(0, 1, 0, 0deg);
