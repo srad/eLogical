@@ -3,17 +3,8 @@
     <h1 ref="difficultyTitle" class="title-difficulty">Chapter {{progress.difficulty}}</h1>
     <h1 ref="levelTitle" class="title-level">Level {{progress.currLevel}}</h1>
     <b-row>
-      <b-col>
+      <b-col cols="3">
         <h4>Stage {{progress.difficulty}} - {{progress.currLevel}}</h4>
-      </b-col>
-      <b-col v-if="progress.currLevel === progress.maxLevel">
-        <stopwatch
-          ref="stopwatch"
-          :time="stopwatchTime"
-          :countingDown="true"
-          :showIcon="false"
-          v-on:timer-stopped="gameOver"
-        ></stopwatch>
       </b-col>
 
       <b-col>
@@ -39,10 +30,18 @@
       </b-col>
     </b-row>
     <hr />
+      <stopwatch
+      v-if="progress.currLevel === progress.maxLevel"
+          ref="stopwatch"
+          :time="stopwatchTime"
+          :countingDown="true"
+          :showIcon="false"
+          v-on:timer-ended="gameOver"
+      ></stopwatch>
 
     <tree v-bind:treeData="treeData" class="tree"></tree>
     <b-row align-h="center">
-      <b-col cols="6" md="2" sm="3" :key="v" v-for="v in options" class="text-center">
+      <b-col cols="6" sm="4" lg="2" :key="v" v-for="v in options" class="text-center">
         <button v-on:click="toggleVariable(v)" class="selector false" :ref="v">{{v}}</button>
       </b-col>
     </b-row>
@@ -75,9 +74,15 @@
             </router-link>
           </b-col>
         </b-row>
-        <b-row align-h="center" v-if="modalText === 'Correct!'">
+        <b-row align-h="center" v-if="modalText === 'Good Job! Choose your Loot'">
           <b-col cols="6">
-            <b-button variant="primary" size="lg" block v-on:click="loadNextStage">Next Level</b-button>
+            <font-awesome-icon ref="dice-icon" size="6x" class="loot-unselected" icon="dice" v-on:click="pickLoot('dice')"></font-awesome-icon>
+          </b-col>
+          <b-col cols="6">
+            <font-awesome-icon ref="heart-icon" size="6x" class="loot-unselected" icon="heart" v-on:click="pickLoot('heart')"></font-awesome-icon>
+          </b-col>
+          <b-col cols="6">
+            <b-button variant="primary" size="lg" block v-on:click="loadNextChapter">Next Chapter</b-button>
           </b-col>
         </b-row>
       </b-container>
@@ -110,6 +115,10 @@ export default {
       options: [],
       expression: "",
       modalText: "",
+      loot: {
+        selected: null,
+        bagpack: []
+      },
       treeData: { nodes: [], edges: [] },
       difficultySettings: {
         1: ["and", "or", "not", "True", "False"],
@@ -187,8 +196,10 @@ export default {
       const isAnswerCorrect = this.tree.evaluate(this.selection);
       if (isAnswerCorrect) {
         if (this.progress.currLevel === this.progress.maxLevel) {
-          this.progress.currLevel = 1;
-          this.progress.difficulty++;
+            this.modalText = "Good Job! Choose your Loot";
+            this.$refs["modal"].show();
+            this.$refs["stopwatch"].stopTimer()
+            return
         } else {
           this.progress.currLevel++;
         }
@@ -210,6 +221,49 @@ export default {
           }
         }, 1000);
       }
+    },
+    pickLoot(loot){
+      this.loot.selected = loot
+      switch(loot){
+        case "dice":
+          this.$refs["dice-icon"].classList.add("dice-selected")
+          this.$refs["dice-icon"].classList.remove("loot-unselected")
+          this.$refs["heart-icon"].classList.add("loot-unselected")
+          this.$refs["heart-icon"].classList.remove("heart-selected")
+          break;
+        case "heart":
+          this.$refs["heart-icon"].classList.add("heart-selected")
+          this.$refs["heart-icon"].classList.remove("loot-unselected")
+          this.$refs["dice-icon"].classList.add("loot-unselected")
+          this.$refs["dice-icon"].classList.remove("dice-selected")
+          break;
+      }
+
+    },
+    emptyBackpack(){
+      this.loot.bagpack.forEach(loot => {
+        switch (loot){
+          case "heart":
+            this.health++
+            break;
+          case "dice":
+            this.rerolls++
+            break;
+        }
+        this.loot.bagpack = []
+      })
+    },
+    loadNextChapter() {
+          this.progress.currLevel = 1;
+          this.progress.difficulty++;
+          this.loot.bagpack.push(this.loot.selected)
+          this.loot.selected = null
+          this.$refs["heart-icon"].classList.remove("heart-selected")
+          this.$refs["dice-icon"].classList.remove("dice-selected")
+          this.$refs["heart-icon"].classList.add("loot-unselected")
+          this.$refs["dice-icon"].classList.add("loot-unselected")
+          this.$refs["modal"].hide();
+          this.generateExercise()
     },
     generateExercise() {
       this.selected = [];
@@ -241,6 +295,7 @@ export default {
         this.$refs["difficultyTitle"].classList.remove("scroll-to-right");
         this.$refs["levelTitle"].classList.remove("scroll-to-left");
       }, 2000);
+      this.emptyBackpack()
     },
     resetGame() {
       this.generateExercise();
@@ -274,6 +329,7 @@ export default {
   color: white;
   border-radius: 2px;
   border-color: transparent;
+  margin-bottom: 1em;
 }
 .toggle-selector {
   animation: spin 0.5s;
@@ -293,6 +349,18 @@ export default {
 .false:hover {
   background-color: #c82333;
   color: white;
+}
+.dice-selected {
+  color: goldenrod;
+  transition: all 1s;
+}
+.heart-selected {
+  color: darkred;
+  transition: all 1s;
+}
+.loot-unselected {
+  color: darkgray;
+  transition: all 1s;
 }
 .text-reroll {
   animation: textReroll 1s;
@@ -379,7 +447,6 @@ export default {
     text-shadow: 0 0 0px rgba(0, 0, 0, 0.5);
   }
 }
-
 @keyframes spin {
   0% {
     transform: rotate3d(0, 1, 0, 0deg);
