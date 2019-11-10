@@ -44,7 +44,7 @@ export default {
           }
           if (this.currMs - 500 < 0) {
             this.currMs = 0;
-            this.$emit("timer-stopped");
+            this.$emit("timer-ended");
           } else {
             this.currMs -= 500;
             setTimeout(this.updateTime, 500);
