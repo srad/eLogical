@@ -79,7 +79,4 @@ export default {
 </script>
 
 <style scoped>
-.progress-bar {
-background-color: blue;
-}
 </style>

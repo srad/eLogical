@@ -26,13 +26,14 @@
     <hr />
     <b-row>
       <b-col class="text-center">
-        <tex v-bind:expression="expression" ref="tex"></tex>
+        <tex v-bind:expression="expression" ref="tex" class="tex"></tex>
       </b-col>
     </b-row>
     <hr />
       <stopwatch
       v-if="progress.currLevel === progress.maxLevel"
           ref="stopwatch"
+          class="stopwatch"
           :time="stopwatchTime"
           :countingDown="true"
           :showIcon="false"
@@ -46,9 +47,9 @@
       </b-col>
     </b-row>
 
-    <b-row class="text-center" style="margin-top: 2em;">
+    <b-row class="text-center">
       <b-col>
-        <b-button variant="primary" size="lg" v-on:click="confirm">Confirm</b-button>
+        <b-button variant="primary" class="confirm" size="lg" v-on:click="confirm">Confirm</b-button>
       </b-col>
     </b-row>
 
@@ -165,21 +166,14 @@ export default {
   methods: {
     toggleVariable(value) {
       let pos = this.selected.indexOf(value);
-      this.$refs[value][0].classList.add("toggle-selector");
       if (pos > -1) {
         this.selected.splice(pos, 1);
-        setTimeout(() => {
-          this.$refs[value][0].classList.remove("true");
-          this.$refs[value][0].classList.add("false");
-          this.$refs[value][0].classList.remove("toggle-selector");
-        }, 500);
+        this.$refs[value][0].classList.remove("true");
+        this.$refs[value][0].classList.add("false");
       } else {
         this.selected.push(value);
-        setTimeout(() => {
-          this.$refs[value][0].classList.remove("false");
-          this.$refs[value][0].classList.add("true");
-          this.$refs[value][0].classList.remove("toggle-selector");
-        }, 500);
+        this.$refs[value][0].classList.remove("false");
+        this.$refs[value][0].classList.add("true");
       }
     },
     rerollExpression() {
@@ -203,23 +197,29 @@ export default {
         } else {
           this.progress.currLevel++;
         }
-        this.options.forEach(opt => {
-          this.$refs[opt][0].classList.remove("true");
-          this.$refs[opt][0].classList.remove("false");
-          this.$refs[opt][0].classList.add("false");
-        });
-        this.generateExercise();
+          this.$refs["tex"].$el.classList.add("tex-right");
+          setTimeout(() => {
+            this.$refs["tex"].$el.classList.remove("tex-right");
+            this.options.forEach(opt => {
+              this.$refs[opt][0].classList.remove("true");
+              this.$refs[opt][0].classList.remove("false");
+              this.$refs[opt][0].classList.add("false");
+            });
+            this.generateExercise();
+          },2000)
       } else {
         if (navigator.vibrate) {
           navigator.vibrate(250);
         }
+        this.$refs["tex"].$el.classList.add("tex-wrong")
         this.$refs["healthbar"].despawnLife();
         setTimeout(() => {
+          this.$refs["tex"].$el.classList.remove("tex-wrong")
           this.health--;
           if (this.health === 0) {
             this.gameOver();
           }
-        }, 1000);
+        }, 3000);
       }
     },
     pickLoot(loot){
@@ -321,7 +321,20 @@ export default {
 
 <style>
 .tree {
-  height: 35vh;
+  height: 25vh;
+}
+.tex {
+  font-size: 1.5em;
+}
+.tex-right {
+  animation: texRight 2s;
+  animation-fill-mode: forwards;
+}
+.tex-wrong {
+  animation: texWrong 2s;
+}
+.tree, .confirm, .selector, .stopwatch{
+    animation: slideInFromTop 1s;
 }
 .selector {
   width: 15vh;
@@ -330,21 +343,19 @@ export default {
   border-radius: 2px;
   border-color: transparent;
   margin-bottom: 1em;
-}
-.toggle-selector {
-  animation: spin 0.5s;
+  font-size: 3em;
 }
 .true {
-  background-color: #28a745;
-  box-shadow: 0 0 5px #05ec3b;
+  animation: spinTrue 1s;
+  animation-fill-mode: forwards;
 }
 .true:hover {
   background-color: #1e7e34;
   color: white;
 }
 .false {
-  background-color: #dc3545;
-  box-shadow: 0 0 5px #f1031b;
+  animation: spinFalse 1s;
+  animation-fill-mode: forwards;
 }
 .false:hover {
   background-color: #c82333;
@@ -447,12 +458,38 @@ export default {
     text-shadow: 0 0 0px rgba(0, 0, 0, 0.5);
   }
 }
-@keyframes spin {
+@keyframes spinTrue {
   0% {
     transform: rotate3d(0, 1, 0, 0deg);
+    background-color: #dc3545;
+    box-shadow: 0 0 5px #f1031b;
   }
   100% {
     transform: rotate3d(0, 1, 0, 360deg);
+    background-color: #28a745;
+    box-shadow: 0 0 5px #05ec3b;
+  }
+}
+@keyframes spinFalse {
+  0% {
+    transform: rotate3d(0, 1, 0, 0deg);
+    background-color: #28a745;
+    box-shadow: 0 0 5px #05ec3b;
+  }
+  100% {
+    transform: rotate3d(0, 1, 0, 360deg);
+    background-color: #dc3545;
+    box-shadow: 0 0 5px #f1031b;
+  }
+}
+@keyframes slideInFromTop {
+  0% {
+    transform: translateY(-3em);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 @keyframes scrollToLeft {
@@ -469,6 +506,64 @@ export default {
   }
   100% {
     transform: translateX(150vw);
+  }
+}
+@keyframes texRight {
+  0%{
+    transform: scale(1);
+    opacity: 1;
+  }
+  25%{
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  50%{
+    transform: scale(1.5);
+    color: green;
+  }
+  75%{
+    transform: scale(1.5);
+    color: green;
+    opacity: 1;
+  }
+  100%{
+    transform: scale(1.5);
+    color: green;
+    transform: translateY(-3em);
+    opacity: 0;
+  }
+}
+@keyframes texWrong {
+  0%{
+    transform: translateX(0);
+  }
+  10%{
+    transform: translateX(5px);
+    color: red;
+  }
+  20%{
+    transform: translateX(-5px)
+  }
+  30%{
+    transform: translateX(5px);
+    color: red;
+  }
+  40%{
+    transform: translateX(-5px);
+  }
+  50%{
+    transform: translateX(5px);
+    color: red;
+  }
+  60%{
+    transform: translateX(-5px)
+  }
+  70%{
+    transform: translateX(5px);
+    color: red;
+  }
+  100%{
+    transform: translateX(-5px);
   }
 }
 </style>
