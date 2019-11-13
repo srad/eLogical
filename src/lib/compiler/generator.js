@@ -10,29 +10,31 @@ const fnList = [fnAnd, fnNot, fnOr, fnTrue, fnXor, fnImpl, fnFalse, fnEq];
  * @param {Number} maxDepth
  * @param {Number} fpr
  * @param {Array|String} vars
- * @param {Array<String>} [functions]
+ * @param {Set<String>} [expWhiteList]
  * @returns {TreeNode}
  */
-function randTree({depth = 0, maxDepth = 3, vars, fpr = 1.0, functions = ["and", "not", "true", "false"]} = {}) {
+function randTree({depth = 0, maxDepth = 3, vars, fpr = 1.0, expWhiteList} = {}) {
   if (depth >= maxDepth) {
     return new ConstNode(pick(vars));
   }
 
   // Root, start language.
   if (depth === 0) {
-    return new Node({fw: fnStart, children: [randTree({depth: depth + 1, maxDepth, vars, fpr, functions})], vars});
+    return new Node({fw: fnStart, children: [randTree({depth: depth + 1, maxDepth, vars, fpr, expWhiteList})], vars});
   }
   if (depth === 1 || Math.random() < fpr) {
-    const rand_f = pick(fnList.filter(f => functions.indexOf(f.name) > -1).filter(f => {
-      if (depth === 1) {
-        return f.arity > 0;
-      }
-      return true;
-    }));
+    const rand_f = pick(fnList
+      .filter(f => expWhiteList.has(f.name))
+      .filter(f => {
+        if (depth === 1) {
+          return f.arity > 0;
+        }
+        return true;
+      }));
     const children = [];
 
     for (let i = 0; i < rand_f.arity; i++) {
-      children.push(randTree({depth: depth + 1, maxDepth, vars, fpr, functions}));
+      children.push(randTree({depth: depth + 1, maxDepth, vars, fpr, expWhiteList}));
     }
 
     const isInnerNode = depth > 1 && children.length > 0;
@@ -52,17 +54,21 @@ function randTree({depth = 0, maxDepth = 3, vars, fpr = 1.0, functions = ["and",
  * @param {Number} [setSize]
  * @param {Number} [maxDepth]
  * @param {Array<String>} [vars]
- * @param {Array<String>} [functions]
- * @returns {{tree: (Node), solution: Array<boolean>}}
+ * @param {Array<String>} [expWhiteList]
+ * @returns {{tree: TreeNode, solution: Array<Boolean>}}
  */
-function randBoolExpr({setSize = 2, maxDepth = 1, vars = ["v0", "v1", "v2"], functions = ["and", "not", "true", "false"]} = {}) {
+function randBoolExpr({
+  setSize = 2, maxDepth = 1, vars = ["v0", "v1", "v2"],
+  expWhiteList = [
+    fnOr.name, fnNot.name, fnAnd.name, fnTrue.name, fnXor.name, fnImpl.name, fnFalse.name, fnEq.name, fnStart.name, fnParens.name],
+} = {}) {
   const table = Object.freeze(truthTable(setSize, vars.length));
 
-  // Keep generating until a satisfiable function is found.
+  // Keep generating until one satisfiable function is found.
   for (; ;) {
     // maxDepth + 1 because the root node is the start symbol.
-    const tree = randTree({depth: 0, maxDepth: maxDepth + 1, vars, functions});
-    // Check for every generated function it is satisfiable.
+    const tree = randTree({depth: 0, maxDepth: maxDepth + 1, vars, expWhiteList: new Set(expWhiteList)});
+    // Check for every generated expression that is has at least one satisfiable solution.
     for (let i = 0; i < table.length; i++) {
       const row = table[i];
       const args = {};

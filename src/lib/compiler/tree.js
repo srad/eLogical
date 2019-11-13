@@ -4,14 +4,16 @@ class FnWrapper {
    * @param {Number} arity
    * @param {Function} fn
    * @param {Object} template
+   * @param {String} color Hex color
    * but can be used for tree rendering optimization.
    * @constructor
    */
-  constructor({name, arity, fn, template} = {}) {
+  constructor({name, arity, fn, template, color} = {}) {
     this.name = name;
     this.arity = arity;
     this.fn = fn;
     this.template = template;
+    this.color = color;
   }
 }
 
@@ -60,7 +62,7 @@ class Node extends TreeNode {
    */
   to(type = "str", depth = -1) {
     const results = this.children.map(node => node.to(type, depth + 1));
-    return this.fw.template[type]({l: results, vars: this.vars, depth, children: this.children});
+    return this.fw.template[type]({l: results, vars: this.vars, depth, children: this.children, color: this.fw.color});
   }
 
   /**
@@ -96,31 +98,26 @@ class Node extends TreeNode {
 
     let id_counter = 0;
 
-    const colors = [
-      "#845EC2",
-      "#D65DB1",
-      "#FF6F91",
-      "#FF9671",
-      "#FFC75F",
-    ];
-
-    function graph(node, depth = 0, parent = 0) {
-      const color = colors[depth % colors.length];
+    function graph(node, depth = 0, parentId = 0, parentNode) {
+      // Return all unique nodes/variables/leafs.
       if (node instanceof ConstNode && !lookupLeaf[node.to()]) {
+        node.color = parentNode.fw.color;
         leafs.push(node);
         lookupLeaf[node.to()] = true;
       }
-      if (depth !== parent) {
-        edges.push({from: parent, to: depth});
+      if (depth !== parentId) {
+        edges.push({from: parentId, to: depth});
       }
       // Don't draw parents
       if (!(node instanceof ConstNode) && node.fw.name === "parens") {
         node = node.children[0];
       }
+      const color = node instanceof ConstNode || node.fw.arity === 0 ? parentNode.fw.color : node.fw.color;
+
       nodes.push({id: depth, label: node.to("obj").name || node.v, type: node, color: {background: color}});
 
       if (Array.isArray(node.children)) {
-        node.children.forEach(n => graph(n, ++id_counter, depth));
+        node.children.forEach(n => graph(n, ++id_counter, depth, node));
       }
     }
 
