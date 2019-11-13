@@ -9,6 +9,8 @@ export default {
   name: "tree",
   props: {
     treeData: Object,
+    moveView: Boolean,
+    moveNode: Boolean
   },
   watch: {
     treeData: function (treeData) {
@@ -38,8 +40,8 @@ export default {
           },
         },
         interaction: {
-          dragNodes: false,
-          dragView: true,
+          dragNodes: this.moveNode || false,
+          dragView: this.moveView || false,
         },
         nodes: {
           physics: true,
