@@ -1,5 +1,9 @@
 <template>
   <div class="pt-4 pr-3 pl-3">
+    <div class="backdrop" ref="backdropLeft" v-show="backdropVisible"></div>
+    <div class="backdrop" ref="backdropRight" v-show="backdropVisible"></div>
+    <div class="backdrop" ref="backdropTop" v-show="backdropVisible"></div>
+    <div class="backdrop" ref="backdropBottom" v-show="backdropVisible"></div>
     <h1 ref="difficultyTitle" class="title-difficulty">Chapter {{progress.difficulty}}</h1>
     <h1 ref="levelTitle" class="title-level">Level {{progress.currLevel}}</h1>
     <b-row>
@@ -40,7 +44,11 @@
           v-on:timer-ended="gameOver"
       ></stopwatch>
 
-    <tree v-bind:treeData="treeData" class="tree"></tree>
+      <b-row align-h="center">
+        <b-col cols="6" class="text-center">
+          <tree v-bind:treeData="treeData" class="tree" ref="tree"></tree>
+        </b-col>
+      </b-row>
     <b-row align-h="center">
       <b-col cols="6" sm="4" lg="2" :key="v" v-for="v in options" class="text-center">
         <button v-on:click="toggleVariable(v)" class="selector false" :ref="v">{{v}}</button>
@@ -49,7 +57,7 @@
 
     <b-row class="text-center">
       <b-col>
-        <b-button variant="primary" class="confirm" size="lg" v-on:click="confirm">Confirm</b-button>
+        <b-button variant="primary" class="confirm" ref="confirm" size="lg" v-on:click="confirm">Confirm</b-button>
       </b-col>
     </b-row>
 
@@ -86,6 +94,26 @@
             <b-button variant="primary" size="lg" block v-on:click="loadNextChapter">Next Chapter</b-button>
           </b-col>
         </b-row>
+        <b-row align-h="center" v-if="modalText === 'Welcome!' && tutorialProposed === false">
+          <b-container>
+            <b-row>
+              <b-col>
+                Welcome to eLogical! Do you want to play through a quick tutorial?
+              </b-col>
+              <b-col>
+                <font-awesome-icon size="6x" class="loot-tutorial" icon="question"></font-awesome-icon>
+              </b-col>
+            </b-row>
+            <b-row>
+              <b-col>
+                <b-button variant="success" size="lg" block v-on:click="startTutorial">Sure</b-button>
+              </b-col>
+              <b-col>
+                <b-button variant="danger" size="lg" block v-on:click="skipTutorial">No</b-button>
+              </b-col>
+            </b-row>
+          </b-container>
+        </b-row>
       </b-container>
     </b-modal>
   </div>
@@ -115,7 +143,7 @@ export default {
       selected: [],
       options: [],
       expression: "",
-      modalText: "",
+      modalText: "Welcome!",
       loot: {
         selected: null,
         bagpack: []
@@ -124,7 +152,9 @@ export default {
       difficultySettings: {
         1: ["and", "or", "not", "True", "False"],
         2: ["and", "not", "True", "False", "xor"]
-      }
+      },
+      tutorialProposed: false,
+      backdropVisible: false
     };
   },
   computed: {
@@ -221,6 +251,7 @@ export default {
           }
         }, 3000);
       }
+      this.hightlightElement(this.$refs["healthbar"].$el)
     },
     pickLoot(loot){
       this.loot.selected = loot
@@ -311,17 +342,51 @@ export default {
     },
     printMessage(msg) {
       alert(msg);
+    },
+    hightlightElement(el){
+      let topDrop = this.$refs["backdropTop"],
+          botDrop = this.$refs["backdropBottom"],
+          leftDrop = this.$refs["backdropLeft"],
+          rightDrop = this.$refs["backdropRight"],
+          bounds = el.getBoundingClientRect()
+      topDrop.style.height = bounds.top+"px"
+      topDrop.style.width = bounds.width+"px"
+      topDrop.style.left = bounds.left+"px"
+      topDrop.style.top = "0"
+      botDrop.style.height = window.screen.height - bounds.bottom+"px"
+      botDrop.style.width = bounds.width+"px"
+      botDrop.style.left = bounds.left+"px"
+      botDrop.style.top = bounds.top+bounds.height+"px"
+      leftDrop.style.left = "0"
+      leftDrop.style.top = "0"
+      leftDrop.style.width = bounds.left+"px"
+      rightDrop.style.top = "0"
+      rightDrop.style.left = bounds.left+bounds.width+"px"
+      this.backdropVisible = true
+      console.warn(bounds)
+    },
+    skipTutorial(){
+      this.tutorialProposed = true;
+      this.$refs["modal"].hide();
+    },
+    startTutorial(){
+      this.tutorialProposed = true;
+      this.$refs["modal"].hide();
     }
   },
   mounted() {
     this.generateExercise();
+    if(!this.tutorialProposed){
+      this.modalText = "Welcome!"
+      this.$refs["modal"].show();
+    }
   }
 };
 </script>
 
 <style>
 .tree {
-  height: 25vh;
+  height: 20vh;
 }
 .tex {
   font-size: 1.5em;
@@ -344,6 +409,14 @@ export default {
   border-color: transparent;
   margin-bottom: 1em;
   font-size: 3em;
+}
+.backdrop {
+  z-index: 999;
+  position: absolute;
+  background-color: rgb(0, 0, 0);
+  opacity: 0.9;
+  width: 100%;
+  height: 100%;
 }
 .true {
   animation: spinTrue 1s;

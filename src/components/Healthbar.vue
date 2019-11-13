@@ -1,6 +1,6 @@
 <template>
   <div>
-      <font-awesome-icon :class="{pulsating: current === 1}" size="3x" class="mr-1 heart" v-for="i in current" :key="i" icon="heart" :ref="i"></font-awesome-icon>
+      <font-awesome-icon :class="{pulsating: current === 1}" size="2x" class="mr-1 heart" v-for="i in current" :key="i" icon="heart" :ref="i"></font-awesome-icon>
   </div>
 </template>
 
