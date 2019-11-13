@@ -7,7 +7,7 @@
 
       <b-col class="text-center p-0 mr-3 pb-2 pt-0" cols="4">
         <b-progress class="bg-secondary h-100 shadow-sm" :value="progress.current" :max="progress.max">
-          <b-progress-bar class="text-dark font-weight-bold" :key="index" v-for="(n, index) in progress.current" :value="1" :label="(index+1)+'/'+progress.max" :style="{backgroundColor: colors[index]}"></b-progress-bar>
+          <b-progress-bar class="font-weight-bold" :key="index" v-for="(n, index) in progress.current" :value="1" :label="(index+1)+'/'+progress.max" :style="{backgroundColor: colors[index]}"></b-progress-bar>
         </b-progress>
       </b-col>
 
@@ -18,7 +18,7 @@
 
     <b-row>
       <b-col>
-        <b-card body-class="p-2 pl-3 bg-white" header="Make this formula true" header-bg-variant="dark" header-text-variant="light" header-class="p-2 text-center" class="shadow-sm border-dark">
+        <b-card body-class="p-2 pl-3" bg-variant="white" header="Make this formula true" header-bg-variant="primary" header-text-variant="white" header-class="p-2 text-center" class="shadow-sm border-dark">
           <b-card-text class="p-0 m-0">
             <tex v-bind:expression="expression"></tex>
           </b-card-text>
@@ -26,28 +26,31 @@
       </b-col>
     </b-row>
 
-    <router-link class="btn btn-warning float-right mt-3 position-absolute" tag="button" style="right: 15px; z-index: 10" to="help">
-      <strong>?</strong>
-    </router-link>
+    <div style="right: 15px; z-index: 10" class="btn-group float-right mt-3 position-absolute">
+      <router-link class="btn btn-warning" tag="button" to="help">
+        <strong>?</strong>
+      </router-link>
+      <b-button variant="danger" v-on:click="generateExercise">
+        <strong>
+          <font-awesome-icon icon="dice"/>
+        </strong>
+      </b-button>
+    </div>
     <tree v-bind:treeData="treeData" style="height: 45vh"></tree>
 
     <b-row class="position-absolute w-100 " style="bottom: 17px">
       <b-col cols="9" class="m-0 p-0 pl-3">
-        <b-card no-body header-bg-variant="dark" header-text-variant="light" header-class="p-2 text-center shadow-sm">
-          <table class="table-dark table-bordered p-0 m-0 table table-sm text-center">
+        <b-card no-body header-bg-variant="primary" header-text-variant="light" header-class="p-2 text-center shadow-sm">
+          <table class="table-dark table-bordered border-danger p-0 m-0 table table-sm text-center">
             <thead>
-            <td class="text-white bg-dark w-25">Name</td>
-            <td class="text-white bg-dark" :key="v" v-for="v in options">
-              {{v}}
-            </td>
+            <th :key="v.name" v-for="v in options" :style="{backgroundColor: v.color}">
+              {{v.name}}
+            </th>
             </thead>
             <tbody>
             <tr>
-              <td class="bg-dark text-white">
-                Value
-              </td>
-              <td class="bg-white" :key="v" v-for="v in options">
-                <b-form-checkbox v-model="tableSelected" v-bind:value="v" switch/>
+              <td class="bg-white" :key="v.name" v-for="v in options">
+                <b-form-checkbox v-model="tableSelected" v-bind:value="v.name" switch/>
               </td>
             </tr>
             </tbody>
@@ -155,7 +158,7 @@ export default {
       const isAnswerCorrect = this.tree.evaluate(this.selection);
       if (isAnswerCorrect) {
         if (this.progress.current === this.progress.max) {
-          this.progress.current = 0;
+          this.progress.current = 1;
           this.level.current += 1;
           this.life.current = Math.min(this.life.current + 1, this.life.max);
         } else {
@@ -166,7 +169,7 @@ export default {
         return;
       }
       // wrong
-      this.progress.current = Math.max(this.progress.current - 1, 0);
+      this.progress.current = Math.max(this.progress.current - 1, 1);
       if (this.progress.current === 0) {
         if (this.level.current > 1) {
           this.progress.current = this.progress.max - 1;
@@ -179,6 +182,7 @@ export default {
         return;
       }
       this.$bvModal.show("wrong");
+      this.generateExercise();
     },
     generateExercise() {
       this.selected = [];
@@ -190,18 +194,12 @@ export default {
       this.treeData = {nodes, edges};
       this.expression = "\\phi =" + this.tree.to("tex");
 
-      if (leafs.length === 0) {
-        // TODO: Only a binary answer needed here. Toggle UI.
-      } else {
-        const str = leafs.map(node => node.v);
-        this.options = Array.from(str).sort();
+      this.singleChoice = leafs.length === 0;
+      if (!this.singleChoice) {
+        this.options = leafs.map(node => ({name: node.v, color: node.color})).sort((a, b) => a.name.localeCompare(b.name));
         this.texOptions = leafs.map(node => node.to("tex")).sort();
       }
     },
-  },
-  beforeCreate() {
-    fetch("https://elogical-api.azurewebsites.net/client")
-      .then(req => req.json().then(json => console.log(json)))
   },
   mounted() {
     this.generateExercise();
