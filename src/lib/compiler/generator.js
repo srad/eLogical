@@ -62,14 +62,14 @@ function randBoolExpr({
   expWhiteList = [
     fnOr.name, fnNot.name, fnAnd.name, fnTrue.name, fnXor.name, fnImpl.name, fnFalse.name, fnEq.name, fnStart.name, fnParens.name],
 } = {}) {
-  const table = Object.freeze(truthTable(setSize, vars.length));
+  const table = truthTable(setSize, vars.length);
 
   // Keep generating until one satisfiable function is found.
   for (; ;) {
     // maxDepth + 1 because the root node is the start symbol.
     const tree = randTree({depth: 0, maxDepth: maxDepth + 1, vars, expWhiteList: new Set(expWhiteList)});
     // Check for every generated expression that is has at least one satisfiable solution.
-    for (let i = 0; i < table.length; i++) {
+    for (let i = table.length - 1; i >= 0; i--) {
       const row = table[i];
       const args = {};
       tree.vars.forEach((name, index) => args[name] = row[index]);

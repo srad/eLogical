@@ -25,43 +25,45 @@ class TreeNode {
 
 class Node extends TreeNode {
   /**
-   * @param {FnWrapper} param.fw Function wrapper
-   * @param {Array} [param.children]
-   * @param {Array} param.vars All variables used in formula, this is not necessary
+   * @param {FnWrapper} fw Function wrapper
+   * @param {Array} [children]
+   * @param {Array} vars All variables used in formula, this is not necessary
    * but can be used for tree rendering optimization.
+   * @param {TreeNode} [parent] Reference to parent node.
    * @constructor
    */
-  constructor(param) {
+  constructor({fw, vars, children} = {}) {
     super();
-    this.fw = param.fw;
-    this.vars = param.vars;
-    this.children = param.children || [];
+    this.fw = fw;
+    this.vars = vars;
+    this.children = children || [];
   }
 
   /**
-   * @param {Object|Array} args
+   * @param {Object|Array} environment
    * @returns {*}
    */
-  evaluate(args) {
+  evaluate(environment) {
     // In case a array of booleans is passed, convert them to a hash for lookup
     // [false, true, ...] => {v0: false, v1: true, ...}
-    if (Array.isArray(args)) {
+    if (Array.isArray(environment)) {
       const params = {};
-      args.forEach((val, index) => params["v" + index] = args[index]);
-      args = params;
+      environment.forEach((val, index) => params["v" + index] = environment[index]);
+      environment = params;
     }
-    const results = this.children.map(node => node.evaluate(args));
+    const results = this.children.map(node => node.evaluate(environment));
     return this.fw.fn(results);
   }
 
   /**
    * Generate code based on the function wrapper template's language.
-   * @param {String} type
-   * @param {Number} depth
-   * @returns {*}
+   * @param {String} [type]
+   * @param {Number} [depth]
+   * @param {Boolean} [color]
+   * @returns {String}
    */
-  to(type = "str", depth = -1) {
-    const results = this.children.map(node => node.to(type, depth + 1));
+  to(type = "str", {depth = -1, color = false} = {}) {
+    const results = this.children.map(node => node.to(type, {depth: depth + 1}));
     return this.fw.template[type]({l: results, vars: this.vars, depth, children: this.children, color: this.fw.color});
   }
 
@@ -142,7 +144,8 @@ class ConstNode extends TreeNode {
   }
 
   evaluate(environment) {
-    return environment[this.v];
+    // defaulting to .. || false only works for Boolean languages!
+    return environment[this.v] || false;
   }
 
   display(depth = 0, indent = 2) {
