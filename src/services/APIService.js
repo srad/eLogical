@@ -2,7 +2,7 @@ import axios from "axios"
 import AuthService from "./AuthService";
 import handleError from "./ErrorHandlerService";
 
-var API_URL = process.env.SERVER_IP || "http://localhost:3000"; // TODO: env not working
+var API_URL = process.env.VUE_APP_API_URL || "http://localhost:3000";
 
 export class APIService {
   constructor() { }
@@ -14,7 +14,7 @@ export class APIService {
     });
     return promise;
   }
-  
+
 
   // getLeaderboardEntries(){
   //   var url = `${API_URL}/client/leaderboard`;
@@ -27,13 +27,12 @@ export class APIService {
   //   return leaderboard;
   // }
 
+
   // addLeaderboardEntries(namePar, pointsPar){
   //   const url = `${API_URL}/leaderboard`;
   //   var data = {"name": namePar, "points":pointsPar};
   //   return axios.post(url, data).then(response => response.data);
   // }
-
-
 }
 
 export default new APIService;

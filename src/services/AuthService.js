@@ -1,12 +1,11 @@
 import axios from "axios"
 import handleError from "./ErrorHandlerService";
 
-var API_URL = process.env.SERVER_IP || "http://localhost:3000"; // TODO: env not working
+var API_URL = process.env.VUE_APP_API_URL || "http://localhost:3000";
 const JWTName = "eLogicalAuthJWT";
 
 export class AuthService {
   constructor() { }
-
 
 
   checkToken(callback) {

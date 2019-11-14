@@ -30,15 +30,15 @@
       </b-col>
     </b-row>
     <hr />
-      <stopwatch
+    <stopwatch
       v-if="progress.currLevel === progress.maxLevel"
-          ref="stopwatch"
-          class="stopwatch"
-          :time="stopwatchTime"
-          :countingDown="true"
-          :showIcon="false"
-          v-on:timer-ended="gameOver"
-      ></stopwatch>
+      ref="stopwatch"
+      class="stopwatch"
+      :time="stopwatchTime"
+      :countingDown="true"
+      :showIcon="false"
+      v-on:timer-ended="gameOver"
+    ></stopwatch>
 
     <tree v-bind:treeData="treeData" class="tree"></tree>
     <b-row align-h="center">
@@ -77,10 +77,22 @@
         </b-row>
         <b-row align-h="center" v-if="modalText === 'Good Job! Choose your Loot'">
           <b-col cols="6">
-            <font-awesome-icon ref="dice-icon" size="6x" class="loot-unselected" icon="dice" v-on:click="pickLoot('dice')"></font-awesome-icon>
+            <font-awesome-icon
+              ref="dice-icon"
+              size="6x"
+              class="loot-unselected"
+              icon="dice"
+              v-on:click="pickLoot('dice')"
+            ></font-awesome-icon>
           </b-col>
           <b-col cols="6">
-            <font-awesome-icon ref="heart-icon" size="6x" class="loot-unselected" icon="heart" v-on:click="pickLoot('heart')"></font-awesome-icon>
+            <font-awesome-icon
+              ref="heart-icon"
+              size="6x"
+              class="loot-unselected"
+              icon="heart"
+              v-on:click="pickLoot('heart')"
+            ></font-awesome-icon>
           </b-col>
           <b-col cols="6">
             <b-button variant="primary" size="lg" block v-on:click="loadNextChapter">Next Chapter</b-button>
@@ -191,31 +203,31 @@ export default {
       const isAnswerCorrect = this.tree.evaluate(this.selection);
       if (isAnswerCorrect) {
         if (this.progress.currLevel === this.progress.maxLevel) {
-            this.modalText = "Good Job! Choose your Loot";
-            this.$refs["modal"].show();
-            this.$refs["stopwatch"].stopTimer()
-            return
+          this.modalText = "Good Job! Choose your Loot";
+          this.$refs["modal"].show();
+          this.$refs["stopwatch"].stopTimer();
+          return;
         } else {
           this.progress.currLevel++;
         }
-          this.$refs["tex"].$el.classList.add("tex-right");
-          setTimeout(() => {
-            this.$refs["tex"].$el.classList.remove("tex-right");
-            this.options.forEach(opt => {
-              this.$refs[opt][0].classList.remove("true");
-              this.$refs[opt][0].classList.remove("false");
-              this.$refs[opt][0].classList.add("false");
-            });
-            this.generateExercise();
-          },2000)
+        this.$refs["tex"].$el.classList.add("tex-right");
+        setTimeout(() => {
+          this.$refs["tex"].$el.classList.remove("tex-right");
+          this.options.forEach(opt => {
+            this.$refs[opt][0].classList.remove("true");
+            this.$refs[opt][0].classList.remove("false");
+            this.$refs[opt][0].classList.add("false");
+          });
+          this.generateExercise();
+        }, 2000);
       } else {
         if (navigator.vibrate) {
           navigator.vibrate(250);
         }
-        this.$refs["tex"].$el.classList.add("tex-wrong")
+        this.$refs["tex"].$el.classList.add("tex-wrong");
         this.$refs["healthbar"].despawnLife();
         setTimeout(() => {
-          this.$refs["tex"].$el.classList.remove("tex-wrong")
+          this.$refs["tex"].$el.classList.remove("tex-wrong");
           this.health--;
           if (this.health === 0) {
             this.gameOver();
@@ -223,48 +235,47 @@ export default {
         }, 3000);
       }
     },
-    pickLoot(loot){
-      this.loot.selected = loot
-      switch(loot){
+    pickLoot(loot) {
+      this.loot.selected = loot;
+      switch (loot) {
         case "dice":
-          this.$refs["dice-icon"].classList.add("dice-selected")
-          this.$refs["dice-icon"].classList.remove("loot-unselected")
-          this.$refs["heart-icon"].classList.add("loot-unselected")
-          this.$refs["heart-icon"].classList.remove("heart-selected")
+          this.$refs["dice-icon"].classList.add("dice-selected");
+          this.$refs["dice-icon"].classList.remove("loot-unselected");
+          this.$refs["heart-icon"].classList.add("loot-unselected");
+          this.$refs["heart-icon"].classList.remove("heart-selected");
           break;
         case "heart":
-          this.$refs["heart-icon"].classList.add("heart-selected")
-          this.$refs["heart-icon"].classList.remove("loot-unselected")
-          this.$refs["dice-icon"].classList.add("loot-unselected")
-          this.$refs["dice-icon"].classList.remove("dice-selected")
+          this.$refs["heart-icon"].classList.add("heart-selected");
+          this.$refs["heart-icon"].classList.remove("loot-unselected");
+          this.$refs["dice-icon"].classList.add("loot-unselected");
+          this.$refs["dice-icon"].classList.remove("dice-selected");
           break;
       }
-
     },
-    emptyBackpack(){
+    emptyBackpack() {
       this.loot.bagpack.forEach(loot => {
-        switch (loot){
+        switch (loot) {
           case "heart":
-            this.health++
+            this.health++;
             break;
           case "dice":
-            this.rerolls++
+            this.rerolls++;
             break;
         }
-        this.loot.bagpack = []
-      })
+        this.loot.bagpack = [];
+      });
     },
     loadNextChapter() {
-          this.progress.currLevel = 1;
-          this.progress.difficulty++;
-          this.loot.bagpack.push(this.loot.selected)
-          this.loot.selected = null
-          this.$refs["heart-icon"].classList.remove("heart-selected")
-          this.$refs["dice-icon"].classList.remove("dice-selected")
-          this.$refs["heart-icon"].classList.add("loot-unselected")
-          this.$refs["dice-icon"].classList.add("loot-unselected")
-          this.$refs["modal"].hide();
-          this.generateExercise()
+      this.progress.currLevel = 1;
+      this.progress.difficulty++;
+      this.loot.bagpack.push(this.loot.selected);
+      this.loot.selected = null;
+      this.$refs["heart-icon"].classList.remove("heart-selected");
+      this.$refs["dice-icon"].classList.remove("dice-selected");
+      this.$refs["heart-icon"].classList.add("loot-unselected");
+      this.$refs["dice-icon"].classList.add("loot-unselected");
+      this.$refs["modal"].hide();
+      this.generateExercise();
     },
     generateExercise() {
       this.selected = [];
@@ -296,7 +307,7 @@ export default {
         this.$refs["difficultyTitle"].classList.remove("scroll-to-right");
         this.$refs["levelTitle"].classList.remove("scroll-to-left");
       }, 2000);
-      this.emptyBackpack()
+      this.emptyBackpack();
     },
     resetGame() {
       this.generateExercise();
@@ -314,12 +325,13 @@ export default {
     printMessage(msg) {
       alert(msg);
     },
-    addLeaderboardEntry(name, points){
+    addLeaderboardEntry(name, points) {
       APIService.addLeaderboardEntries(name, points);
     },
-    calculatePoints(){
-      var points = (this.progress.difficulty-1)*5+this.progress.currLevel-1;
-      console.log("Points: "+points);
+    calculatePoints() {
+      var points =
+        (this.progress.difficulty - 1) * 5 + this.progress.currLevel - 1;
+      console.log("Points: " + points);
       return points;
     }
   },
@@ -343,8 +355,11 @@ export default {
 .tex-wrong {
   animation: texWrong 2s;
 }
-.tree, .confirm, .selector, .stopwatch{
-    animation: slideInFromTop 1s;
+.tree,
+.confirm,
+.selector,
+.stopwatch {
+  animation: slideInFromTop 1s;
 }
 .selector {
   width: 15vh;
@@ -519,24 +534,24 @@ export default {
   }
 }
 @keyframes texRight {
-  0%{
+  0% {
     transform: scale(1);
     opacity: 1;
   }
-  25%{
+  25% {
     transform: scale(0.5);
     opacity: 1;
   }
-  50%{
+  50% {
     transform: scale(1.5);
     color: green;
   }
-  75%{
+  75% {
     transform: scale(1.5);
     color: green;
     opacity: 1;
   }
-  100%{
+  100% {
     transform: scale(1.5);
     color: green;
     transform: translateY(-3em);
@@ -544,35 +559,35 @@ export default {
   }
 }
 @keyframes texWrong {
-  0%{
+  0% {
     transform: translateX(0);
   }
-  10%{
+  10% {
     transform: translateX(5px);
     color: red;
   }
-  20%{
-    transform: translateX(-5px)
-  }
-  30%{
-    transform: translateX(5px);
-    color: red;
-  }
-  40%{
+  20% {
     transform: translateX(-5px);
   }
-  50%{
+  30% {
     transform: translateX(5px);
     color: red;
   }
-  60%{
-    transform: translateX(-5px)
+  40% {
+    transform: translateX(-5px);
   }
-  70%{
+  50% {
     transform: translateX(5px);
     color: red;
   }
-  100%{
+  60% {
+    transform: translateX(-5px);
+  }
+  70% {
+    transform: translateX(5px);
+    color: red;
+  }
+  100% {
     transform: translateX(-5px);
   }
 }
