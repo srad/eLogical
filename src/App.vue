@@ -17,13 +17,16 @@
       </b-collapse>
     </b-navbar>
     <b-container fluid>
-      <router-view/>
+      <keep-alive include="Game2">
+        <router-view/>
+      </keep-alive>
     </b-container>
   </div>
 </template>
 
 <style lang="scss">
 @import "assets/main.scss";
+
 body {
   overflow: hidden;
 }
