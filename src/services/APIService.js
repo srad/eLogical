@@ -3,14 +3,28 @@ import AuthService from "./AuthService";
 
 var API_URL = process.env.SERVER_IP || "http://localhost:3000"; // TODO: env not working
 
-export class APIService{
-  constructor(){}  
+export class APIService {
+  constructor() { }
 
-  getLeaderboardEntries(){
-    const url = `${API_URL}/client/leaderboard`;
-    var authHeader = AuthService.getAuthHeader();
-    return  axios.get(url, {headers: authHeader}).then(response => response.data);
+  getLeaderboardEntries() {
+    var url = `${API_URL}/client/leaderboard`;
+    var promise = AuthService.getAuthHeader(function (authHeader) {
+      return axios.get(url, { headers: authHeader }).then(response => response.data);
+    });
+    return promise;
+
   }
+
+  // getLeaderboardEntries(){
+  //   var url = `${API_URL}/client/leaderboard`;
+  //   var leaderboard = AuthService.getAuthHeader( function (authHeader) {
+  //     console.log("getLeaderboard - authHeader: " + JSON.stringify(authHeader));
+  //     var data =  axios.get(url, {headers: authHeader}).then(response => response.data);
+  //     console.log("getLeaderboard - data: " + JSON.stringify(data));
+  //   });
+  //   console.log("getLeaderboard - leaderboard: " + JSON.stringify(leaderboard));
+  //   return leaderboard;
+  // }
 
   // addLeaderboardEntries(namePar, pointsPar){
   //   const url = `${API_URL}/leaderboard`;

@@ -5,14 +5,14 @@
 
       <b-navbar-brand class="font-weight-bold">
         eLogical
-        <font-awesome-icon icon="robot" class="ml-3 text-white"/>
+        <font-awesome-icon icon="robot" class="ml-3 text-white" />
       </b-navbar-brand>
 
       <b-collapse id="nav-text-collapse" is-nav>
         <b-navbar-nav>
           <b-nav-item>
             <router-link to="/" class="btn btn-dark btn-block text-left">Home</router-link>
-          </b-nav-item>      
+          </b-nav-item>
           <b-nav-item>
             <router-link to="leaderboard" class="btn btn-dark btn-block text-left">Leaderboard</router-link>
           </b-nav-item>
@@ -26,10 +26,24 @@
       </b-collapse>
     </b-navbar>
     <b-container fluid>
-      <router-view/>
+      <router-view />
     </b-container>
   </div>
 </template>
+
+<script>
+import AuthService from "./services/AuthService";
+export default {
+  mounted() {
+    this.checkToken();
+  },
+  methods: {
+    checkToken() {
+      AuthService.checkToken(() => {});
+    }
+  }
+};
+</script>
 
 <style lang="scss">
 @import "assets/main.scss";

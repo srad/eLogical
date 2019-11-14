@@ -25,7 +25,7 @@ export default {
   methods: {
     loadLeaderboardEntries() {
       APIService.getLeaderboardEntries().then(response => {
-        console.log("RESPONSE: "+response);
+        console.log("RESPONSE: " + response);
         this.leaderboardEntries = response.table;
       });
     }

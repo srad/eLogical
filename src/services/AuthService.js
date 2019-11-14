@@ -6,27 +6,37 @@ const JWTName = "eLogicalAuthJWT";
 export class AuthService {
   constructor() { }
 
-  checkToken() {
+
+
+  checkToken(callback) {
     var currJWT = window.localStorage.getItem(JWTName);
     if (currJWT == undefined) {
-      this.requestToken();
+      return this.requestToken(callback);
     }
     else {
       // If a experation timer is set for the tokens it can be checked here.
+      return callback();
     }
   }
 
-  requestToken() {
+
+  requestToken(callback) {
     const url = `${API_URL}/auth`;
-    axios.get(url).then(response => window.localStorage.setItem(JWTName, response.data));
+    return axios.get(url).then(function (response) {
+      window.localStorage.setItem(JWTName, response.data);
+      return callback();
+    });
+
   }
 
-  getAuthHeader() {
-    this.checkToken(); // Needs to wait for new token
-    var authHeader = {
-      authorization : `Bearer ${window.localStorage.getItem(JWTName)}`,
-    };
-    return authHeader
+
+  getAuthHeader(callback) {
+    return this.checkToken(function () {
+      var authHeader = {
+        authorization: `Bearer ${window.localStorage.getItem(JWTName)}`,
+      };
+      return callback(authHeader);
+    });
   }
 
 
