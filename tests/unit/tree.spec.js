@@ -1,5 +1,6 @@
 import {expect} from "chai";
 import {Node, ConstNode} from "@/lib/compiler/tree";
+// eslint-disable-next-line no-unused-vars
 import {fnAnd, fnNot, fnOr, fnEq, fnFalse, fnImpl, fnTrue, fnXor, fnStart, fnParens} from "@/lib/compiler/language";
 
 const constNode = new ConstNode("v0");

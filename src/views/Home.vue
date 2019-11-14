@@ -8,7 +8,7 @@
       </b-row>
       <b-row>
         <b-col class="text-center">
-          <font-awesome-icon icon="robot" size="5x" class="mt-3 mb-3"/>
+          <font-awesome-icon icon="robot" size="5x" class="mt-3 mb-3" />
         </b-col>
       </b-row>
       <b-row>
@@ -36,12 +36,9 @@
 <script>
 export default {
   name: "Home",
-  components: {},
+  components: {}
 };
 </script>
 
 <style>
-.home {
-  height: 100vh;
-}
 </style>
