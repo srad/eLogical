@@ -10,7 +10,7 @@ export default {
   props: {
     treeData: Object,
     moveView: Boolean,
-    moveNode: Boolean
+    moveNode: Boolean,
   },
   watch: {
     treeData: function (treeData) {
@@ -19,6 +19,14 @@ export default {
         edges: new vis.DataSet(treeData.edges),
       };
       this.network = new vis.Network(this.$refs.tree, data, this.config);
+
+      this.network.on("click", (properties) => {
+        const ids = properties.nodes;
+        const clickedNodes = data.nodes.get(ids);
+        if (clickedNodes.length > 0) {
+          this.$emit("click-node", {node: clickedNodes[0].type, id: clickedNodes[0].id, rawNode: clickedNodes[0]});
+        }
+      });
     },
   },
   data() {
