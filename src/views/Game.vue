@@ -1,5 +1,15 @@
 <template>
   <div class="pt-4 pr-3 pl-3">
+    <b-container class="notification" ref="notification">
+      <b-row align-v="center" class="tutorial-text-row">
+        <b-col cols="9">
+          {{tutorialText}}
+        </b-col>
+        <b-col cols="3 text-right">
+          <b-button variant="success" v-on:click="progressTutorial">OK</b-button>
+        </b-col>
+      </b-row>
+    </b-container>
     <div class="backdrop" ref="backdropLeft" v-show="backdropVisible"></div>
     <div class="backdrop" ref="backdropRight" v-show="backdropVisible"></div>
     <div class="backdrop" ref="backdropTop" v-show="backdropVisible"></div>
@@ -167,7 +177,8 @@ export default {
         2: ["and", "not", "True", "False", "xor"]
       },
       tutorialProposed: false,
-      backdropVisible: false
+      backdropVisible: false,
+      tutorialText: "The goal is to make this evaluate to 'true'"
     };
   },
   computed: {
@@ -377,7 +388,6 @@ export default {
       rightDrop.style.left = bounds.left+bounds.width+"px"
       rightDrop.style.width = window.screen.width - (bounds.left+bounds.width)+"px"
       this.backdropVisible = true
-      console.warn(bounds)
     },
     skipTutorial(){
       this.tutorialProposed = true;
@@ -386,6 +396,14 @@ export default {
     startTutorial(){
       this.tutorialProposed = true;
       this.$refs["modal"].hide();
+      this.$refs["notification"].classList.add("notification-visible")
+      this.$refs["notification"].classList.remove("notification-hidden")
+      this.highlightElement(this.$refs["tex"].$el)
+    },
+    progressTutorial(step){
+      this.$refs["notification"].classList.add("notification-hidden")
+      this.$refs["notification"].classList.remove("notification-visible")
+      this.backdropVisible = false
     },
     addLeaderboardEntry(name, points) {
       APIService.addLeaderboardEntries(name, points);
@@ -436,8 +454,31 @@ export default {
   margin-bottom: 1em;
   font-size: 3em;
 }
-.backdrop {
+.notification {
   z-index: 999;
+  position: fixed;
+  top: -3.5em;
+  left: 5%;
+  width: 90%;
+}
+.notification-hidden{
+  animation: slideOutNotification 0.5s;
+  animation-fill-mode: forwards;
+  }
+.notification-visible{
+  animation: slideInNotification 0.5s;
+  animation-fill-mode: forwards;
+}
+.tutorial-text-row{
+  height: 3em;
+  background-color: #FEFEFE;
+  border-radius: 0 0 0.5em 0.5em;
+  -webkit-box-shadow: 2px 3px 2px 0px rgba(0,0,0,0.5);
+  -moz-box-shadow: 2px 3px 2px 0px rgba(0,0,0,0.5);
+  box-shadow: 2px 3px 2px 0px rgba(0,0,0,0.5);
+  }
+.backdrop {
+  z-index: 998;
   position: absolute;
   background-color: rgb(0, 0, 0);
   opacity: 0.9;
@@ -499,6 +540,26 @@ export default {
   animation-name: scrollToRight;
   animation-duration: 1.5s;
   animation-timing-function: cubic-bezier(0.11, 1.23, 0.98, 0.01);
+}
+@keyframes slideInNotification {
+  from{
+    transform: translateY(0);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(3.5em);
+    opacity: 1;
+  }
+}
+@keyframes slideOutNotification {
+  from{
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-3.5em);
+    opacity: 0;
+  }
 }
 @keyframes textReroll {
   0% {
