@@ -13,7 +13,7 @@
 <script>
 import APIService from "../services/APIService";
 export default {
-  name: "leaderboard",
+  name: "Leaderboard",
   data() {
     return {
       leaderboardEntries: []

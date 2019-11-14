@@ -1,32 +1,25 @@
 <template>
   <div id="app">
-    <b-navbar toggleable="sm" type="dark" variant="dark">
+    <b-navbar toggleable="sm" type="light" variant="primary">
       <b-navbar-toggle target="nav-text-collapse"></b-navbar-toggle>
 
-      <b-navbar-brand class="font-weight-bold">
+      <b-navbar-brand class="font-weight-bold text-white">
         eLogical
         <font-awesome-icon icon="robot" class="ml-3 text-white" />
       </b-navbar-brand>
 
       <b-collapse id="nav-text-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item>
-            <router-link to="/" class="btn btn-dark btn-block text-left">Home</router-link>
-          </b-nav-item>
-          <b-nav-item>
-            <router-link to="leaderboard" class="btn btn-dark btn-block text-left">Leaderboard</router-link>
-          </b-nav-item>
-          <b-nav-item>
-            <router-link to="help" class="btn btn-dark btn-block text-left">Help</router-link>
-          </b-nav-item>
-          <b-nav-item>
-            <router-link to="about" class="btn btn-dark btn-block text-left">About</router-link>
+          <b-nav-item v-for="route in $router.options.routes" :key="route.path">
+            <router-link :to="route.path" class="btn btn-block text-left text-white" :active-class="route.name!=='home'?'text-dark':''">{{route.title}}</router-link>
           </b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
     <b-container fluid>
-      <router-view />
+      <keep-alive include="Game2">
+        <router-view/>
+      </keep-alive>
     </b-container>
   </div>
 </template>
@@ -47,4 +40,8 @@ export default {
 
 <style lang="scss">
 @import "assets/main.scss";
+
+body {
+  overflow: hidden;
+}
 </style>

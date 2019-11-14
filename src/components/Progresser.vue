@@ -1,7 +1,7 @@
 <template>
   <div>
-    <font-awesome-icon size="lg" class="mr-1 grow" :style="{color:color}" v-for="_ in current" :icon="icon"></font-awesome-icon>
-    <font-awesome-icon size="lg" class="mr-1 grow text-secondary" v-for="_ in max-current" :icon="icon"></font-awesome-icon>
+    <font-awesome-icon size="lg" class="mr-1 grow" :style="{color:color}" v-for="_ in _current" :icon="icon"></font-awesome-icon>
+    <font-awesome-icon size="lg" class="mr-1 grow text-secondary" v-for="_ in max-_current" :icon="icon"></font-awesome-icon>
   </div>
 </template>
 
@@ -13,6 +13,11 @@ export default {
     current: Number,
     icon: String,
     color: String,
+  },
+  computed: {
+    _current() {
+      return Math.max(this.current, 0);
+    },
   },
 };
 </script>

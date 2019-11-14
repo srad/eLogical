@@ -4,14 +4,16 @@ class FnWrapper {
    * @param {Number} arity
    * @param {Function} fn
    * @param {Object} template
+   * @param {String} color Hex color
    * but can be used for tree rendering optimization.
    * @constructor
    */
-  constructor({name, arity, fn, template} = {}) {
+  constructor({name, arity, fn, template, color} = {}) {
     this.name = name;
     this.arity = arity;
     this.fn = fn;
     this.template = template;
+    this.color = color;
   }
 }
 
@@ -23,44 +25,46 @@ class TreeNode {
 
 class Node extends TreeNode {
   /**
-   * @param {FnWrapper} param.fw Function wrapper
-   * @param {Array} [param.children]
-   * @param {Array} param.vars All variables used in formula, this is not necessary
+   * @param {FnWrapper} fw Function wrapper
+   * @param {Array} [children]
+   * @param {Array} vars All variables used in formula, this is not necessary
    * but can be used for tree rendering optimization.
+   * @param {TreeNode} [parent] Reference to parent node.
    * @constructor
    */
-  constructor(param) {
+  constructor({fw, vars, children} = {}) {
     super();
-    this.fw = param.fw;
-    this.vars = param.vars;
-    this.children = param.children || [];
+    this.fw = fw;
+    this.vars = vars;
+    this.children = children || [];
   }
 
   /**
-   * @param {Object|Array} args
+   * @param {Object|Array} environment
    * @returns {*}
    */
-  evaluate(args) {
+  evaluate(environment) {
     // In case a array of booleans is passed, convert them to a hash for lookup
     // [false, true, ...] => {v0: false, v1: true, ...}
-    if (Array.isArray(args)) {
+    if (Array.isArray(environment)) {
       const params = {};
-      args.forEach((val, index) => params["v" + index] = args[index]);
-      args = params;
+      environment.forEach((val, index) => params["v" + index] = environment[index]);
+      environment = params;
     }
-    const results = this.children.map(node => node.evaluate(args));
+    const results = this.children.map(node => node.evaluate(environment));
     return this.fw.fn(results);
   }
 
   /**
    * Generate code based on the function wrapper template's language.
-   * @param {String} type
-   * @param {Number} depth
-   * @returns {*}
+   * @param {String} [type]
+   * @param {Number} [depth]
+   * @param {Boolean} [color]
+   * @returns {String}
    */
-  to(type = "str", depth = -1) {
-    const results = this.children.map(node => node.to(type, depth + 1));
-    return this.fw.template[type]({l: results, vars: this.vars, depth, children: this.children});
+  to(type = "str", {depth = -1, color = false} = {}) {
+    const results = this.children.map(node => node.to(type, {depth: depth + 1}));
+    return this.fw.template[type]({l: results, vars: this.vars, depth, children: this.children, color: this.fw.color});
   }
 
   /**
@@ -96,31 +100,26 @@ class Node extends TreeNode {
 
     let id_counter = 0;
 
-    const colors = [
-      "#845EC2",
-      "#D65DB1",
-      "#FF6F91",
-      "#FF9671",
-      "#FFC75F",
-    ];
-
-    function graph(node, depth = 0, parent = 0) {
-      const color = colors[depth % colors.length];
+    function graph(node, depth = 0, parentId = 0, parentNode) {
+      // Return all unique nodes/variables/leafs.
       if (node instanceof ConstNode && !lookupLeaf[node.to()]) {
+        node.color = parentNode.fw.color;
         leafs.push(node);
         lookupLeaf[node.to()] = true;
       }
-      if (depth !== parent) {
-        edges.push({from: parent, to: depth});
+      if (depth !== parentId) {
+        edges.push({from: parentId, to: depth});
       }
       // Don't draw parents
       if (!(node instanceof ConstNode) && node.fw.name === "parens") {
         node = node.children[0];
       }
+      const color = node instanceof ConstNode || node.fw.arity === 0 ? parentNode.fw.color : node.fw.color;
+
       nodes.push({id: depth, label: node.to("obj").name || node.v, type: node, color: {background: color}});
 
       if (Array.isArray(node.children)) {
-        node.children.forEach(n => graph(n, ++id_counter, depth));
+        node.children.forEach(n => graph(n, ++id_counter, depth, node));
       }
     }
 
@@ -145,7 +144,8 @@ class ConstNode extends TreeNode {
   }
 
   evaluate(environment) {
-    return environment[this.v];
+    // defaulting to .. || false only works for Boolean languages!
+    return environment[this.v] || false;
   }
 
   display(depth = 0, indent = 2) {
