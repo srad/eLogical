@@ -19,7 +19,7 @@ function texColor(color, template) {
 const fnOr = new FnWrapper({
   name: "or",
   arity: 2,
-  fn: (l) => l[0] || l[1],
+  fn: (l) => l[0] === true || l[1] === true,
   color: "#1b95af",
   template: {
     tex: ({l, vars, depth, color}) => texColor(color, `${l[0]} \\vee ${l[1]}`),
@@ -32,7 +32,7 @@ const fnOr = new FnWrapper({
 const fnAnd = new FnWrapper({
   name: "and",
   arity: 2,
-  fn: (l) => l[0] && l[1],
+  fn: (l) => l[0] === true && l[1] === true,
   color: "#7cb24a",
   template: {
     tex: ({l, vars, depth, color}) => texColor(color, `${l[0]} \\wedge ${l[1]}`),
@@ -45,7 +45,7 @@ const fnAnd = new FnWrapper({
 const fnXor = new FnWrapper({
   name: "xor",
   arity: 2,
-  fn: (l) => l[0] !== l[1],
+  fn: (l) => (typeof l[0] === "boolean" && typeof l[1] === "boolean") && (l[0] !== l[1]),
   color: "#8B5A99",
   template: {
     tex: ({l, vars, depth, color}) => texColor(color, `${l[0]} \\oplus ${l[1]}`),
@@ -58,7 +58,7 @@ const fnXor = new FnWrapper({
 const fnImpl = new FnWrapper({
   name: "implication",
   arity: 2,
-  fn: (l) => !(l[0] && !l[1]),
+  fn: (l) => ((l[0] === true) && (l[1] === false)) === false,
   color: "#00745E",
   template: {
     tex: ({l, vars, depth, color}) => texColor(color, `${l[0]} \\rightarrow ${l[1]}`),
@@ -71,7 +71,7 @@ const fnImpl = new FnWrapper({
 const fnEq = new FnWrapper({
   name: "eq",
   arity: 2,
-  fn: (l) => (l[0] === l[1]),
+  fn: (l) => (typeof l[0] === "boolean" && typeof l[1] === "boolean") && (l[0] === l[1]),
   color: "#402E32",
   template: {
     tex: ({l, vars, depth, color}) => texColor(color, `${l[0]} \\leftrightarrow ${l[1]}`),
