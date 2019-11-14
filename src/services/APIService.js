@@ -1,5 +1,6 @@
 import axios from "axios"
 import AuthService from "./AuthService";
+import handleError from "./ErrorHandlerService";
 
 var API_URL = process.env.SERVER_IP || "http://localhost:3000"; // TODO: env not working
 
@@ -9,11 +10,11 @@ export class APIService {
   getLeaderboardEntries() {
     var url = `${API_URL}/client/leaderboard`;
     var promise = AuthService.getAuthHeader(function (authHeader) {
-      return axios.get(url, { headers: authHeader }).then(response => response.data);
+      return axios.get(url, { headers: authHeader }).then(response => response.data).catch(error => handleError(error));
     });
     return promise;
-
   }
+  
 
   // getLeaderboardEntries(){
   //   var url = `${API_URL}/client/leaderboard`;

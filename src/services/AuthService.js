@@ -1,4 +1,5 @@
 import axios from "axios"
+import handleError from "./ErrorHandlerService";
 
 var API_URL = process.env.SERVER_IP || "http://localhost:3000"; // TODO: env not working
 const JWTName = "eLogicalAuthJWT";
@@ -25,8 +26,7 @@ export class AuthService {
     return axios.get(url).then(function (response) {
       window.localStorage.setItem(JWTName, response.data);
       return callback();
-    });
-
+    }).catch(error => handleError(error));
   }
 
 
