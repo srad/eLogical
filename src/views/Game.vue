@@ -251,7 +251,7 @@ export default {
           }
         }, 3000);
       }
-      this.hightlightElement(this.$refs["healthbar"].$el)
+      this.highlightElement(this.$refs["healthbar"].$el)
     },
     pickLoot(loot){
       this.loot.selected = loot
@@ -343,7 +343,7 @@ export default {
     printMessage(msg) {
       alert(msg);
     },
-    hightlightElement(el){
+    highlightElement(el){
       let topDrop = this.$refs["backdropTop"],
           botDrop = this.$refs["backdropBottom"],
           leftDrop = this.$refs["backdropLeft"],
@@ -362,6 +362,7 @@ export default {
       leftDrop.style.width = bounds.left+"px"
       rightDrop.style.top = "0"
       rightDrop.style.left = bounds.left+bounds.width+"px"
+      rightDrop.style.width = window.screen.width - (bounds.left+bounds.width)+"px"
       this.backdropVisible = true
       console.warn(bounds)
     },
