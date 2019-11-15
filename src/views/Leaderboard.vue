@@ -1,35 +1,36 @@
 <template>
-  <div class="leaderboard">
-    <h1>Leaderboard</h1>
-    <b-row v-for="entry in leaderboardEntries">
+  <div class="leaderboard mt-3">
+    <h1 class="mb-3">Leaderboard</h1>
+    <b-row>
       <b-col>
-        <p>{{entry.id}} - {{entry.name}} - {{entry.points}}</p>
+        <b-table class="bg-white table-condensed" bordered :items="entries"/>
+        <p v-if="loading">
+          Loading ...
+        </p>
       </b-col>
     </b-row>
   </div>
 </template>
 
-
 <script>
-import APIService from "../services/APIService";
 export default {
   name: "Leaderboard",
   data() {
     return {
-      leaderboardEntries: []
+      loading: true,
+      entries: [],
     };
   },
   mounted() {
-    this.loadLeaderboardEntries();
-  },
-  methods: {
-    loadLeaderboardEntries() {
-      APIService.getLeaderboardEntries().then(response => {
-        if (response && response.table) {
-          this.leaderboardEntries = response.table;
-        }
+    this.$api.getLeaderBoard()
+      .then(response => {
+        this.loading = false;
+        this.entries = response.data.map(item => ({Score: item.total, Client: item.client[0].name}));
+      })
+      .catch(error => {
+        this.loading = false;
+        alert(error);
       });
-    }
-  }
+  },
 };
 </script>

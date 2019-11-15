@@ -147,7 +147,6 @@ import Tree from "../components/Tree";
 import Tex from "../components/Tex";
 import Healthbar from "../components/Healthbar";
 import Stopwatch from "../components/Stopwatch";
-import APIService from "../services/APIService";
 import Rerolls from "../components/Rerolls";
 
 export default {
@@ -406,7 +405,11 @@ export default {
       this.backdropVisible = false
     },
     addLeaderboardEntry(name, points) {
-      APIService.addLeaderboardEntries(name, points);
+      this.$api.saveAnswer({
+        level: {current: this.progress.currLevel},
+        progress: {current: this.progress.difficulty},
+        score: points,
+      });
     },
     calculatePoints() {
       var points =
