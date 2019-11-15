@@ -1,6 +1,6 @@
 <template>
   <div>
-    <font-awesome-icon :ref="i" size="3x" class="mr-1 dice" v-for="i in current" :key="i" icon="dice" v-on:click="fireEvent(i)"></font-awesome-icon>
+    <font-awesome-icon :ref="i" size="2x" class="mr-1 dice" v-for="i in current" :key="i" icon="dice" v-on:click="fireEvent(i)"></font-awesome-icon>
   </div>
 </template>
 
