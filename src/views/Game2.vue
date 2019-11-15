@@ -111,12 +111,12 @@ export default {
       header: "",
       colors: colors.gradient.purple,
       level: {
-        current: 4,
+        current: 1,
         max: 4,
       },
       progress: {
         max: 4,
-        current: 3,
+        current: 1,
       },
       life: {
         max: 3,
