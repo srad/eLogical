@@ -212,6 +212,11 @@ export default {
       const isAnswerCorrect = this.tree.evaluate(this.selection);
 
       if (isAnswerCorrect) {
+        this.$api.saveAnswer({
+          level: this.level,
+          progress: this.progress,
+          score: 1
+        });
         this.message = {
           title: "Your answer is ...",
           text: "Correct!",
