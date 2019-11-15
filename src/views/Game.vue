@@ -111,7 +111,7 @@
             ></font-awesome-icon>
           </b-col>
           <b-col cols="6">
-            <b-button variant="primary" size="lg" block v-on:click="loadNextChapter">Next Chapter</b-button>
+            <b-button variant="primary" size="lg" block v-on:click="loadNextChapter" :disabled="loot.selected === null">Next Chapter</b-button>
           </b-col>
         </b-row>
         <b-row align-h="center" v-if="modalText === 'Welcome!' && tutorial.proposed === false">
