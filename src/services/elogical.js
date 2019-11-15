@@ -22,7 +22,7 @@ class ElogicalApi {
             this.axios = axios.create({
               baseURL: API_URL,
               timeout: 10000,
-              headers: {authorization: `Bearer ${token}`},
+              headers: {authorization: `Bearer ${this.getToken()}`},
             });
             resolve({token: this.getToken(), user: this.getUser()});
           })

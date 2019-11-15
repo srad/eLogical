@@ -6,12 +6,14 @@ import Home from "./views/Home.vue";
 import Help from "./views/Help";
 import Leaderboard from "./views/Leaderboard.vue";
 import About from "./views/About.vue";
+import Profile from "./views/Profile.vue";
 
 Vue.use(Router);
 
 export default new Router({
   routes: [
     {path: "/", name: "home", component: Home, title: "Home"},
+    {path: "/profile", name: "profile", component: Profile, title: "My Profile"},
     {path: "/game", name: "game", component: Game, title: "Game 1"},
     {path: "/game2", name: "game2", component: Game2, title: "Game 2"},
     {path: "/leaderboard", name: "leaderboard", component: Leaderboard, title: "Leaderboard"},
