@@ -33,6 +33,7 @@
 @import "assets/main.scss";
 
 body {
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 </style>
