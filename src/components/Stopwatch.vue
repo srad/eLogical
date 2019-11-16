@@ -13,8 +13,7 @@ export default {
   name: "Stopwatch",
   props: {
     time: String,
-    countingDown: Boolean,
-    showIcon: Boolean
+    countingDown: Boolean
   },
   data() {
     return {
@@ -56,24 +55,22 @@ export default {
       }
     },
     startTimer() {
-      let minToMs = Number(this.time.split(":")[0]) * 60000,
-        secsToMs = Number(this.time.split(":")[1]) * 1000;
-      this.currMs = minToMs + secsToMs;
       this.isRunning = true;
       this.updateTime();
     },
     stopTimer() {
       this.isRunning = false;
       this.$emit("timer-stopped", this.time);
+    },
+    setupTimer(){
+      let minToMs = Number(this.time.split(":")[0]) * 60000,
+          secsToMs = Number(this.time.split(":")[1]) * 1000;
+      this.totalMs = minToMs + secsToMs;
+      this.currMs = this.totalMs
     }
   },
   mounted() {
-    let minToMs = Number(this.time.split(":")[0]) * 60000,
-      secsToMs = Number(this.time.split(":")[1]) * 1000;
-    this.totalMs = minToMs + secsToMs;
-    this.currMs = this.totalMs
-    this.isRunning = true;
-    this.updateTime();
+    this.setupTimer()
   }
 };
 </script>
