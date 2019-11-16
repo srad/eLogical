@@ -43,46 +43,28 @@ describe("generator.js", () => {
   });
 
   const and = new Node({fw: fnAnd, children: [new ConstNode("v0"), new ConstNode("v1")]});
-  it("eval AND expression (true, true) => true", () => {
-    expect(and.evaluate({v0: true, v1: true})).to.be.true;
-  });
-  it("eval AND expression (true, false) => false", () => {
-    expect(and.evaluate({v0: true})).to.be.false;
-  });
-  it("eval AND expression (false, true) => false", () => {
-    expect(and.evaluate({v1: true})).to.be.false;
-  });
-  it("eval AND expression (false, false) => false", () => {
-    expect(and.evaluate({})).to.be.false;
-  });
+  it("eval AND expression (true  AND  true)  => true", () => expect(and.evaluate({v0: true, v1: true})).to.be.true);
+  it("eval AND expression (true  AND false) => false", () => expect(and.evaluate({v0: true, v1: false})).to.be.false);
+  it("eval AND expression (false AND  true) => false", () => expect(and.evaluate({v0: false, v1: true})).to.be.false);
+  it("eval AND expression (false AND false) => false", () => expect(and.evaluate({v0: false, v1: false})).to.be.false);
+  it("eval AND expression (true  AND false) => false", () => expect(and.evaluate({v0: true})).to.be.false);
+  it("eval AND expression (false AND  true) => false", () => expect(and.evaluate({v1: true})).to.be.false);
+  it("eval AND expression (false AND false) => false", () => expect(and.evaluate({})).to.be.false);
 
   const or = new Node({fw: fnOr, children: [new ConstNode("v0"), new ConstNode("v1")]});
-  it("eval OR expression: (true OR true) => true", () => {
-    expect(or.evaluate({v0: true, v1: true})).to.be.true;
-  });
-  it("eval OR expression: (true OR false) => true", () => {
-    expect(or.evaluate({v0: true})).to.be.true;
-  });
-  it("eval OR expression: (false OR true) => true", () => {
-    expect(or.evaluate({v1: true})).to.be.true;
-  });
-  it("eval OR expression: (false OR false) => false", () => {
-    expect(or.evaluate({})).to.be.false;
-  });
+  it("eval OR expression: (true  OR true)  => true", () => expect(or.evaluate({v0: true, v1: true})).to.be.true);
+  it("eval OR expression: (true  OR false) => true", () => expect(or.evaluate({v0: true, v1: false})).to.be.true);
+  it("eval OR expression: (false OR true)  => true", () => expect(or.evaluate({v0: false, v1: true})).to.be.true);
+  it("eval OR expression: (false OR false) => true", () => expect(or.evaluate({v0: false, v1: false})).to.be.false);
+  it("eval OR expression: (true  OR false) => true", () => expect(or.evaluate({v0: true})).to.be.true);
+  it("eval OR expression: (false OR  true) => true", () => expect(or.evaluate({v1: true})).to.be.true);
+  it("eval OR expression: (false OR false) => false", () => expect(or.evaluate({})).to.be.false);
 
   const impl = new Node({fw: fnImpl, children: [new ConstNode("v0"), new ConstNode("v1")]});
-  it("eval IMPLICATION expression: (true -> true) => true", () => {
-    expect(impl.evaluate({v0: true, v1: true})).to.be.true;
-  });
-  it("eval IMPLICATION expression: (true -> false) => false", () => {
-    expect(impl.evaluate({v0: true})).to.be.false;
-  });
-  it("eval IMPLICATION expression: (false -> true) => true", () => {
-    expect(impl.evaluate({v1: true})).to.be.true;
-  });
-  it("eval IMPLICATION expression: (false -> false) => false", () => {
-    expect(impl.evaluate({})).to.be.true;
-  });
+  it("eval IMPLICATION expression: (true  -> true)  => true", () => expect(impl.evaluate({v0: true, v1: true})).to.be.true);
+  it("eval IMPLICATION expression: (true  -> false) => false", () => expect(impl.evaluate({v0: true})).to.be.false);
+  it("eval IMPLICATION expression: (false -> true)  => true", () => expect(impl.evaluate({v1: true})).to.be.true);
+  it("eval IMPLICATION expression: (false -> false) => false", () => expect(impl.evaluate({})).to.be.true);
 
   it("eval eval NOT expression: !true => false", () => {
     const node = new Node({fw: fnNot, children: [new ConstNode("v0")]});
@@ -94,30 +76,24 @@ describe("generator.js", () => {
   });
 
   const xor = new Node({fw: fnXor, children: [new ConstNode("v0"), new ConstNode("v1")]});
-  it("eval XOR expression: (true XOR true) => true", () => {
-    expect(xor.evaluate({v0: true, v1: true})).to.be.false;
-  });
-  it("eval XOR expression: (true XOR false) => false", () => {
-    expect(xor.evaluate({v0: true})).to.be.true;
-  });
-  it("eval XOR expression: (false XOR true) => true", () => {
-    expect(xor.evaluate({v1: true})).to.be.true;
-  });
-  it("eval XOR expression: (false XOR false) => false", () => {
-    expect(xor.evaluate({})).to.be.false;
-  });
+  it("eval XOR expression: (true XOR true) => true", () => expect(xor.evaluate({v0: true, v1: true})).to.be.false);
+  it("eval XOR expression: (true XOR false) => false", () => expect(xor.evaluate({v0: true})).to.be.true);
+  it("eval XOR expression: (false XOR true) => true", () => expect(xor.evaluate({v1: true})).to.be.true);
+  it("eval XOR expression: (false XOR false) => false", () => expect(xor.evaluate({})).to.be.false);
 
   const eq = new Node({fw: fnEq, children: [new ConstNode("v0"), new ConstNode("v1")]});
-  it("eval EQ expression: (true == true) => true", () => {
-    expect(eq.evaluate({v0: true, v1: true})).to.be.true;
-  });
-  it("eval EQ expression: (true == false) => false", () => {
-    expect(eq.evaluate({v0: true})).to.be.false;
-  });
-  it("eval EQ expression: (false == true) => false", () => {
-    expect(eq.evaluate({v1: true})).to.be.false;
-  });
-  it("eval EQ expression: (false == false) => true", () => {
-    expect(eq.evaluate({})).to.be.true;
-  });
+  it("eval EQ expression: (true == true) => true", () => expect(eq.evaluate({v0: true, v1: true})).to.be.true);
+  it("eval EQ expression: (true == false) => false", () => expect(eq.evaluate({v0: true})).to.be.false);
+  it("eval EQ expression: (false == true) => false", () => expect(eq.evaluate({v1: true})).to.be.false);
+  it("eval EQ expression: (false == false) => true", () => expect(eq.evaluate({})).to.be.true);
+
+  const and1 = new Node({fw: fnAnd, children: [new ConstNode("v0"), new ConstNode("v1")]});
+  const notAnd = new Node({fw: fnNot, children: [and1]});
+  it("eval expression: NoT(false AND false) => true", () => expect(notAnd.evaluate({v0: false, v1: false})).to.be.true);
+  it("eval expression: NOT(true  AND false) => true", () => expect(notAnd.evaluate({v0: true, v1: false})).to.be.true);
+  it("eval expression: NOT(false AND  true) => true", () => expect(notAnd.evaluate({v0: false, v1: true})).to.be.true);
+  it("eval expression: NOT(false AND false) => true", () => expect(notAnd.evaluate({v0: false})).to.be.true);
+  it("eval expression: NOT(false AND false) => true", () => expect(notAnd.evaluate({v1: false})).to.be.true);
+  it("eval expression: NOT(false AND false) => true", () => expect(notAnd.evaluate({})).to.be.true);
+  it("eval expression: NOT(true  AND  true) => false", () => expect(notAnd.evaluate({v0: true, v1: true})).to.be.false);
 });
