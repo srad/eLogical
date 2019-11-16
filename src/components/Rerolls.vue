@@ -8,8 +8,7 @@
 export default {
   name: "Rerolls",
   props: {
-    current: Number,
-    allowshake: Boolean
+    current: Number
   },
   data() {
       return {
@@ -18,8 +17,11 @@ export default {
   },
   methods: {
       fireEvent(i) {
-          this.$refs[i][0].classList.add("despawning")
+        this.$refs[this.current][0].addEventListener("animationend",() => {
           this.$emit("reroll-consumed")
+        })
+        this.$refs[this.current][0].classList.add("despawning")
+        this.$emit("rerolling")
       }
   }
 }
@@ -35,7 +37,7 @@ export default {
 .despawning {
   animation-name: despawn;
   animation-duration: 1s;
-  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
 }
 @keyframes despawn {
   0% {transform: scale(1)}

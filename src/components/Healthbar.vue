@@ -12,6 +12,12 @@ export default {
   },
   methods: {
     despawnLife() {
+      if (navigator.vibrate) {
+        navigator.vibrate(250);
+      }
+      this.$refs[this.current][0].addEventListener("animationend",() => {
+          this.$emit("damage-taken")
+        })
       this.$refs[this.current][0].classList.add("despawning")
     }
   }
@@ -31,7 +37,6 @@ export default {
 }
 .despawning {
   animation: despawn 1s;
-  animation-delay: 2s;
 }
 @keyframes pulsate {
   0% {transform: scale(1)}

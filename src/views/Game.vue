@@ -23,12 +23,12 @@
         <b-container>
           <b-row>
             <b-col class="text-right">
-              <healthbar ref="healthbar" v-bind:current="health" />
+              <healthbar ref="healthbar" v-on:damage-taken="adjustHealth" v-bind:current="health" />
             </b-col>
           </b-row>
           <b-row>
             <b-col class="text-right">
-              <rerolls :current="rerolls" v-on:reroll-consumed="rerollExpression" ref="rerolls" />
+              <rerolls :current="rerolls" v-on:rerolling="rerollExpression" v-on:reroll-consumed="rerolls--" ref="rerolls" />
             </b-col>
           </b-row>
         </b-container>
@@ -48,7 +48,6 @@
       class="stopwatch"
       :time="stopwatchTime"
       :countingDown="true"
-      :showIcon="false"
       v-on:timer-ended="gameOver"
     ></stopwatch>
 
@@ -85,7 +84,6 @@
         </b-row>
         <b-row align-h="center" v-if="modalText === 'Game Over!'">
           <b-col cols="6">
-            <!-- <b-button variant="primary" size="lg" block v-on:click="printMessage('functionality not yet implemented')">Leaderboard</b-button> -->
             <router-link to="/leaderboard">
               <b-button variant="primary" size="lg" block>Leaderboard</b-button>
             </router-link>
@@ -248,48 +246,31 @@ export default {
     },
     rerollExpression() {
       this.$refs["tex"].$el.classList.add("text-reroll");
+      if(this.progress.currLevel === this.progress.maxLevel){
+        this.$refs["stopwatch"].stopTimer()
+        this.$refs["stopwatch"].setupTimer()
+      }
       setTimeout(() => {
         this.generateExercise();
       }, 500);
-      setTimeout(() => {
-        this.rerolls--;
-        this.$refs["tex"].$el.classList.remove("text-reroll");
-      }, 1000);
+    },
+    adjustHealth() {
+      this.health--;
+      if (this.health === 0) {
+        this.gameOver();
+      }
     },
     confirm() {
       const isAnswerCorrect = this.tree.evaluate(this.selection);
       if (isAnswerCorrect) {
-        if (this.progress.currLevel === this.progress.maxLevel) {
-          this.modalText = "Good Job! Choose your Loot";
-          this.$refs["modal"].show();
-          this.$refs["stopwatch"].stopTimer();
-          return;
-        } else {
-          this.progress.currLevel++;
-        }
         this.$refs["tex"].$el.classList.add("tex-right");
-        setTimeout(() => {
-          this.$refs["tex"].$el.classList.remove("tex-right");
-          this.options.forEach(opt => {
-            this.$refs[opt][0].classList.remove("true");
-            this.$refs[opt][0].classList.remove("false");
-            this.$refs[opt][0].classList.add("false");
-          });
-          this.generateExercise();
-        }, 2000);
+        this.options.forEach(opt => {
+          this.$refs[opt][0].classList.remove("true");
+          this.$refs[opt][0].classList.remove("false");
+          this.$refs[opt][0].classList.add("false");
+        });
       } else {
-        if (navigator.vibrate) {
-          navigator.vibrate(250);
-        }
         this.$refs["tex"].$el.classList.add("tex-wrong");
-        this.$refs["healthbar"].despawnLife();
-        setTimeout(() => {
-          this.$refs["tex"].$el.classList.remove("tex-wrong");
-          this.health--;
-          if (this.health === 0) {
-            this.gameOver();
-          }
-        }, 3000);
       }
     },
     pickLoot(loot) {
@@ -357,14 +338,15 @@ export default {
         const str = leafs.map(node => node.v);
         this.options = Array.from(str).sort();
         this.texOptions = leafs.map(node => node.to("tex")).sort();
-      }
-      this.$refs["difficultyTitle"].classList.add("scroll-to-right");
-      this.$refs["levelTitle"].classList.add("scroll-to-left");
-      setTimeout(() => {
-        this.$refs["difficultyTitle"].classList.remove("scroll-to-right");
-        this.$refs["levelTitle"].classList.remove("scroll-to-left");
-      }, 2000);
+      }  
       this.emptyBackpack();
+      if(this.tutorial.proposed){
+        this.slideInTitle()
+      }
+    },
+    slideInTitle(){
+      this.$refs["levelTitle"].classList.add("scroll-to-left");
+      this.$refs["difficultyTitle"].classList.add("scroll-to-right");
     },
     resetGame() {
       this.generateExercise();
@@ -373,14 +355,12 @@ export default {
       this.progress.currLevel = 1;
       this.progress.difficulty = 1;
       this.health = 3;
+      this.rerolls = 3;
     },
     gameOver() {
       this.modalText = "Game Over!";
       this.$refs["modal"].show();
       this.addLeaderboardEntry("player1", this.calculatePoints());
-    },
-    printMessage(msg) {
-      alert(msg);
     },
     highlightElement(el){
       let topDrop = this.$refs["backdropTop"],
@@ -419,18 +399,18 @@ export default {
     skipTutorial(){
       this.tutorial.proposed = true;
       this.$refs["modal"].hide();
+      this.slideInTitle()
     },
     startTutorial(){
       this.tutorial.proposed = true;
       this.tutorial.isRunning = true
       this.$refs["modal"].hide();
       this.$refs["notification"].classList.add("notification-visible")
-      this.$refs["notification"].classList.remove("notification-hidden")
       this.progressTutorial()
     },
     progressTutorial(){
       this.tutorial.currentStep++
-      if(this.tutorial.currentStep < 7){
+      if(this.tutorial.currentStep < 8){
         let tutorialData = this.tutorialData
         this.tutorial.currentText = tutorialData.text
         this.highlightElement(tutorialData.element)
@@ -450,6 +430,7 @@ export default {
       rightDrop.style.display = "none"
       this.$refs["notification"].classList.add("notification-hidden")
       this.$refs["notification"].classList.remove("notification-visible")
+      this.slideInTitle()
     },
     addLeaderboardEntry(name, points) {
       this.$api.saveAnswer({
@@ -471,6 +452,37 @@ export default {
       this.modalText = "Welcome!"
       this.$refs["modal"].show();
     }
+    //configure what should happen after the various animations
+    this.$refs["difficultyTitle"].addEventListener("animationend", () => {
+      if(this.progress.currLevel === this.progress.maxLevel){
+        this.$refs["stopwatch"].startTimer()
+      }
+      this.$refs["difficultyTitle"].classList.remove("scroll-to-right");
+    })
+
+    this.$refs["levelTitle"].addEventListener("animationend", () => {
+      this.$refs["levelTitle"].classList.remove("scroll-to-left");
+    })
+    //
+    this.$refs["tex"].$el.addEventListener("animationend", () => {
+      if(this.$refs["tex"].$el.classList.contains("tex-wrong")){
+        this.$refs["healthbar"].despawnLife();
+        this.$refs["tex"].$el.classList.remove("tex-wrong");
+      }else if(this.$refs["tex"].$el.classList.contains("tex-right")){
+        if(this.progress.currLevel === this.progress.maxLevel){
+          this.modalText = "Good Job! Choose your Loot";
+          this.$refs["modal"].show();
+          this.$refs["stopwatch"].stopTimer();
+        }else{
+          this.progress.currLevel++;
+          this.generateExercise();
+        }
+        this.$refs["tex"].$el.classList.remove("tex-right");
+      }
+    })
+    this.$refs["tex"].$el.addEventListener("animationend", () => {
+      this.$refs["tex"].$el.classList.remove("text-reroll");
+    })
   }
 };
 </script>
@@ -486,11 +498,11 @@ export default {
   font-size: 1.5em;
 }
 .tex-right {
-  animation: texRight 2s;
+  animation: texRight 1.25s;
   animation-fill-mode: forwards;
 }
 .tex-wrong {
-  animation: texWrong 2s;
+  animation: texWrong 1.25s;
 }
 .tree,
 .confirm,
@@ -505,12 +517,14 @@ export default {
   width: 90%;
 }
 .notification-hidden{
-  animation: slideOutNotification 0.5s;
-  animation-fill-mode: forwards;
-  }
+    top: -3.5em;
+    opacity: 1;
+    transition: all 0.5s;
+}
 .notification-visible{
-  animation: slideInNotification 0.5s;
-  animation-fill-mode: forwards;
+  top: 0;
+  opacity: 1;
+  transition: all 0.5s;
 }
 .tutorial-text-row{
   height: 3em;
@@ -539,7 +553,7 @@ export default {
 }
 .true {
   color: white;
-  animation: spinTrue 1s;
+  animation: spinTrue 0.5s;
   animation-fill-mode: forwards;
 }
 .true:hover {
@@ -548,7 +562,7 @@ export default {
 }
 .false {
   color: white;
-  animation: spinFalse 1s;
+  animation: spinFalse 0.5s;
   animation-fill-mode: forwards;
 }
 .false:hover {
@@ -601,8 +615,6 @@ export default {
     opacity: 0;
   }
   to {
-    transform: translateY(3.5em);
-    opacity: 1;
   }
 }
 @keyframes slideOutNotification {
