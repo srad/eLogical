@@ -58,7 +58,7 @@
     <b-row class="mt-4">
       <b-col cols="9" align-self="center" class="text-center">
           <b-row ref="buttons" align-h="center" align-v="center">
-            <b-col cols="4" lg="2" :key="v" v-for="v in options" class="text-center">
+            <b-col cols="3" lg="2" :key="v" v-for="v in options" class="text-center">
               <b-button v-on:click="toggleVariable(v)" class="false shadow-sm" :ref="v" size="lg">{{v}}</b-button>
             </b-col>
           </b-row>
