@@ -2,11 +2,12 @@
   <div id="app">
     <b-navbar toggleable="sm" type="light" variant="primary">
       <b-navbar-toggle target="nav-text-collapse"></b-navbar-toggle>
-
-      <b-navbar-brand class="font-weight-bold text-white">
-        eLogical
-        <font-awesome-icon icon="robot" class="ml-3 text-white"/>
-      </b-navbar-brand>
+      <router-link to="/">
+        <b-navbar-brand class="font-weight-bold text-white">
+          eLogical
+          <font-awesome-icon icon="robot" class="ml-3 text-white"/>
+        </b-navbar-brand>
+      </router-link>
 
       <b-collapse id="nav-text-collapse" is-nav>
         <b-navbar-nav>
