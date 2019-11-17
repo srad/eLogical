@@ -351,7 +351,7 @@ export default {
       }
     },
     slideInTitle(){
-      this.$refs["levelTitle"].classList.add("scroll-to-left");
+      this.$refs["levelTitle"].classList.add("scroll-to-right");
       this.$refs["difficultyTitle"].classList.add("scroll-to-right");
     },
     resetGame() {
@@ -593,7 +593,7 @@ export default {
   font-size: 4em;
   position: fixed;
   top: 50vh;
-  right: -5em;
+  left: -5em;
 }
 .title-difficulty {
   z-index: 999;
