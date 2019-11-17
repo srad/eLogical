@@ -467,7 +467,7 @@ export default {
     })
 
     this.$refs["levelTitle"].addEventListener("animationend", () => {
-      this.$refs["levelTitle"].classList.remove("scroll-to-left");
+      this.$refs["levelTitle"].classList.remove("scroll-to-right");
     })
     //
     this.$refs["tex"].$el.addEventListener("animationend", () => {
