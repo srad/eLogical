@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-4 pr-3 pl-3">
+  <div class="">
     <b-container class="notification" ref="notification" v-on:click="progressTutorial">
       <b-row align-v="center" class="tutorial-text-row">
         <b-col cols="12" class="text-center">
@@ -14,12 +14,12 @@
     <div class="backdrop" ref="backdropBottom" v-show="tutorial.isRunning"></div>
     <h1 ref="difficultyTitle" class="title-difficulty">Chapter {{progress.difficulty}}</h1>
     <h1 ref="levelTitle" class="title-level">Level {{progress.currLevel}}</h1>
-    <b-row>
-      <b-col cols="3">
-        <h4>Stage {{progress.difficulty}} - {{progress.currLevel}}</h4>
+    <b-row class="pt-3 pb-2 bg-white p-0 mb-3 border-bottom shadow-sm" align-v="center">
+      <b-col cols="4">
+        <h5><strong>Level {{progress.currLevel}}/{{progress.maxLevel}}</strong></h5>
       </b-col>
 
-      <b-col>
+      <b-col cols="8">
         <b-container>
           <b-row>
             <b-col class="text-right">
@@ -34,8 +34,6 @@
         </b-container>
       </b-col>
     </b-row>
-
-    <hr />
     <b-row>
       <b-col class="text-center">
         <tex v-bind:expression="expression" ref="tex" class="tex"></tex>
@@ -51,20 +49,22 @@
       v-on:timer-ended="gameOver"
     ></stopwatch>
 
-      <b-row align-h="center">
-        <b-col cols="6" class="text-center">
-          <tree v-bind:treeData="treeData" class="tree" ref="tree"></tree>
-        </b-col>
-      </b-row>
-    <b-row align-h="center" align-v="center" ref="buttons" class="contentrow">
-      <b-col cols="6" sm="4" lg="2" :key="v" v-for="v in options" class="text-center">
-        <b-button v-on:click="toggleVariable(v)" class="false" :ref="v" size="lg">{{v}}</b-button>
+    <b-row align-h="center">
+      <b-col cols="10" class="text-center">
+        <tree v-bind:treeData="treeData" class="tree" ref="tree"></tree>
       </b-col>
     </b-row>
-
-    <b-row class="contentrow" align-v="center">
-      <b-col class="text-center">
-        <b-button variant="primary" class="confirm" ref="confirm" size="lg" v-on:click="confirm">Confirm</b-button>
+    <hr />
+    <b-row class="mt-4">
+      <b-col cols="9" align-self="center" class="text-center">
+          <b-row ref="buttons" align-h="center" align-v="center">
+            <b-col cols="4" lg="2" :key="v" v-for="v in options" class="text-center">
+              <b-button v-on:click="toggleVariable(v)" class="false shadow-sm" :ref="v" size="lg">{{v}}</b-button>
+            </b-col>
+          </b-row>
+      </b-col>
+      <b-col cols="3" md="2" lg="1" align-self="end">
+          <b-button variant="primary" class="confirm shadow-sm" ref="confirm" size="lg" v-on:click="confirm"><font-awesome-icon icon="check"/></b-button>
       </b-col>
     </b-row>
 
@@ -90,27 +90,33 @@
           </b-col>
         </b-row>
         <b-row align-h="center" v-if="modalText === 'Good Job! Choose your Loot'">
-          <b-col cols="6">
-            <font-awesome-icon
-              ref="dice-icon"
-              size="6x"
-              class="loot-unselected"
-              icon="dice"
-              v-on:click="pickLoot('dice')"
-            ></font-awesome-icon>
-          </b-col>
-          <b-col cols="6">
-            <font-awesome-icon
-              ref="heart-icon"
-              size="6x"
-              class="loot-unselected"
-              icon="heart"
-              v-on:click="pickLoot('heart')"
-            ></font-awesome-icon>
-          </b-col>
-          <b-col cols="6">
-            <b-button variant="primary" size="lg" block v-on:click="loadNextChapter" :disabled="loot.selected === null">Next Chapter</b-button>
-          </b-col>
+          <b-container>
+            <b-row>
+              <b-col cols="6">
+                <font-awesome-icon
+                  ref="dice-icon"
+                  size="6x"
+                  class="loot-unselected"
+                  icon="dice"
+                  v-on:click="pickLoot('dice')"
+                ></font-awesome-icon>
+              </b-col>
+              <b-col cols="6">
+                <font-awesome-icon
+                  ref="heart-icon"
+                  size="6x"
+                  class="loot-unselected"
+                  icon="heart"
+                  v-on:click="pickLoot('heart')"
+                ></font-awesome-icon>
+              </b-col>
+            </b-row>
+            <b-row class="mt-4" align-h="center">
+              <b-col cols="6">
+                <b-button variant="primary" size="lg" block v-on:click="loadNextChapter" :disabled="loot.selected === null">Next Chapter</b-button>
+              </b-col>
+            </b-row>
+          </b-container>
         </b-row>
         <b-row align-h="center" v-if="modalText === 'Welcome!' && tutorial.proposed === false">
           <b-container>
@@ -119,7 +125,7 @@
                 Welcome to eLogical! Do you want to play through a quick tutorial?
               </b-col>
             </b-row>
-            <b-row class="contentrow">
+            <b-row class="mt-4">
               <b-col>
                 <b-button variant="success" size="lg" block v-on:click="startTutorial">Sure</b-button>
               </b-col>
@@ -345,7 +351,7 @@ export default {
       }
     },
     slideInTitle(){
-      this.$refs["levelTitle"].classList.add("scroll-to-left");
+      this.$refs["levelTitle"].classList.add("scroll-to-right");
       this.$refs["difficultyTitle"].classList.add("scroll-to-right");
     },
     resetGame() {
@@ -489,10 +495,7 @@ export default {
 
 <style>
 .tree {
-  height: 30vh;
-}
-.contentrow{
-   margin-top: 1em;
+  height: 40vh;
 }
 .tex {
   font-size: 1.5em;
@@ -590,7 +593,7 @@ export default {
   font-size: 4em;
   position: fixed;
   top: 50vh;
-  right: -5em;
+  left: -5em;
 }
 .title-difficulty {
   z-index: 999;
