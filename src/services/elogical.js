@@ -7,7 +7,7 @@ const JWTName = "eLogicalAuthJWT";
 const store = window.localStorage;
 
 const ENCRYPT_KEY = process.env.ENCRYPT_KEY || "12345";
-const ENCRYPT = process.env.NODE_ENV === "production";
+const ENCRYPT = false;//process.env.NODE_ENV === "production";
 
 class ElogicalApi {
   /**
