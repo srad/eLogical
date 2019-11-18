@@ -1,24 +1,34 @@
 <template>
   <div>
     <b-row class="pt-3 pb-2 bg-white p-0 mb-3 border-bottom shadow-sm">
-      <b-col cols="4">
-        <h5><strong>Level {{level.current}}/{{level.max}}</strong></h5>
+      <b-col cols="5">
+        <h4><strong>Level {{levelCurrent}}/{{levelMax}}</strong></h4>
       </b-col>
 
-      <b-col class="text-center p-0 mr-3 pb-2 pt-0" cols="4">
-        <b-progress class="bg-secondary h-100 shadow-sm" :value="progress.current" :max="progress.max">
-          <b-progress-bar class="font-weight-bold" :key="index" v-for="(n, index) in progress.current" :value="1" :label="(index+1)+'/'+progress.max" :style="{backgroundColor: colors[index]}"></b-progress-bar>
+      <b-col aria-colcount="7" class="pl-0 ml-0">
+        <b-progress class="bg-secondary h-75 shadow-sm" :current="progressCurrent" :max="progressMax">
+          <block-bar :colors="colors" :current="progressCurrent" :max="progressMax"/>
         </b-progress>
       </b-col>
+    </b-row>
 
-      <b-col class="p-0 pt-0 text-right" cols="3">
-        <progresser icon="heart" color="darkred" v-bind:max="life.max" v-bind:current="life.current"/>
+    <b-row class="mb-3">
+      <b-col cols="6" class="text-left">
+        <progresser animate hide-animation-class="swing" icon="dice" v-on:click="dice" color="" class="text-warning" v-bind:max="retryMax" v-bind:current="retryCurrent"/>
+      </b-col>
+      <b-col cols="6" class="text-right">
+        <progresser animate hide-animation-class="hinge" icon="heart" color="" class="text-danger" v-bind:max="lifeMax" v-bind:current="lifeCurrent"/>
       </b-col>
     </b-row>
 
     <b-row>
       <b-col>
-        <b-card body-class="p-1" bg-variant="white" :header="cardHeader" header-bg-variant="primary" header-text-variant="white" header-class="p-1 text-center" class="shadow-sm border-dark">
+        <b-card
+            v-bind:class="{'animated slow shake': success===false, 'animated tada': success===true}"
+            body-class="p-1" bg-variant="white" :header="cardHeader"
+            :header-bg-variant="success===false?'danger':'primary'"
+            header-class="p-1 text-center text-white"
+            class="shadow-sm border-dark">
           <b-card-text class="p-0 m-0 text-center">
             <tex v-bind:expression="expression"></tex>
           </b-card-text>
@@ -26,42 +36,25 @@
       </b-col>
     </b-row>
 
-    <div style="right: 15px; z-index: 10" class="float-right mt-3 position-absolute">
-      <router-link class="btn btn-warning toolbar" tag="button" to="help">
-        <strong>?</strong>
-      </router-link>
-      <br/>
-      <b-button variant="danger" class="toolbar" v-on:click="dice">
-        <strong>
-          <font-awesome-icon icon="dice"/>
-        </strong>
-      </b-button>
-    </div>
+    <tree v-bind:treeData="treeData" class="mt-2" style="height: 50vh"></tree>
 
-    <tree v-bind:treeData="treeData" class="mt-2" v-on:click-node="clickNode" style="height: 45vh"></tree>
-
-    <b-row class="position-absolute w-100 " style="bottom: 17px">
-      <b-col cols="9" class="m-0 p-0 pl-3">
-        <b-card no-body header-bg-variant="primary" header-text-variant="light" header-class="p-2 text-center shadow-sm">
-          <table class="table-dark table-bordered border-light m-0 table table-sm shadow-sm text-center">
-            <thead>
-            <th :key="v.name" v-for="v in options" class="p-0">
-              {{v.name}}
-            </th>
-            </thead>
-            <tbody>
-            <tr>
-              <td class="bg-white p-0" :key="v.name" v-for="v in options">
-                <b-form-checkbox v-model="selected" v-bind:value="v.name" switch/>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </b-card>
+    <b-row class="position-absolute w-100" style="bottom: 3%">
+      <b-col class="text-left" cols="3">
+        <b-button variant="primary" size="lg" v-on:click="confirm">
+          ok
+        </b-button>
       </b-col>
-      <b-col cols="2">
-        <b-button variant="success" v-on:click="confirm" class="shadow-sm w-100 h-100 overflow-hidden position-absolute">
-          <font-awesome-icon icon="check"/>
+      <b-col class="text-right">
+        <b-button
+            ref="btnSelect"
+            v-for="(node, index) in options"
+            :key="node.name"
+            v-bind:class="{'ml-1': index > 0}"
+            :variant="node.selected ? 'primary animated flip' : 'danger animated pulse'"
+            @click="select(node.name, index)"
+            size="lg"
+            class="p-2 pl-3 pr-3 faster">
+          {{node.name}}
         </b-button>
       </b-col>
     </b-row>
@@ -91,10 +84,11 @@ import Tex from "../components/Tex";
 import Progresser from "../components/Progresser";
 import colors from "@/lib/colors";
 import {ConstNode} from "../lib/compiler/tree";
+import BlockBar from "../components/BlockBar";
 
 export default {
   name: "Game2",
-  components: {Tree, Tex, Progresser},
+  components: {Tree, Tex, Progresser, BlockBar},
   props: {},
   data() {
     return {
@@ -110,19 +104,15 @@ export default {
       expression: "",
       header: "",
       colors: colors.gradient.purple,
-      level: {
-        current: 1,
-        max: 4,
-      },
-      progress: {
-        max: 4,
-        current: 1,
-      },
-      life: {
-        max: 3,
-        current: 1,
-      },
-      selected: [],
+      success: undefined,
+      levelCurrent: 1,
+      levelMax: 4,
+      progressCurrent: 1,
+      progressMax: 4,
+      lifeCurrent: 4,
+      lifeMax: 4,
+      retryCurrent: 3,
+      retryMax: 3,
       options: [],
       texOptions: [],
       treeData: {nodes: [], edges: []},
@@ -135,12 +125,7 @@ export default {
   watch: {
     tree(node) {
       if (node instanceof ConstNode) {
-        const idx = this.selected.indexOf(node.v);
-        if (idx !== -1) {
-          this.selected.splice(idx, 1);
-        } else {
-          this.selected.push(node.v);
-        }
+        this.select(node.v);
       }
       this.expression = (this.nodeId === 0 ? "\\phi = " : "") + node.to("tex", {color: true});
     },
@@ -156,107 +141,82 @@ export default {
       return "Part of the expression";
     },
     hasWon() {
-      return this.level.current === this.level.max && this.progress.current === this.progress.max;
+      return this.levelCurrent === this.levelMax && this.progressCurrent === this.progressMax;
     },
     isSectionComplete() {
-      return this.progress.current === this.progress.max;
-    },
-    selection() {
-      let params = {};
-      this.selected.forEach(s => params[s] = true);
-      return params;
+      return this.progressCurrent === this.progressMax;
     },
     vars() {
-      return new Array(this.progress.current + 1).fill(0).map((_, index) => "v" + index);
+      return new Array(this.progressCurrent + 1).fill(0).map((_, index) => "v" + index);
     },
     expFilter() {
-      if (this.level.current <= 3) {
-        return this.difficultySettings[this.level.current];
+      if (this.levelCurrent <= 3) {
+        return this.difficultySettings[this.levelCurrent];
       }
       return undefined;
     },
   },
   methods: {
+    select(node, index) {
+      this.options[index].selected = !this.options[index].selected;
+    },
     restart() {
-      this.level.current = 1;
-      this.progress.current = 1;
-      this.life.current = this.life.max;
+      this.levelCurrent = 1;
+      this.progressCurrent = 1;
+      this.lifeCurrent = this.lifeMax;
+      this.retryCurrent = this.retryMax;
       this.generateExercise();
     },
-    clickNode({node, id}) {
-      this.nodeId = id;
-      this.tree = node;
-    },
     dice() {
-      if (this.life.current > 0) {
-        this.message = {
-          title: "Retry",
-          variant: "primary",
-          text: "It costs you 1 life to generate another formula!",
-          ok: () => {
-            this.life.current -= 1;
-            this.generateExercise();
-          },
-        };
-      } else {
-        this.message = {
-          title: "Info",
-          text: "You have no more lifes to spare for a retry!",
-          variant: "danger",
-          ok: () => {
-          },
-        };
-      }
+      this.retryCurrent = Math.max(this.retryCurrent - 1, 0);
+      this.generateExercise();
     },
     confirm() {
-      const isAnswerCorrect = this.tree.evaluate(this.selection);
+      const selection = {};
+      this.options.forEach(o => selection[o.name] = o.selected);
+      const isAnswerCorrect = this.tree.evaluate(selection);
+      this.success = isAnswerCorrect;
+      setTimeout(() => this.success = undefined, 1500);
 
       if (isAnswerCorrect) {
         this.$api.saveAnswer({
           level: this.level,
           progress: this.progress,
-          score: 1
+          score: 1,
         });
-        this.message = {
-          title: "Your answer is ...",
-          text: "Correct!",
-          icon: "check",
-          variant: "primary",
-          ok: () => {
-            if (this.isSectionComplete) {
-              if (this.hasWon) {
-                this.message = {
-                  title: "Congratulations!",
-                  text: "You have won! Press ok to restart the game!",
-                  icon: "trophy",
-                  variant: "warning",
-                  ok: this.restart,
-                };
-                return;
-              } else {
-                this.progress.current = 1;
-                this.level.current += 1;
-                this.life.current = Math.min(this.life.current + 1, this.life.max);
-              }
-            } else {
-              this.progress.current += 1;
-            }
+        if (this.isSectionComplete) {
+          if (this.hasWon) {
+            this.message = {
+              title: "Congratulations!",
+              text: "You have won! Press ok to restart the game!",
+              icon: "trophy",
+              variant: "warning",
+              ok: this.restart,
+            };
+            return;
+          } else {
+            this.progressCurrent = 1;
+            this.levelCurrent += 1;
+            this.lifeCurrent = Math.min(this.lifeCurrent + 1, this.lifeMax);
+            this.retryCurrent = Math.min(this.retryCurrent + 1, this.retryMax);
+          }
+        } else {
+          this.progressCurrent += 1;
+        }
 
-            this.generateExercise();
-          },
-        };
+        setTimeout(this.generateExercise, 1500);
         return;
       }
       // wrong
-      this.progress.current = Math.max(this.progress.current - 1, 1);
-      if (this.progress.current === 0) {
-        if (this.level.current > 1) {
-          this.progress.current = this.progress.max;
+      this.progressCurrent = Math.max(this.progressCurrent - 1, 1);
+      if (this.progressCurrent === 0) {
+        if (this.levelCurrent > 1) {
+          this.progressCurrent = this.progressMax;
         }
-        this.level.current = Math.max(this.level.current - 1, 1);
+        this.levelCurrent = Math.max(this.levelCurrent - 1, 1);
       }
-      this.life.current -= 1;
-      if (this.life.current < 0) {
+      this.lifeCurrent -= 1;
+      if (this.lifeCurrent < 0) {
         this.message = {
           title: "Game Over",
           text: "You lost!",
@@ -264,24 +224,12 @@ export default {
           variant: "danger",
           ok: this.restart,
         };
-      } else {
-        this.message = {
-          title: "Your answer is..",
-          text: "Wrong!",
-          icon: "heart-broken",
-          variant: "danger",
-          ok() {
-
-          },
-        };
       }
     },
     generateExercise() {
-      // Reset
-      this.nodeId = 0;
-      this.selected = [];
+      this.nodeId = 0; // Reset any tree click
       // Generate tree
-      const {tree} = randBoolExpr({setSize: 2, maxDepth: this.level.current, vars: this.vars, expWhiteList: this.expFilter});
+      const {tree} = randBoolExpr({setSize: 2, maxDepth: this.levelCurrent, vars: this.vars, expWhiteList: this.expFilter});
       this.tree = tree;
       // Draw tree
       const {nodes, edges, leafs} = this.tree.toGraph();
@@ -289,7 +237,7 @@ export default {
       // TODO: Show only yes/no answer
       this.singleChoice = leafs.length === 0;
       if (!this.singleChoice) {
-        this.options = leafs.map(node => ({name: node.v, color: node.color})).sort((a, b) => a.name.localeCompare(b.name));
+        this.options = leafs.map(node => ({name: node.v, color: node.color, selected: false})).sort((a, b) => a.name.localeCompare(b.name));
         this.texOptions = leafs.map(node => node.to("tex")).sort();
       }
     },
@@ -300,9 +248,6 @@ export default {
 };
 </script>
 
-<style scoped>
-.toolbar {
-  width: 2.7em;
-  margin-bottom: 0.1em;
-}
+<style>
+@import "~animate.css/animate.min.css";
 </style>
