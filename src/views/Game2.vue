@@ -1,6 +1,6 @@
 <template>
   <div style="margin-top: -0.5rem">
-    <b-row class="border-bottom shadow-sm pt-2 mb-3">
+    <b-row class="border-bottom shadow-sm pt-2 mb-3" style="padding-top: 0.7rem !important;">
       <b-col cols="5">
         <h4 class="pb-1"><strong>Level {{levelCurrent}}/{{levelMax}}</strong></h4>
       </b-col>
@@ -36,7 +36,7 @@
       </b-col>
     </b-row>
 
-    <tree v-bind:treeData="treeData" class="mt-2" style="height: 50vh"></tree>
+    <tree v-bind:treeData="treeData" class="mt-2" style="height: 40vh"></tree>
 
     <b-row class="position-absolute w-100" style="bottom: 3%">
       <b-col class="text-left" cols="3">
