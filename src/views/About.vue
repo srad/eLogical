@@ -1,12 +1,11 @@
 <template>
   <div class="about">
-    <!-- <h1>This is an about page</h1> -->
     <h2>What is eLogical?</h2>
     <p>eLogical is a web application for practicing the evaluation of boolean algebra expressions.</p>
     <p>The app was developed by students of the Goethe-University Frankfurt am Main for the course "Platforms and Systems for eLearning" in the winter-semester 2019/20.</p>
     <p>The layout is optimized for mobile devices.</p>
     <!-- <h2>Developers:</h2>
-    <p></p> -->
+    <p>Our names go here (if we want to)</p> -->
     <h2>List of frameworks and libraries used in eLogical:</h2>
     <ul>
       <li><a href="https://vuejs.org/">Vue.js</a></li>
