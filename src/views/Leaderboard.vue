@@ -3,7 +3,7 @@
     <h1>Leaderboard</h1>
     <b-row>
       <b-col>
-        <b-table class="bg-white table-condensed" bordered :items="entries"/>
+        <b-table class="table-white" bordered :items="entries"/>
         <p v-if="loading">
           Loading ...
         </p>
