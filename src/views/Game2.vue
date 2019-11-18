@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <b-row class="bg-white p-0 mb-3 border-bottom shadow-sm">
+  <div style="margin-top: -0.5rem">
+    <b-row class="border-bottom shadow-sm pt-2 mb-3">
       <b-col cols="5">
         <h4 class="pb-1"><strong>Level {{levelCurrent}}/{{levelMax}}</strong></h4>
       </b-col>
