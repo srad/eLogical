@@ -1,6 +1,6 @@
 <template>
-  <div class="mt-3">
-    <h1 class="mb-3">My Profile</h1>
+  <div>
+    <h1>My Profile</h1>
     <b-row>
       <b-col>
         <div class="text-center" v-if="loading">

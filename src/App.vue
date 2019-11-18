@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <b-navbar toggleable="sm" type="light" variant="primary">
+    <b-navbar toggleable="sm" type="light" variant="primary" fixed="top">
       <b-navbar-toggle target="nav-text-collapse"></b-navbar-toggle>
       <router-link to="/">
         <b-navbar-brand class="font-weight-bold text-white">
@@ -58,5 +58,6 @@ export default {
 body {
   overflow-x: hidden;
   overflow-y: scroll;
+  padding-top: 4rem;
 }
 </style>

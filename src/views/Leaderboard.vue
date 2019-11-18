@@ -1,6 +1,6 @@
 <template>
-  <div class="leaderboard mt-3">
-    <h1 class="mb-3">Leaderboard</h1>
+  <div>
+    <h1>Leaderboard</h1>
     <b-row>
       <b-col>
         <b-table class="bg-white table-condensed" bordered :items="entries"/>

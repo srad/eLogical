@@ -1,8 +1,8 @@
 <template>
   <div>
-    <b-row class="pt-3 pb-2 bg-white p-0 mb-3 border-bottom shadow-sm">
+    <b-row class="bg-white p-0 mb-3 border-bottom shadow-sm">
       <b-col cols="5">
-        <h4><strong>Level {{levelCurrent}}/{{levelMax}}</strong></h4>
+        <h4 class="pb-1"><strong>Level {{levelCurrent}}/{{levelMax}}</strong></h4>
       </b-col>
 
       <b-col aria-colcount="7" class="pl-0 ml-0">

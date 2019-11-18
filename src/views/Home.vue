@@ -1,5 +1,5 @@
 <template>
-  <b-row align-v="center" style="height: 100vh" class="bg-primary text-white">
+  <b-row align-v="center" style="height: 100vh" class="home bg-primary text-white">
     <b-col>
       <b-row>
         <b-col class="text-center">
@@ -40,5 +40,8 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.home {
+  margin-top: -3rem;
+}
 </style>
