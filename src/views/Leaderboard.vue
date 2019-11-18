@@ -1,9 +1,10 @@
 <template>
   <div>
     <h1>Leaderboard</h1>
+    <hr/>
     <b-row>
       <b-col>
-        <b-table class="table-white" bordered :items="entries"/>
+        <logic-table :fields="fields" :items="entries" header="Top Players"/>
         <p v-if="loading">
           Loading ...
         </p>
@@ -13,11 +14,24 @@
 </template>
 
 <script>
+import LogicTable from "../components/LogicTable";
+
 export default {
   name: "Leaderboard",
+  components: {
+    "logic-table": LogicTable,
+  },
   data() {
     return {
       loading: true,
+      fields: [
+        {
+          key: "Score",
+        },
+        {
+          key: "Client",
+        },
+      ],
       entries: [],
     };
   },
