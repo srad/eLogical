@@ -6,6 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
+    "test:junit": "vue-cli-service test:unit --reporter=node_modules\\mocha-junit-reporter --reporter-options mochaFile=./tests/results.xml",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
@@ -37,6 +38,7 @@
     "chai": "^4.1.2",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
+    "mocha-junit-reporter": "^1.23.1",
     "node-sass": "^4.13.0",
     "sass-loader": "^8.0.0",
     "vue-template-compiler": "^2.6.10"
