@@ -20,10 +20,10 @@ class ElogicalApi {
       const axiosOptions = {
         baseURL: API_URL,
         timeout: 10000,
-        headers: {encrypted: ENCRYPT ? "1" : "0"},
+        headers: { encrypted: ENCRYPT ? "1" : "0" },
         transformRequest: [function (data, headers) {
           if (data && ENCRYPT) {
-            return {data: AES.encrypt(JSON.stringify(data), ENCRYPT_KEY).toString()};
+            return { data: AES.encrypt(JSON.stringify(data), ENCRYPT_KEY).toString() };
           }
           return data;
         }, ...axios.defaults.transformRequest],
@@ -36,13 +36,13 @@ class ElogicalApi {
             store.setItem("username", response.data.name);
             axiosOptions.headers.authorization = `Bearer ${this.getToken()}`;
             this.axios = axios.create(axiosOptions);
-            resolve({token: this.getToken(), user: this.getUser()});
+            resolve({ token: this.getToken(), user: this.getUser() });
           })
           .catch(reject);
       } else {
         axiosOptions.headers.authorization = `Bearer ${this.getToken()}`;
         this.axios = axios.create(axiosOptions);
-        resolve({token, username});
+        resolve({ token, username });
       }
     }));
   }
@@ -92,4 +92,4 @@ class ElogicalApi {
   }
 }
 
-export {ElogicalApi};
+export { ElogicalApi };
