@@ -5,7 +5,7 @@
       v-for="(_, index) in localMax"
       :key="index"
       :size="localSize"
-      :class="{'text-secondary': index >= localCurrent, [localShowAnimationClass]: !rendered}"
+      :class="{'text-secondary': index >= localCurrent, [localShowAnimationClass]: !rendered, 'pulsating': current === 1 && icon === 'heart' && index === 0}"
       class="mr-1 animated fast"
       v-bind:style="{color:localColor, 'animation-delay': delayCallback(index)}"
       :icon="localIcon"
@@ -77,3 +77,20 @@ export default {
   }
 };
 </script>
+<style scoped>
+.pulsating {
+  animation: pulsate 1s;
+  animation-iteration-count: infinite;
+}
+@keyframes pulsate {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+</style>
