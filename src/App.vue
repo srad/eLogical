@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <b-navbar toggleable="sm" type="light" variant="primary">
+    <b-navbar toggleable="sm" type="light" variant="primary" fixed="top">
       <b-navbar-toggle target="nav-text-collapse"></b-navbar-toggle>
       <router-link to="/">
         <b-navbar-brand class="font-weight-bold text-white">
@@ -11,7 +11,8 @@
 
       <b-collapse id="nav-text-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item v-for="route in $router.options.routes" :key="route.path">
+          <!-- <b-nav-item v-for="route in $router.options.routes" :key="route.path"> -->
+          <b-nav-item v-for="route in menuroutes" :key="route.path">
             <router-link
                 :to="route.path"
                 class="btn btn-block text-left text-white"
@@ -30,11 +31,38 @@
   </div>
 </template>
 
+<script>
+import router from "./router";
+
+export default {
+  name: "App",
+  data() {
+    return {
+      allroutes: router.options.routes,
+    };
+  },
+  computed: {
+    menuroutes: function () {
+      return this.allroutes.filter(function (u) {
+        if (!u.path.includes("game")) {
+          return u;
+        }
+      });
+    },
+  },
+};
+</script>
+
 <style lang="scss">
 @import "assets/main.scss";
 
 body {
   overflow-x: hidden;
   overflow-y: scroll;
+  padding-top: 4rem;
+}
+
+.table th, .table td {
+  padding: 0.3rem !important;
 }
 </style>
