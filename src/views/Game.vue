@@ -562,7 +562,7 @@ export default {
   animation: slideInFromTop 1s;
 }
 .notification {
-  z-index: 999;
+  z-index: 1031;
   position: fixed;
   top: -3.5em;
   left: 5%;
