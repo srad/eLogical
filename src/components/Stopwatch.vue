@@ -1,11 +1,11 @@
 <template>
-<div>
-  <b-progress :max="100">
-    <b-progress-bar :value="(currMs/totalMs)*100" :variant="variant">
-      <strong>{{currTime}}</strong>
-    </b-progress-bar>
-  </b-progress>
-</div>
+  <div>
+    <b-progress :max="100">
+      <b-progress-bar :value="(currMs/totalMs)*100" :variant="variant">
+        <strong>{{currTime}}</strong>
+      </b-progress-bar>
+    </b-progress>
+  </div>
 </template>
 
 <script>
@@ -34,12 +34,12 @@ export default {
     updateTime() {
       if (this.isRunning) {
         if (this.countingDown) {
-          if ((this.currMs/this.totalMs <= 0.25) || this.currMs < 10000){
-            this.variant = "danger"
-          }else if ((this.currMs/this.totalMs <= 0.5) || this.currMs < 15000){
-            this.variant = "warning"
-          }else{
-            this.variant = "success"
+          if (this.currMs / this.totalMs <= 0.25 || this.currMs < 10000) {
+            this.variant = "danger";
+          } else if (this.currMs / this.totalMs <= 0.5 || this.currMs < 15000) {
+            this.variant = "warning";
+          } else {
+            this.variant = "success";
           }
           if (this.currMs - 500 < 0) {
             this.currMs = 0;
@@ -62,15 +62,15 @@ export default {
       this.isRunning = false;
       this.$emit("timer-stopped", this.time);
     },
-    setupTimer(){
+    setupTimer() {
       let minToMs = Number(this.time.split(":")[0]) * 60000,
-          secsToMs = Number(this.time.split(":")[1]) * 1000;
+        secsToMs = Number(this.time.split(":")[1]) * 1000;
       this.totalMs = minToMs + secsToMs;
-      this.currMs = this.totalMs
+      this.currMs = this.totalMs;
     }
   },
   mounted() {
-    this.setupTimer()
+    this.setupTimer();
   }
 };
 </script>

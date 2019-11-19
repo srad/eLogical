@@ -1,10 +1,8 @@
 <template>
-  <div class="">
+  <div class>
     <b-container class="notification" ref="notification" v-on:click="progressTutorial">
       <b-row align-v="center" class="tutorial-text-row">
-        <b-col cols="12" class="text-center">
-          {{tutorial.currentText}}
-        </b-col>
+        <b-col cols="12" class="text-center">{{tutorial.currentText}}</b-col>
       </b-row>
     </b-container>
     <div class="backdrop-click" v-if="tutorial.isRunning" v-on:click="progressTutorial"></div>
@@ -16,7 +14,9 @@
     <h1 ref="levelTitle" class="title-level">Level {{progress.currLevel}}</h1>
     <b-row class="pt-3 pb-2 bg-white p-0 mb-3 border-bottom shadow-sm" align-v="center">
       <b-col cols="4">
-        <h5><strong>Level {{progress.currLevel}}/{{progress.maxLevel}}</strong></h5>
+        <h5>
+          <strong>Level {{progress.currLevel}}/{{progress.maxLevel}}</strong>
+        </h5>
       </b-col>
 
       <b-col cols="8">
@@ -28,7 +28,12 @@
           </b-row>
           <b-row>
             <b-col class="text-right">
-              <rerolls :current="rerolls" v-on:rerolling="rerollExpression" v-on:reroll-consumed="rerolls--" ref="rerolls" />
+              <rerolls
+                :current="rerolls"
+                v-on:rerolling="rerollExpression"
+                v-on:reroll-consumed="rerolls--"
+                ref="rerolls"
+              />
             </b-col>
           </b-row>
         </b-container>
@@ -57,14 +62,27 @@
     <hr />
     <b-row class="mt-4">
       <b-col cols="9" align-self="center" class="text-center">
-          <b-row ref="buttons" align-h="center" align-v="center">
-            <b-col cols="3" lg="2" :key="v" v-for="v in options" class="text-center mb-2">
-              <b-button v-on:click="toggleVariable(v)" class="false shadow-sm" :ref="v" size="lg">{{v}}</b-button>
-            </b-col>
-          </b-row>
+        <b-row ref="buttons" align-h="center" align-v="center">
+          <b-col cols="3" lg="2" :key="v" v-for="v in options" class="text-center mb-2">
+            <b-button
+              v-on:click="toggleVariable(v)"
+              class="false shadow-sm"
+              :ref="v"
+              size="lg"
+            >{{v}}</b-button>
+          </b-col>
+        </b-row>
       </b-col>
       <b-col cols="3" md="2" lg="1" align-self="end">
-          <b-button variant="primary" class="confirm shadow-sm" ref="confirm" size="lg" v-on:click="confirm"><font-awesome-icon icon="check"/></b-button>
+        <b-button
+          variant="primary"
+          class="confirm shadow-sm"
+          ref="confirm"
+          size="lg"
+          v-on:click="confirm"
+        >
+          <font-awesome-icon icon="check" />
+        </b-button>
       </b-col>
     </b-row>
 
@@ -113,7 +131,13 @@
             </b-row>
             <b-row class="mt-4" align-h="center">
               <b-col cols="6">
-                <b-button variant="primary" size="lg" block v-on:click="loadNextChapter" :disabled="loot.selected === null">Next Chapter</b-button>
+                <b-button
+                  variant="primary"
+                  size="lg"
+                  block
+                  v-on:click="loadNextChapter"
+                  :disabled="loot.selected === null"
+                >Next Chapter</b-button>
               </b-col>
             </b-row>
           </b-container>
@@ -121,9 +145,9 @@
         <b-row align-h="center" v-if="modalText === 'Welcome!' && tutorial.proposed === false">
           <b-container>
             <b-row>
-              <b-col class="text-center">
-                Welcome to eLogical! Do you want to play through a quick tutorial?
-              </b-col>
+              <b-col
+                class="text-center"
+              >Welcome to eLogical! Do you want to play through a quick tutorial?</b-col>
             </b-row>
             <b-row class="mt-4">
               <b-col>
@@ -179,7 +203,7 @@ export default {
         isRunning: false,
         currentStep: 0,
         currentText: ""
-      },
+      }
     };
   },
   computed: {
@@ -217,25 +241,47 @@ export default {
         secs = totalSecs - mins * 60;
       return mins + ":" + secs;
     },
-    tutorialData(){
-        switch(this.tutorial.currentStep){
+    tutorialData() {
+      switch (this.tutorial.currentStep) {
         case 1:
-          return {element: this.$refs["tex"].$el, text: "The goal is to make this evaluate to 'true'."}
-          break
+          return {
+            element: this.$refs["tex"].$el,
+            text: "The goal is to make this evaluate to 'true'."
+          };
+          break;
         case 2:
-          return {element: this.$refs["tree"].$el, text: "This visualizaion can be helpful, too!"}
+          return {
+            element: this.$refs["tree"].$el,
+            text: "This visualizaion can be helpful, too!"
+          };
         case 3:
-          return {element: this.$refs["buttons"], text: "You can configure the variables using these buttons."}
+          return {
+            element: this.$refs["buttons"],
+            text: "You can configure the variables using these buttons."
+          };
         case 4:
-          return {element: this.$refs["confirm"], text: "You have to confirm your configuration."}
+          return {
+            element: this.$refs["confirm"],
+            text: "You have to confirm your configuration."
+          };
         case 5:
-          return {element: this.$refs["healthbar"].$el, text: "You can take damage if your input is wrong!"}
+          return {
+            element: this.$refs["healthbar"].$el,
+            text: "You can take damage if your input is wrong!"
+          };
         case 6:
-          return {element: this.$refs["rerolls"].$el, text: "If you don't like the current expression you can reroll it using these."}
+          return {
+            element: this.$refs["rerolls"].$el,
+            text:
+              "If you don't like the current expression you can reroll it using these."
+          };
         default:
-          return {element: null, text: "That's it! Have fun playing the game!"}
-        }
-    },
+          return {
+            element: null,
+            text: "That's it! Have fun playing the game!"
+          };
+      }
+    }
   },
   methods: {
     toggleVariable(value) {
@@ -252,9 +298,9 @@ export default {
     },
     rerollExpression() {
       this.$refs["tex"].$el.classList.add("text-reroll");
-      if(this.progress.currLevel === this.progress.maxLevel){
-        this.$refs["stopwatch"].stopTimer()
-        this.$refs["stopwatch"].setupTimer()
+      if (this.progress.currLevel === this.progress.maxLevel) {
+        this.$refs["stopwatch"].stopTimer();
+        this.$refs["stopwatch"].setupTimer();
       }
       setTimeout(() => {
         this.generateExercise();
@@ -344,13 +390,13 @@ export default {
         const str = leafs.map(node => node.v);
         this.options = Array.from(str).sort();
         this.texOptions = leafs.map(node => node.to("tex")).sort();
-      }  
+      }
       this.emptyBackpack();
-      if(this.tutorial.proposed){
-        this.slideInTitle()
+      if (this.tutorial.proposed) {
+        this.slideInTitle();
       }
     },
-    slideInTitle(){
+    slideInTitle() {
       this.$refs["levelTitle"].classList.add("scroll-to-right");
       this.$refs["difficultyTitle"].classList.add("scroll-to-right");
     },
@@ -368,81 +414,84 @@ export default {
       this.$refs["modal"].show();
       this.addLeaderboardEntry("player1", this.calculatePoints());
     },
-    highlightElement(el){
+    highlightElement(el) {
       let topDrop = this.$refs["backdropTop"],
-          botDrop = this.$refs["backdropBottom"],
-          leftDrop = this.$refs["backdropLeft"],
-          rightDrop = this.$refs["backdropRight"]
-      if(el === null){
-        topDrop.style.height = document.documentElement.clientHeight+"px"
-        topDrop.style.width = document.documentElement.clientWidth+"px"
-        topDrop.style.left = "0"
-        topDrop.style.top = "0"
-        botDrop.style.display = "none"
-        rightDrop.style.display = "none"
-        leftDrop.style.display = "none"
-
-      }else{
-        let bounds = el.getBoundingClientRect()
-        topDrop.style.height = bounds.top+"px"
-        topDrop.style.width = bounds.width+"px"
-        topDrop.style.left = bounds.left+"px"
-        topDrop.style.top = "0"
-        botDrop.style.height = (document.documentElement.clientHeight - bounds.bottom)+"px"
-        botDrop.style.width = bounds.width+"px"
-        botDrop.style.left = bounds.left+"px"
-        botDrop.style.top = bounds.bottom+"px"
-        leftDrop.style.left = "0"
-        leftDrop.style.top = "0"
-        leftDrop.style.height = document.documentElement.clientHeight + "px"
-        leftDrop.style.width = bounds.left+"px"
-        rightDrop.style.top = "0"
-        rightDrop.style.left = bounds.left+bounds.width+"px"
-        rightDrop.style.width = document.documentElement.clientWidth - (bounds.left+bounds.width)+"px"
-        rightDrop.style.height = document.documentElement.clientHeight+"px"
+        botDrop = this.$refs["backdropBottom"],
+        leftDrop = this.$refs["backdropLeft"],
+        rightDrop = this.$refs["backdropRight"];
+      if (el === null) {
+        topDrop.style.height = document.documentElement.clientHeight + "px";
+        topDrop.style.width = document.documentElement.clientWidth + "px";
+        topDrop.style.left = "0";
+        topDrop.style.top = "0";
+        botDrop.style.display = "none";
+        rightDrop.style.display = "none";
+        leftDrop.style.display = "none";
+      } else {
+        let bounds = el.getBoundingClientRect();
+        topDrop.style.height = bounds.top + "px";
+        topDrop.style.width = bounds.width + "px";
+        topDrop.style.left = bounds.left + "px";
+        topDrop.style.top = "0";
+        botDrop.style.height =
+          document.documentElement.clientHeight - bounds.bottom + "px";
+        botDrop.style.width = bounds.width + "px";
+        botDrop.style.left = bounds.left + "px";
+        botDrop.style.top = bounds.bottom + "px";
+        leftDrop.style.left = "0";
+        leftDrop.style.top = "0";
+        leftDrop.style.height = document.documentElement.clientHeight + "px";
+        leftDrop.style.width = bounds.left + "px";
+        rightDrop.style.top = "0";
+        rightDrop.style.left = bounds.left + bounds.width + "px";
+        rightDrop.style.width =
+          document.documentElement.clientWidth -
+          (bounds.left + bounds.width) +
+          "px";
+        rightDrop.style.height = document.documentElement.clientHeight + "px";
       }
     },
-    skipTutorial(){
+    skipTutorial() {
       this.tutorial.proposed = true;
       this.$refs["modal"].hide();
-      this.slideInTitle()
+      this.slideInTitle();
     },
-    startTutorial(){
+    startTutorial() {
       this.tutorial.proposed = true;
-      this.tutorial.isRunning = true
+      this.tutorial.isRunning = true;
       this.$refs["modal"].hide();
-      this.$refs["notification"].classList.add("notification-visible")
-      this.progressTutorial()
+      this.$refs["notification"].classList.add("notification-visible");
+      this.progressTutorial();
     },
-    progressTutorial(){
-      this.tutorial.currentStep++
-      if(this.tutorial.currentStep < 8){
-        let tutorialData = this.tutorialData
-        this.tutorial.currentText = tutorialData.text
-        this.highlightElement(tutorialData.element)
-      }else{
-        this.stopTutorial()
+    progressTutorial() {
+      this.tutorial.currentStep++;
+      if (this.tutorial.currentStep < 8) {
+        let tutorialData = this.tutorialData;
+        this.tutorial.currentText = tutorialData.text;
+        this.highlightElement(tutorialData.element);
+      } else {
+        this.stopTutorial();
       }
     },
-    stopTutorial(){
+    stopTutorial() {
       let topDrop = this.$refs["backdropTop"],
-          botDrop = this.$refs["backdropBottom"],
-          leftDrop = this.$refs["backdropLeft"],
-          rightDrop = this.$refs["backdropRight"]
-      this.tutorial.isRunning = false
-      topDrop.style.display = "none"
-      botDrop.style.display = "none"
-      leftDrop.style.display = "none"
-      rightDrop.style.display = "none"
-      this.$refs["notification"].classList.add("notification-hidden")
-      this.$refs["notification"].classList.remove("notification-visible")
-      this.slideInTitle()
+        botDrop = this.$refs["backdropBottom"],
+        leftDrop = this.$refs["backdropLeft"],
+        rightDrop = this.$refs["backdropRight"];
+      this.tutorial.isRunning = false;
+      topDrop.style.display = "none";
+      botDrop.style.display = "none";
+      leftDrop.style.display = "none";
+      rightDrop.style.display = "none";
+      this.$refs["notification"].classList.add("notification-hidden");
+      this.$refs["notification"].classList.remove("notification-visible");
+      this.slideInTitle();
     },
     addLeaderboardEntry(name, points) {
       this.$api.saveAnswer({
-        level: {current: this.progress.currLevel},
-        progress: {current: this.progress.difficulty},
-        score: points,
+        level: { current: this.progress.currLevel },
+        progress: { current: this.progress.difficulty },
+        score: points
       });
     },
     calculatePoints() {
@@ -454,41 +503,41 @@ export default {
   },
   mounted() {
     this.generateExercise();
-    if(!this.tutorial.proposed){
-      this.modalText = "Welcome!"
+    if (!this.tutorial.proposed) {
+      this.modalText = "Welcome!";
       this.$refs["modal"].show();
     }
     //configure what should happen after the various animations
     this.$refs["difficultyTitle"].addEventListener("animationend", () => {
-      if(this.progress.currLevel === this.progress.maxLevel){
-        this.$refs["stopwatch"].startTimer()
+      if (this.progress.currLevel === this.progress.maxLevel) {
+        this.$refs["stopwatch"].startTimer();
       }
       this.$refs["difficultyTitle"].classList.remove("scroll-to-right");
-    })
+    });
 
     this.$refs["levelTitle"].addEventListener("animationend", () => {
       this.$refs["levelTitle"].classList.remove("scroll-to-right");
-    })
+    });
     //
     this.$refs["tex"].$el.addEventListener("animationend", () => {
-      if(this.$refs["tex"].$el.classList.contains("tex-wrong")){
+      if (this.$refs["tex"].$el.classList.contains("tex-wrong")) {
         this.$refs["healthbar"].despawnLife();
         this.$refs["tex"].$el.classList.remove("tex-wrong");
-      }else if(this.$refs["tex"].$el.classList.contains("tex-right")){
-        if(this.progress.currLevel === this.progress.maxLevel){
+      } else if (this.$refs["tex"].$el.classList.contains("tex-right")) {
+        if (this.progress.currLevel === this.progress.maxLevel) {
           this.modalText = "Good Job! Choose your Loot";
           this.$refs["modal"].show();
           this.$refs["stopwatch"].stopTimer();
-        }else{
+        } else {
           this.progress.currLevel++;
           this.generateExercise();
         }
         this.$refs["tex"].$el.classList.remove("tex-right");
       }
-    })
+    });
     this.$refs["tex"].$el.addEventListener("animationend", () => {
       this.$refs["tex"].$el.classList.remove("text-reroll");
-    })
+    });
   }
 };
 </script>
@@ -513,31 +562,31 @@ export default {
   animation: slideInFromTop 1s;
 }
 .notification {
-  z-index: 999;
+  z-index: 1031;
   position: fixed;
   top: -3.5em;
   left: 5%;
   width: 90%;
 }
-.notification-hidden{
-    top: -3.5em;
-    opacity: 1;
-    transition: all 0.5s;
+.notification-hidden {
+  top: -3.5em;
+  opacity: 1;
+  transition: all 0.5s;
 }
-.notification-visible{
+.notification-visible {
   top: 0;
   opacity: 1;
   transition: all 0.5s;
 }
-.tutorial-text-row{
+.tutorial-text-row {
   height: 3em;
-  background-color: #FEFEFE;
+  background-color: #fefefe;
   border-radius: 0 0 0.5em 0.5em;
-  -webkit-box-shadow: 2px 3px 2px 0px rgba(0,0,0,0.5);
-  -moz-box-shadow: 2px 3px 2px 0px rgba(0,0,0,0.5);
-  box-shadow: 2px 3px 2px 0px rgba(0,0,0,0.5);
-  }
-.backdrop-click{
+  -webkit-box-shadow: 2px 3px 2px 0px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 2px 3px 2px 0px rgba(0, 0, 0, 0.5);
+  box-shadow: 2px 3px 2px 0px rgba(0, 0, 0, 0.5);
+}
+.backdrop-click {
   z-index: 998;
   position: absolute;
   opacity: 0;
@@ -613,7 +662,7 @@ export default {
   animation-timing-function: cubic-bezier(0.11, 1.23, 0.98, 0.01);
 }
 @keyframes slideInNotification {
-  from{
+  from {
     transform: translateY(0);
     opacity: 0;
   }
@@ -621,7 +670,7 @@ export default {
   }
 }
 @keyframes slideOutNotification {
-  from{
+  from {
     transform: translateY(0);
     opacity: 1;
   }

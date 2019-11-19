@@ -1,6 +1,14 @@
 <template>
   <div>
-    <font-awesome-icon :ref="i" size="2x" class="mr-1 dice" v-for="i in current" :key="i" icon="dice" v-on:click="fireEvent(i)"></font-awesome-icon>
+    <font-awesome-icon
+      :ref="i"
+      size="2x"
+      class="mr-1 dice"
+      v-for="i in current"
+      :key="i"
+      icon="dice"
+      v-on:click="fireEvent(i)"
+    ></font-awesome-icon>
   </div>
 </template>
 
@@ -11,20 +19,18 @@ export default {
     current: Number
   },
   data() {
-      return {
-
-      }
+    return {};
   },
   methods: {
-      fireEvent(i) {
-        this.$refs[this.current][0].addEventListener("animationend",() => {
-          this.$emit("reroll-consumed")
-        })
-        this.$refs[this.current][0].classList.add("despawning")
-        this.$emit("rerolling")
-      }
+    fireEvent(i) {
+      this.$refs[this.current][0].addEventListener("animationend", () => {
+        this.$emit("reroll-consumed");
+      });
+      this.$refs[this.current][0].classList.add("despawning");
+      this.$emit("rerolling");
+    }
   }
-}
+};
 </script>
 
 <style scoped>
@@ -40,17 +46,27 @@ export default {
   animation-fill-mode: forwards;
 }
 @keyframes despawn {
-  0% {transform: scale(1)}
-  50% {transform: scale(1.5)}
-  75% {transform: scale(1.5); opacity: 1}
-  100% {transform: scale(1) translateY(1em); opacity: 0}
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+  75% {
+    transform: scale(1.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) translateY(1em);
+    opacity: 0;
+  }
 }
-@keyframes slideInFromRight{
-  from{
+@keyframes slideInFromRight {
+  from {
     transform: translateX(3em);
     opacity: 0;
   }
-  to{
+  to {
     transform: translateX(0);
     opacity: 1;
   }
