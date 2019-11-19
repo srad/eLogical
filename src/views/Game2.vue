@@ -20,7 +20,7 @@
 
     <b-row class="mb-3">
       <b-col cols="6" class="text-left">
-        <progresser
+        <ressource
           animate
           hide-animation-class="swing"
           icon="dice"
@@ -32,7 +32,7 @@
         />
       </b-col>
       <b-col cols="6" class="text-right">
-        <progresser
+        <ressource
           animate
           hide-animation-class="hinge"
           icon="heart"
@@ -106,14 +106,14 @@
 import { randBoolExpr } from "@/lib/compiler/generator";
 import Tree from "../components/Tree";
 import Tex from "../components/Tex";
-import Progresser from "../components/Progresser";
+import Ressource from "../components/Ressource";
 import colors from "@/lib/colors";
 import { ConstNode } from "../lib/compiler/tree";
 import BlockBar from "../components/BlockBar";
 
 export default {
   name: "Game2",
-  components: { Tree, Tex, Progresser, BlockBar },
+  components: { Tree, Tex, Ressource, BlockBar },
   props: {},
   data() {
     return {

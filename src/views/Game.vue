@@ -23,22 +23,40 @@
         <b-container>
           <b-row>
             <b-col class="text-right">
-              <healthbar ref="healthbar" v-on:damage-taken="adjustHealth" v-bind:current="health" />
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col class="text-right">
-              <rerolls
-                :current="rerolls"
-                v-on:rerolling="rerollExpression"
-                v-on:reroll-consumed="rerolls--"
-                ref="rerolls"
-              />
             </b-col>
           </b-row>
         </b-container>
       </b-col>
     </b-row>
+
+    <b-row class="mb-3">
+      <b-col cols="6" class="text-left">
+        <ressource
+          animate
+          hide-animation-class="hinge"
+          icon="heart"
+          color
+          class="text-danger"
+          v-bind:max="health.max"
+          v-bind:current="health.current"
+          ref="health"
+        />
+      </b-col>
+      <b-col cols="6" class="text-right">
+        <ressource
+          animate
+          hide-animation-class="swing"
+          icon="dice"
+          v-on:click="rerollExpression"
+          color
+          class="text-warning"
+          v-bind:max="rerolls.max"
+          v-bind:current="rerolls.current"
+          ref="rerolls"
+        />
+      </b-col>
+    </b-row>
+
     <b-row>
       <b-col>
         <b-card
@@ -123,7 +141,7 @@
         <b-row align-h="center" v-if="modalText === 'Good Job! Choose your Loot'">
           <b-container>
             <b-row>
-              <b-col cols="6">
+              <b-col cols="6" v-if="rerolls.current < rerolls.max">
                 <font-awesome-icon
                   ref="dice-icon"
                   size="6x"
@@ -132,7 +150,7 @@
                   v-on:click="pickLoot('dice')"
                 ></font-awesome-icon>
               </b-col>
-              <b-col cols="6">
+              <b-col cols="6" v-if="health.current < health.max">
                 <font-awesome-icon
                   ref="heart-icon"
                   size="6x"
@@ -149,7 +167,7 @@
                   size="lg"
                   block
                   v-on:click="loadNextChapter"
-                  :disabled="loot.selected === null"
+                  :disabled="(health.current < health.max || rerolls.current < rerolls.max) && loot.selected === null"
                 >Next Chapter</b-button>
               </b-col>
             </b-row>
@@ -184,10 +202,11 @@ import Tex from "../components/Tex";
 import Healthbar from "../components/Healthbar";
 import Stopwatch from "../components/Stopwatch";
 import Rerolls from "../components/Rerolls";
+import Ressource from "../components/Ressource";
 
 export default {
   name: "Game",
-  components: { Tree, Tex, Healthbar, Stopwatch, Rerolls },
+  components: { Tree, Tex, Healthbar, Stopwatch, Rerolls, Ressource },
   props: {},
   data() {
     return {
@@ -197,8 +216,14 @@ export default {
         maxLevel: 5
       },
       success: null,
-      health: 3,
-      rerolls: 3,
+      health: {
+        current: 3,
+        max: 3
+      },
+      rerolls: {
+        current: 3,
+        max: 3
+      },
       selected: [],
       options: [],
       expression: "",
@@ -280,7 +305,7 @@ export default {
           };
         case 5:
           return {
-            element: this.$refs["healthbar"].$el,
+            element: this.$refs["health"].$el,
             text: "You can take damage if your input is wrong!"
           };
         case 6:
@@ -311,18 +336,21 @@ export default {
       }
     },
     rerollExpression() {
-      this.$refs["tex"].$el.classList.add("text-reroll");
-      if (this.progress.currLevel === this.progress.maxLevel) {
-        this.$refs["stopwatch"].stopTimer();
-        this.$refs["stopwatch"].setupTimer();
+      if(this.rerolls.current > 0){
+        this.$refs["expression"].classList.add("text-reroll");
+        if (this.progress.currLevel === this.progress.maxLevel) {
+          this.$refs["stopwatch"].stopTimer();
+          this.$refs["stopwatch"].setupTimer();
+        }
+        setTimeout(() => {
+          this.generateExercise();
+        }, 500);
+        this.rerolls.current--
       }
-      setTimeout(() => {
-        this.generateExercise();
-      }, 500);
     },
-    adjustHealth() {
-      this.health--;
-      if (this.health === 0) {
+    takeDamage() {
+      this.health.current--;
+      if (this.health.current === 0) {
         this.gameOver();
       }
     },
@@ -335,6 +363,8 @@ export default {
           this.$refs[opt][0].classList.remove("false");
           this.$refs[opt][0].classList.add("false");
         });
+      }else {
+        this.takeDamage()
       }
     },
     pickLoot(loot) {
@@ -371,11 +401,14 @@ export default {
       this.progress.currLevel = 1;
       this.progress.difficulty++;
       this.loot.bagpack.push(this.loot.selected);
+      if(this.loot.selected === "heart"){
+        this.$refs["heart-icon"].classList.remove("heart-selected");
+        this.$refs["heart-icon"].classList.add("loot-unselected");
+      } else if(this.loot.selected === "dice"){
+        this.$refs["dice-icon"].classList.remove("dice-selected");
+        this.$refs["dice-icon"].classList.add("loot-unselected");
+      }
       this.loot.selected = null;
-      this.$refs["heart-icon"].classList.remove("heart-selected");
-      this.$refs["dice-icon"].classList.remove("dice-selected");
-      this.$refs["heart-icon"].classList.add("loot-unselected");
-      this.$refs["dice-icon"].classList.add("loot-unselected");
       this.$refs["modal"].hide();
       this.generateExercise();
     },
@@ -418,8 +451,8 @@ export default {
       this.$refs["modal"].hide();
       this.progress.currLevel = 1;
       this.progress.difficulty = 1;
-      this.health = 3;
-      this.rerolls = 3;
+      this.health.current = 3;
+      this.rerolls.current = 3;
     },
     gameOver() {
       this.modalText = "Game Over!";
@@ -533,7 +566,6 @@ export default {
     
     this.$refs["expression"].addEventListener("animationend", () => {
       if (!this.success) {
-        this.$refs["healthbar"].despawnLife();
         this.$refs["expression"].classList.remove("shake");
       } else {
         if (this.progress.currLevel === this.progress.maxLevel) {
@@ -547,6 +579,7 @@ export default {
         this.$refs["expression"].classList.remove("tada");
       }
       this.$refs["expression"].classList.remove("animated");
+      this.$refs["expression"].classList.remove("text-reroll");
       this.success = undefined
     });
   }
@@ -559,13 +592,6 @@ export default {
 }
 .tex {
   font-size: 1.5em;
-}
-.tex-right {
-  animation: texRight 1.25s;
-  animation-fill-mode: forwards;
-}
-.tex-wrong {
-  animation: texWrong 1.25s;
 }
 .tree,
 .confirm,
@@ -791,64 +817,6 @@ export default {
   }
   100% {
     transform: translateX(150vw);
-  }
-}
-@keyframes texRight {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  25% {
-    transform: scale(0.5);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.5);
-    color: green;
-  }
-  75% {
-    transform: scale(1.5);
-    color: green;
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1.5);
-    color: green;
-    transform: translateY(-3em);
-    opacity: 0;
-  }
-}
-@keyframes texWrong {
-  0% {
-    transform: translateX(0);
-  }
-  10% {
-    transform: translateX(5px);
-    color: red;
-  }
-  20% {
-    transform: translateX(-5px);
-  }
-  30% {
-    transform: translateX(5px);
-    color: red;
-  }
-  40% {
-    transform: translateX(-5px);
-  }
-  50% {
-    transform: translateX(5px);
-    color: red;
-  }
-  60% {
-    transform: translateX(-5px);
-  }
-  70% {
-    transform: translateX(5px);
-    color: red;
-  }
-  100% {
-    transform: translateX(-5px);
   }
 }
 </style>

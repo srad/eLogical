@@ -16,7 +16,7 @@
 
 <script>
 export default {
-  name: "progresser",
+  name: "ressource",
   props: {
     animate: Boolean,
     showAnimation: String,
