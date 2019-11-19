@@ -97,17 +97,11 @@ export default {
       ],
       tSecundaryItems: [
         {x: 0, y: 0, xrarry: 1, xoplusy: 0, xharry: 1},
-        {x: 0, y: 1, xrarry: 0, xoplusy: 1, xharry: 0},
-        {x: 1, y: 0, xrarry: 1, xoplusy: 1, xharry: 0},
+        {x: 0, y: 1, xrarry: 1, xoplusy: 1, xharry: 0},
+        {x: 1, y: 0, xrarry: 0, xoplusy: 1, xharry: 0},
         {x: 1, y: 1, xrarry: 1, xoplusy: 0, xharry: 1},
       ],
     };
   },
 };
 </script>
-
-<style scoped>
-.help {
-  padding-bottom: 1rem;
-}
-</style>

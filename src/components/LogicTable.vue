@@ -1,5 +1,5 @@
 <template>
-  <b-card class="logic-table shadow-sm" bg-variant="primary" body-bg-variant="white" body-class="p-0" header-class="pt-1 pb-0 pl-2 text-white">
+  <b-card class="logic-table shadow-sm" bg-variant="primary" body-bg-variant="white" body-class="p-0" header-class="pt-2 pb-0 pl-2 text-white">
     <template v-slot:header>
       <h5 v-html="header"></h5>
     </template>

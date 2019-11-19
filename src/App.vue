@@ -60,6 +60,7 @@ body {
   overflow-x: hidden;
   overflow-y: scroll;
   padding-top: 4rem;
+  padding-bottom: 1rem;
 }
 
 .table th, .table td {
