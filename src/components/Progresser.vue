@@ -1,15 +1,16 @@
 <template>
   <div>
     <font-awesome-icon
-        ref="icons"
-        v-for="(_, index) in localMax"
-        :key="index"
-        :size="localSize"
-        :class="{'text-secondary': index >= localCurrent, [localShowAnimationClass]: !rendered}"
-        class="mr-1 animated fast"
-        v-bind:style="{color:localColor, 'animation-delay': delayCallback(index)}"
-        :icon="localIcon"
-        @click="$emit('click')"/>
+      ref="icons"
+      v-for="(_, index) in localMax"
+      :key="index"
+      :size="localSize"
+      :class="{'text-secondary': index >= localCurrent, [localShowAnimationClass]: !rendered}"
+      class="mr-1 animated fast"
+      v-bind:style="{color:localColor, 'animation-delay': delayCallback(index)}"
+      :icon="localIcon"
+      @click="$emit('click')"
+    />
   </div>
 </template>
 
@@ -27,7 +28,7 @@ export default {
     size: String,
     current: Number,
     icon: String,
-    color: String,
+    color: String
   },
   data() {
     return {
@@ -40,7 +41,7 @@ export default {
       localMax: this.max,
       localSize: this.size || "2x",
       localIcon: this.icon,
-      localColor: this.color,
+      localColor: this.color
     };
   },
   watch: {
@@ -60,19 +61,19 @@ export default {
       } else {
         this.localCurrent = val;
       }
-    },
+    }
   },
   methods: {
     delayCallback(index) {
       if (!this.rendered) {
         return (index + 1) * this.localDelay + "ms";
       }
-    },
+    }
   },
   mounted() {
     setTimeout(() => {
       this.rendered = true;
-    }, this.localMax * this.localDelay* 2);
-  },
+    }, this.localMax * this.localDelay * 2);
+  }
 };
 </script>

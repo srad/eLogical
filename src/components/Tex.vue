@@ -8,13 +8,13 @@ import katex from "katex";
 export default {
   name: "Tex",
   props: {
-    expression: String,
+    expression: String
   },
   watch: {
-    expression: function (str) {
+    expression: function(str) {
       katex.render(str, this.$refs.tex);
-    },
-  },
+    }
+  }
 };
 </script>
 

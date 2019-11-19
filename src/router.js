@@ -12,12 +12,12 @@ Vue.use(Router);
 
 export default new Router({
   routes: [
-    {path: "/", name: "home", component: Home, title: "Home"},
-    {path: "/profile", name: "profile", component: Profile, title: "My Profile"},
-    {path: "/game", name: "game", component: Game, title: "Game 1"},
-    {path: "/game2", name: "game2", component: Game2, title: "Game 2"},
-    {path: "/leaderboard", name: "leaderboard", component: Leaderboard, title: "Leaderboard"},
-    {path: "/help", name: "help", component: Help, title: "Help"},
-    {path: "/about", name: "about", component: About, title: "About"},
+    { path: "/", name: "home", component: Home, title: "Home" },
+    { path: "/profile", name: "profile", component: Profile, title: "My Profile" },
+    { path: "/game", name: "game", component: Game, title: "Game 1" },
+    { path: "/game2", name: "game2", component: Game2, title: "Game 2" },
+    { path: "/leaderboard", name: "leaderboard", component: Leaderboard, title: "Leaderboard" },
+    { path: "/help", name: "help", component: Help, title: "Help" },
+    { path: "/about", name: "about", component: About, title: "About" },
   ],
 });
