@@ -1,6 +1,7 @@
 # eLogical
 
 [![Build Status](https://srad.visualstudio.com/elogical-node/_apis/build/status/elogical-node%20-%20CI?branchName=master)](https://srad.visualstudio.com/elogical-node/_build/latest?definitionId=2&branchName=master)
+![Azure DevOps tests](https://img.shields.io/azure-devops/tests/srad/elogical-node/2)
 
 ## Project setup
 ```
