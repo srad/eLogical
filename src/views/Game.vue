@@ -40,8 +40,21 @@
       </b-col>
     </b-row>
     <b-row>
-      <b-col class="text-center">
-        <tex v-bind:expression="expression" ref="tex" class="tex"></tex>
+      <b-col>
+        <b-card
+          v-bind:class="{'animated slow shake': success===false, 'animated tada': success===true}"
+          body-class="p-1"
+          bg-variant="white"
+          header="Make this formula true"
+          :header-bg-variant="success===false?'danger':'primary'"
+          header-class="p-1 text-center text-white"
+          class="shadow-sm border-dark"
+          ref="expression"
+        >
+          <b-card-text class="p-0 m-0 text-center">
+            <tex v-bind:expression="expression"></tex>
+          </b-card-text>
+        </b-card>
       </b-col>
     </b-row>
     <hr />
@@ -183,6 +196,7 @@ export default {
         currLevel: 1,
         maxLevel: 5
       },
+      success: null,
       health: 3,
       rerolls: 3,
       selected: [],
@@ -245,7 +259,7 @@ export default {
       switch (this.tutorial.currentStep) {
         case 1:
           return {
-            element: this.$refs["tex"].$el,
+            element: this.$refs["expression"],
             text: "The goal is to make this evaluate to 'true'."
           };
           break;
@@ -314,15 +328,13 @@ export default {
     },
     confirm() {
       const isAnswerCorrect = this.tree.evaluate(this.selection);
-      if (isAnswerCorrect) {
-        this.$refs["tex"].$el.classList.add("tex-right");
+      this.success = isAnswerCorrect;
+      if (this.success) {
         this.options.forEach(opt => {
           this.$refs[opt][0].classList.remove("true");
           this.$refs[opt][0].classList.remove("false");
           this.$refs[opt][0].classList.add("false");
         });
-      } else {
-        this.$refs["tex"].$el.classList.add("tex-wrong");
       }
     },
     pickLoot(loot) {
@@ -518,12 +530,12 @@ export default {
     this.$refs["levelTitle"].addEventListener("animationend", () => {
       this.$refs["levelTitle"].classList.remove("scroll-to-right");
     });
-    //
-    this.$refs["tex"].$el.addEventListener("animationend", () => {
-      if (this.$refs["tex"].$el.classList.contains("tex-wrong")) {
+    
+    this.$refs["expression"].addEventListener("animationend", () => {
+      if (!this.success) {
         this.$refs["healthbar"].despawnLife();
-        this.$refs["tex"].$el.classList.remove("tex-wrong");
-      } else if (this.$refs["tex"].$el.classList.contains("tex-right")) {
+        this.$refs["expression"].classList.remove("shake");
+      } else {
         if (this.progress.currLevel === this.progress.maxLevel) {
           this.modalText = "Good Job! Choose your Loot";
           this.$refs["modal"].show();
@@ -532,11 +544,10 @@ export default {
           this.progress.currLevel++;
           this.generateExercise();
         }
-        this.$refs["tex"].$el.classList.remove("tex-right");
+        this.$refs["expression"].classList.remove("tada");
       }
-    });
-    this.$refs["tex"].$el.addEventListener("animationend", () => {
-      this.$refs["tex"].$el.classList.remove("text-reroll");
+      this.$refs["expression"].classList.remove("animated");
+      this.success = undefined
     });
   }
 };
