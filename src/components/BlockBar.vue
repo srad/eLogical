@@ -8,6 +8,7 @@
         v-bind:style="{backgroundColor: index <= current ? colors[index]: '', 'animation-delay': (index+1)*300+'ms'}"
         :value="1"
         :label="String(index)"
+        ref="bar"
     />
   </div>
 </template>
@@ -28,5 +29,14 @@ export default {
       },
     };
   },
+  mounted(){
+    for(let i = 0; i < this.max; i++){
+      this.$refs["bar"][i].$el.addEventListener("animationend", () => {
+        if(this.$refs["bar"][i].$el.classList.contains("bounceIn")){
+          this.$emit("level-finished")
+        }
+      })
+    }
+  }
 };
 </script>

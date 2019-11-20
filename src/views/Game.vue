@@ -11,21 +11,21 @@
     <div class="backdrop" ref="backdropRight" v-show="tutorial.isRunning"></div>
     <div class="backdrop" ref="backdropBottom" v-show="tutorial.isRunning"></div>
     <h1 ref="difficultyTitle" class="title-difficulty">Chapter {{progress.difficulty}}</h1>
-    <h1 ref="levelTitle" class="title-level">Level {{progress.currLevel}}</h1>
     <b-row class="pt-3 pb-2 bg-white p-0 mb-3 border-bottom shadow-sm" align-v="center">
-      <b-col cols="4">
+      <b-col cols="3">
         <h5>
-          <strong>Level {{progress.currLevel}}/{{progress.maxLevel}}</strong>
+          <strong>Level:</strong>
         </h5>
       </b-col>
 
-      <b-col cols="8">
-        <b-container>
-          <b-row>
-            <b-col class="text-right">
-            </b-col>
-          </b-row>
-        </b-container>
+      <b-col aria-colcount="9" class="pl-0 ml-0">
+        <b-progress
+          class="bg-secondary h-75 shadow-sm"
+          :current="progress.currLevel"
+          :max="progress.maxLevel"
+        >
+          <block-bar :colors="colors" :current="progress.currLevel" :max="progress.maxLevel" v-on:level-finished="cleanup" />
+        </b-progress>
       </b-col>
     </b-row>
 
@@ -33,9 +33,9 @@
       <b-col cols="6" class="text-left">
         <ressource
           animate
-          hide-animation-class="hinge"
+          hide-animation-class="flash"
           icon="heart"
-          color
+          color="darkred"
           class="text-danger"
           v-bind:max="health.max"
           v-bind:current="health.current"
@@ -48,7 +48,7 @@
           hide-animation-class="swing"
           icon="dice"
           v-on:click="rerollExpression"
-          color
+          color="goldenrod"
           class="text-warning"
           v-bind:max="rerolls.max"
           v-bind:current="rerolls.current"
@@ -75,9 +75,8 @@
         </b-card>
       </b-col>
     </b-row>
-    <hr />
     <stopwatch
-      v-if="progress.currLevel === progress.maxLevel"
+      v-if="progress.currLevel === progress.maxLevel - 1"
       ref="stopwatch"
       class="stopwatch"
       :time="stopwatchTime"
@@ -203,16 +202,18 @@ import Healthbar from "../components/Healthbar";
 import Stopwatch from "../components/Stopwatch";
 import Rerolls from "../components/Rerolls";
 import Ressource from "../components/Ressource";
+import BlockBar from "../components/BlockBar";
+import colors from "@/lib/colors";
 
 export default {
   name: "Game",
-  components: { Tree, Tex, Healthbar, Stopwatch, Rerolls, Ressource },
+  components: { Tree, Tex, Healthbar, Stopwatch, Rerolls, Ressource, BlockBar },
   props: {},
   data() {
     return {
       progress: {
         difficulty: 1,
-        currLevel: 1,
+        currLevel: 0,
         maxLevel: 5
       },
       success: null,
@@ -226,6 +227,7 @@ export default {
       },
       selected: [],
       options: [],
+      colors: colors.gradient.purple,
       expression: "",
       modalText: "Welcome!",
       loot: {
@@ -358,11 +360,14 @@ export default {
       const isAnswerCorrect = this.tree.evaluate(this.selection);
       this.success = isAnswerCorrect;
       if (this.success) {
-        this.options.forEach(opt => {
-          this.$refs[opt][0].classList.remove("true");
-          this.$refs[opt][0].classList.remove("false");
-          this.$refs[opt][0].classList.add("false");
-        });
+          this.options.forEach(opt => {
+            this.$refs[opt][0].classList.remove("true");
+            this.$refs[opt][0].classList.remove("false");
+            this.$refs[opt][0].classList.add("false");
+          });
+        if(this.progress.currLevel < this.progress.maxLevel){
+          this.progress.currLevel++;
+        }
       }else {
         this.takeDamage()
       }
@@ -373,14 +378,18 @@ export default {
         case "dice":
           this.$refs["dice-icon"].classList.add("dice-selected");
           this.$refs["dice-icon"].classList.remove("loot-unselected");
-          this.$refs["heart-icon"].classList.add("loot-unselected");
-          this.$refs["heart-icon"].classList.remove("heart-selected");
+          if(this.health.current < this.health.max){
+            this.$refs["heart-icon"].classList.add("loot-unselected");
+            this.$refs["heart-icon"].classList.remove("heart-selected");
+          }
           break;
         case "heart":
           this.$refs["heart-icon"].classList.add("heart-selected");
           this.$refs["heart-icon"].classList.remove("loot-unselected");
-          this.$refs["dice-icon"].classList.add("loot-unselected");
-          this.$refs["dice-icon"].classList.remove("dice-selected");
+          if(this.rerolls.current < this.rerolls.max){
+            this.$refs["dice-icon"].classList.add("loot-unselected");
+            this.$refs["dice-icon"].classList.remove("dice-selected");
+          }
           break;
       }
     },
@@ -397,8 +406,18 @@ export default {
         this.loot.bagpack = [];
       });
     },
+    cleanup(){
+        if(this.progress.currLevel === this.progress.maxLevel){
+          this.modalText = "Good Job! Choose your Loot";
+          this.$refs["modal"].show();
+        }
+        else {
+          this.generateExercise();
+        }
+
+    },
     loadNextChapter() {
-      this.progress.currLevel = 1;
+      this.progress.currLevel = 0;
       this.progress.difficulty++;
       this.loot.bagpack.push(this.loot.selected);
       if(this.loot.selected === "heart"){
@@ -437,19 +456,21 @@ export default {
         this.texOptions = leafs.map(node => node.to("tex")).sort();
       }
       this.emptyBackpack();
-      if (this.tutorial.proposed) {
+      if (this.progress.currLevel === this.progress.maxLevel -1) {
+          this.$refs["stopwatch"].startTimer();
+      } 
+      if (this.tutorial.proposed && this.progress.currLevel === 0) {
         this.slideInTitle();
       }
     },
     slideInTitle() {
-      this.$refs["levelTitle"].classList.add("scroll-to-right");
       this.$refs["difficultyTitle"].classList.add("scroll-to-right");
     },
     resetGame() {
       this.generateExercise();
       this.modalText = "";
       this.$refs["modal"].hide();
-      this.progress.currLevel = 1;
+      this.progress.currLevel = 0;
       this.progress.difficulty = 1;
       this.health.current = 3;
       this.rerolls.current = 3;
@@ -554,30 +575,12 @@ export default {
     }
     //configure what should happen after the various animations
     this.$refs["difficultyTitle"].addEventListener("animationend", () => {
-      if (this.progress.currLevel === this.progress.maxLevel) {
-        this.$refs["stopwatch"].startTimer();
-      }
       this.$refs["difficultyTitle"].classList.remove("scroll-to-right");
-    });
-
-    this.$refs["levelTitle"].addEventListener("animationend", () => {
-      this.$refs["levelTitle"].classList.remove("scroll-to-right");
     });
     
     this.$refs["expression"].addEventListener("animationend", () => {
-      if (!this.success) {
-        this.$refs["expression"].classList.remove("shake");
-      } else {
-        if (this.progress.currLevel === this.progress.maxLevel) {
-          this.modalText = "Good Job! Choose your Loot";
-          this.$refs["modal"].show();
-          this.$refs["stopwatch"].stopTimer();
-        } else {
-          this.progress.currLevel++;
-          this.generateExercise();
-        }
-        this.$refs["expression"].classList.remove("tada");
-      }
+      this.$refs["expression"].classList.remove("tada");
+      this.$refs["expression"].classList.remove("shake");
       this.$refs["expression"].classList.remove("animated");
       this.$refs["expression"].classList.remove("text-reroll");
       this.success = undefined
@@ -674,47 +677,17 @@ export default {
   animation: textReroll 1s;
   animation-iteration-count: 1;
 }
-.title-level {
+.title-difficulty {
   z-index: 999;
   font-size: 4em;
   position: fixed;
   top: 50vh;
   left: -5em;
 }
-.title-difficulty {
-  z-index: 999;
-  font-size: 4em;
-  position: fixed;
-  top: 30vh;
-  left: -5em;
-}
-.scroll-to-left {
-  animation-name: scrollToLeft;
-  animation-duration: 1.5s;
-  animation-timing-function: cubic-bezier(0.11, 1.23, 0.98, 0.01);
-}
 .scroll-to-right {
   animation-name: scrollToRight;
   animation-duration: 1.5s;
   animation-timing-function: cubic-bezier(0.11, 1.23, 0.98, 0.01);
-}
-@keyframes slideInNotification {
-  from {
-    transform: translateY(0);
-    opacity: 0;
-  }
-  to {
-  }
-}
-@keyframes slideOutNotification {
-  from {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateY(-3.5em);
-    opacity: 0;
-  }
 }
 @keyframes textReroll {
   0% {
@@ -801,14 +774,6 @@ export default {
   100% {
     transform: translateY(0);
     opacity: 1;
-  }
-}
-@keyframes scrollToLeft {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-155vw);
   }
 }
 @keyframes scrollToRight {
