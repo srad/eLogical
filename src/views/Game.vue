@@ -397,10 +397,14 @@ export default {
       this.loot.bagpack.forEach(loot => {
         switch (loot) {
           case "heart":
-            this.health++;
+            if(this.health.current < this.health.max){
+              this.health.current++;
+            }
             break;
           case "dice":
-            this.rerolls++;
+            if(this.rerolls.current < this.rerolls.max){
+              this.rerolls.current++; 
+            }
             break;
         }
         this.loot.bagpack = [];
@@ -432,6 +436,7 @@ export default {
       this.generateExercise();
     },
     generateExercise() {
+      this.emptyBackpack();
       this.selected = [];
       const { tree, solution } = randBoolExpr({
         setSize: 2,
@@ -455,7 +460,6 @@ export default {
         this.options = Array.from(str).sort();
         this.texOptions = leafs.map(node => node.to("tex")).sort();
       }
-      this.emptyBackpack();
       if (this.progress.currLevel === this.progress.maxLevel -1) {
           this.$refs["stopwatch"].startTimer();
       } 
