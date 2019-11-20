@@ -94,13 +94,15 @@
     <b-row class="mt-4">
       <b-col cols="9" align-self="center" class="text-center">
         <b-row ref="buttons" align-h="center" align-v="center">
-          <b-col cols="3" lg="2" :key="v" v-for="v in options" class="text-center mb-2">
-            <b-button
-              v-on:click="toggleVariable(v)"
-              class="false shadow-sm"
-              :ref="v"
-              size="lg"
-            >{{v}}</b-button>
+          <b-col cols="3" lg="2" v-for="(node, index) in options"
+          :key="node.name" class="text-center mb-2">
+          <b-button
+            :ref="'btnSelect'+index"
+            :variant="node.selected ? 'primary true' : 'danger false'"
+            @click="toggleVariable(node.name, index)"
+            size="lg"
+            class="p-2 pl-3 pr-3 faster"
+        >{{node.name}}</b-button>
           </b-col>
         </b-row>
       </b-col>
@@ -140,6 +142,21 @@
         </b-row>
         <b-row align-h="center" v-if="modalText === 'Good Job! Choose your Loot'">
           <b-container>
+            <b-row v-if="rerolls.current === rerolls.max && health.current === health.max">
+              <b-col class="text-center">
+                <font-awesome-icon
+                  ref="dice-icon"
+                  size="6x"
+                  class="dice-selected"
+                  icon="trophy"
+                ></font-awesome-icon>
+              </b-col>
+            </b-row>
+            <b-row v-if="rerolls.current === rerolls.max && health.current === health.max">
+              <b-col class="text-center">
+                WOW! Your ressources are still maxed out! Keep it up!
+              </b-col>
+            </b-row>
             <b-row>
               <b-col cols="6" v-if="rerolls.current < rerolls.max">
                 <font-awesome-icon
@@ -199,16 +216,15 @@
 import { randBoolExpr } from "@/lib/compiler/generator";
 import Tree from "../components/Tree";
 import Tex from "../components/Tex";
-import Healthbar from "../components/Healthbar";
+import { ConstNode } from "../lib/compiler/tree";
 import Stopwatch from "../components/Stopwatch";
-import Rerolls from "../components/Rerolls";
 import Ressource from "../components/Ressource";
 import BlockBar from "../components/BlockBar";
 import colors from "@/lib/colors";
 
 export default {
   name: "Game",
-  components: { Tree, Tex, Healthbar, Stopwatch, Rerolls, Ressource, BlockBar },
+  components: { Tree, Tex, Stopwatch, Ressource, BlockBar },
   props: {},
   data() {
     return {
@@ -228,6 +244,7 @@ export default {
       },
       selected: [],
       options: [],
+      nodeId: 0,
       colors: colors.gradient.purple,
       expression: "",
       modalText: "Welcome!",
@@ -236,6 +253,8 @@ export default {
         bagpack: []
       },
       treeData: { nodes: [], edges: [] },
+      tree: undefined,
+      texOptions: [],
       difficultySettings: {
         1: ["and", "or", "not", "True", "False"],
         2: ["and", "not", "True", "False", "xor"]
@@ -247,6 +266,15 @@ export default {
         currentText: ""
       }
     };
+  },
+    watch: {
+    tree(node) {
+      if (node instanceof ConstNode) {
+        this.select(node.v);
+      }
+      this.expression =
+        (this.nodeId === 0 ? "\\phi = " : "") + node.to("tex", { color: true });
+    }
   },
   computed: {
     selection() {
@@ -326,17 +354,8 @@ export default {
     }
   },
   methods: {
-    toggleVariable(value) {
-      let pos = this.selected.indexOf(value);
-      if (pos > -1) {
-        this.selected.splice(pos, 1);
-        this.$refs[value][0].classList.remove("true");
-        this.$refs[value][0].classList.add("false");
-      } else {
-        this.selected.push(value);
-        this.$refs[value][0].classList.remove("false");
-        this.$refs[value][0].classList.add("true");
-      }
+    toggleVariable(node, index) {
+      this.options[index].selected = !this.options[index].selected
     },
     rerollExpression() {
       if(this.rerolls.current > 0){
@@ -361,14 +380,11 @@ export default {
       }
     },
     confirm() {
-      const isAnswerCorrect = this.tree.evaluate(this.selection);
+      const selection = {};
+      this.options.forEach(o => (selection[o.name] = o.selected));
+      const isAnswerCorrect = this.tree.evaluate(selection);
       this.success = isAnswerCorrect;
       if (this.success) {
-          this.options.forEach(opt => {
-            this.$refs[opt][0].classList.remove("true");
-            this.$refs[opt][0].classList.remove("false");
-            this.$refs[opt][0].classList.add("false");
-          });
         if(this.progress.currLevel < this.progress.maxLevel){
           this.progress.currLevel++;
         }
@@ -440,30 +456,27 @@ export default {
       this.generateExercise();
     },
     generateExercise() {
-      this.emptyBackpack();
-      this.selected = [];
-      const { tree, solution } = randBoolExpr({
+      this.nodeId = 0; // Reset any tree click
+      // Generate tree
+      const { tree } = randBoolExpr({
         setSize: 2,
         maxDepth: this.progress.difficulty,
         vars: this.vars,
-        functions: this.functions
+        expWhiteList: this.functions
       });
-      console.log(solution);
       this.tree = tree;
-      this.options = this.tree.vars.map(v => {
-        return { text: v, value: v };
-      });
-
+      // Draw tree
       const { nodes, edges, leafs } = this.tree.toGraph();
       this.treeData = { nodes, edges };
-      this.expression = "\\phi =" + this.tree.to("tex");
-      if (leafs.length === 0) {
-        // TODO: Only a binary answer needed here. Toggle UI.
-      } else {
-        const str = leafs.map(node => node.v);
-        this.options = Array.from(str).sort();
+      // TODO: Show only yes/no answer
+      this.singleChoice = leafs.length === 0;
+      if (!this.singleChoice) {
+        this.options = leafs
+          .map(node => ({ name: node.v, color: node.color, selected: false }))
+          .sort((a, b) => a.name.localeCompare(b.name));
         this.texOptions = leafs.map(node => node.to("tex")).sort();
       }
+      this.emptyBackpack();
       if (this.progress.currLevel === this.progress.maxLevel -1) {
           this.$refs["stopwatch"].startTimer();
       } 
