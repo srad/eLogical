@@ -340,7 +340,7 @@ export default {
     rerollExpression() {
       if(this.rerolls.current > 0){
         this.$refs["expression"].classList.add("text-reroll");
-        if (this.progress.currLevel === this.progress.maxLevel) {
+        if (this.progress.currLevel === this.progress.maxLevel -1) {
           this.$refs["stopwatch"].stopTimer();
           this.$refs["stopwatch"].setupTimer();
         }
