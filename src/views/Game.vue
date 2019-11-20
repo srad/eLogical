@@ -351,6 +351,9 @@ export default {
       }
     },
     takeDamage() {
+      if (navigator.vibrate) {
+        navigator.vibrate(250);
+      }
       this.health.current--;
       if (this.health.current === 0) {
         this.gameOver();
