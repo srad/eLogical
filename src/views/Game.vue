@@ -1,10 +1,8 @@
 <template>
-  <div class>
-    <b-container class="notification" ref="notification" v-on:click="progressTutorial">
-      <b-row align-v="center" class="tutorial-text-row">
+  <div style="margin-top: -0.5rem">
+      <b-row align-v="center" class="notification tutorial-text-row ml-0" ref="notification" v-on:click="progressTutorial">
         <b-col cols="12" class="text-center">{{tutorial.currentText}}</b-col>
       </b-row>
-    </b-container>
     <div class="backdrop-click" v-if="tutorial.isRunning" v-on:click="progressTutorial"></div>
     <div class="backdrop" ref="backdropTop" v-show="tutorial.isRunning"></div>
     <div class="backdrop" ref="backdropLeft" v-show="tutorial.isRunning"></div>
@@ -612,10 +610,9 @@ export default {
   animation: slideInFromTop 1s;
 }
 .notification {
-  z-index: 1031;
+  z-index: 1032;
   position: fixed;
   top: -3.5em;
-  left: 5%;
   width: 90%;
 }
 .notification-hidden {
@@ -637,7 +634,7 @@ export default {
   box-shadow: 2px 3px 2px 0px rgba(0, 0, 0, 0.5);
 }
 .backdrop-click {
-  z-index: 998;
+  z-index: 1032;
   position: absolute;
   opacity: 0;
   top: 0;
@@ -646,7 +643,7 @@ export default {
   height: 100%;
 }
 .backdrop {
-  z-index: 997;
+  z-index: 1031;
   position: absolute;
   background-color: rgb(0, 0, 0);
   opacity: 0.6;
