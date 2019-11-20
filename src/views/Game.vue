@@ -57,7 +57,7 @@
       </b-col>
     </b-row>
 
-    <b-row>
+    <b-row class="mb-3">
       <b-col>
         <b-card
           v-bind:class="{'animated slow shake': success===false, 'animated tada': success===true}"
@@ -75,14 +75,17 @@
         </b-card>
       </b-col>
     </b-row>
-    <stopwatch
-      v-if="progress.currLevel === progress.maxLevel - 1"
-      ref="stopwatch"
-      class="stopwatch"
-      :time="stopwatchTime"
-      :countingDown="true"
-      v-on:timer-ended="gameOver"
-    ></stopwatch>
+    <b-row class="mb-3"  v-if="progress.currLevel === progress.maxLevel - 1">
+      <b-col>
+        <stopwatch
+          ref="stopwatch"
+          class="stopwatch"
+          :time="stopwatchTime"
+          :countingDown="true"
+          v-on:timer-ended="gameOver"
+        ></stopwatch>
+      </b-col>
+    </b-row>
 
     <b-row align-h="center">
       <b-col cols="10" class="text-center">
