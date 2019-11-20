@@ -73,8 +73,11 @@
         </b-card>
       </b-col>
     </b-row>
-    <b-row class="mb-3"  v-if="progress.currLevel === progress.maxLevel - 1">
-      <b-col>
+    <b-row class="mb-3"  v-if="progress.currLevel === progress.maxLevel - 1" align-h="start">
+      <b-col cols="1" class="text-right bones-icon">
+        <font-awesome-icon icon="skull-crossbones" size="lg" />
+      </b-col>
+      <b-col cols="11" class="text-left">
         <stopwatch
           ref="stopwatch"
           class="stopwatch"
@@ -619,6 +622,7 @@ export default {
 }
 .tree,
 .confirm,
+.bones-icon,
 .stopwatch {
   animation: slideInFromTop 1s;
 }
