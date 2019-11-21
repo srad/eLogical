@@ -6,35 +6,41 @@ const fnList = [fnAnd, fnNot, fnOr, fnTrue, fnXor, fnImpl, fnFalse, fnEq];
 
 /**
  * Generate recursively a random tree.
- * @param {Number} depth
- * @param {Number} maxDepth
- * @param {Number} fpr
- * @param {Array|String} vars
+ * @param {Number} [depth]
+ * @param {Number} [maxDepth]
+ * @param {Number} [fpr]
+ * @param {Set<String>} [vars]
+ * @param {Set<String>} [usedVars]
  * @param {Set<String>} [expWhiteList]
  * @returns {TreeNode}
  */
-function randTree({depth = 0, maxDepth = 3, vars, fpr = 1.0, expWhiteList} = {}) {
+function randTree({depth = 0, maxDepth = 3, vars, fpr = 1.0, expWhiteList, usedVars = new Set()} = {}) {
   if (depth >= maxDepth) {
     return new ConstNode(pick(vars));
   }
 
   // Root, start language.
   if (depth === 0) {
-    return new Node({fw: fnStart, children: [randTree({depth: depth + 1, maxDepth, vars, fpr, expWhiteList})], vars});
+    return new Node({fw: fnStart, children: [randTree({depth: depth + 1, maxDepth, vars, fpr, expWhiteList, usedVars})], vars});
   }
   if (depth === 1 || Math.random() < fpr) {
+    const allVarsUsed = usedVars.size === vars.size;
     const rand_f = pick(fnList
-      .filter(f => expWhiteList.has(f.name))
       .filter(f => {
-        if (depth === 1) {
+        if (depth === 1 || !allVarsUsed) {
           return f.arity > 0;
         }
         return true;
-      }));
+      })
+      .filter(f => expWhiteList.has(f.name)));
     const children = [];
 
     for (let i = 0; i < rand_f.arity; i++) {
-      children.push(randTree({depth: depth + 1, maxDepth, vars, fpr, expWhiteList}));
+      const child = randTree({depth: depth + 1, maxDepth, vars, fpr, expWhiteList, usedVars});
+      if (child instanceof ConstNode) {
+        usedVars.add(child.v);
+      }
+      children.push(child);
     }
 
     const isInnerNode = depth > 1 && children.length > 0;
