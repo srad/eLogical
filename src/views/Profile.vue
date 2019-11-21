@@ -9,7 +9,8 @@
         <div v-else>
           <h5>
             Your username is
-            <b-badge variant="info">{{entry.client.name}}</b-badge>
+            <b-badge variant="info" v-if='hasScore'>{{entry.client.name}}</b-badge>
+            <b-badge variant="info" v-else>{{localusername}}</b-badge>
           </h5>
           <h5 v-if="hasScore">
             Your score is
@@ -29,7 +30,8 @@ export default {
     return {
       loading: true,
       entry: undefined,
-      hasScore: false
+      hasScore: false,
+      localusername: localStorage.username,
     };
   },
   mounted() {
