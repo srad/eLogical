@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1>My Profile</h1>
+    <hr/>
     <b-row>
       <b-col>
         <div class="text-center" v-if="loading">
@@ -29,7 +30,7 @@ export default {
     return {
       loading: true,
       entry: undefined,
-      hasScore: false
+      hasScore: false,
     };
   },
   mounted() {
@@ -48,6 +49,6 @@ export default {
         this.loading = false;
         alert(error);
       });
-  }
+  },
 };
 </script>

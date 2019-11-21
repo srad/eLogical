@@ -37,7 +37,7 @@ export default {
   name: "App",
   data() {
     return {
-      allroutes: router.options.routes
+      allroutes: router.options.routes,
     };
   },
   computed: {
@@ -47,8 +47,8 @@ export default {
           return u;
         }
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -60,10 +60,5 @@ body {
   overflow-y: scroll;
   padding-top: 4rem;
   padding-bottom: 1rem;
-}
-
-.table th,
-.table td {
-  padding: 0.3rem !important;
 }
 </style>
