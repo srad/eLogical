@@ -17,7 +17,7 @@
             Your highscore is
             <b-badge variant="warning">{{entry.total}}</b-badge>
           </h5>
-          <h4 v-else>You don't have any highscore yet!</h4>
+          <h4 v-else>You don't have a highscore yet!</h4>
         </div>
       </b-col>
     </b-row>
