@@ -14,10 +14,10 @@
             <b-badge variant="info" v-else>{{localusername}}</b-badge>
           </h5>
           <h5 v-if="hasScore">
-            Your score is
+            Your highscore is
             <b-badge variant="warning">{{entry.total}}</b-badge>
           </h5>
-          <h4 v-else>You don't have any score yet!</h4>
+          <h4 v-else>You don't have any highscore yet!</h4>
         </div>
       </b-col>
     </b-row>
