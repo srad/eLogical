@@ -263,7 +263,7 @@ export default {
         2: ["and", "not", "True", "False", "xor"]
       },
       tutorial: {
-        proposed: false,
+        proposed: localStorage.tutorialProposed || false,
         isRunning: false,
         currentStep: 0,
         currentText: ""
@@ -542,12 +542,12 @@ export default {
       }
     },
     skipTutorial() {
-      this.tutorial.proposed = true;
+      localStorage.tutorialProposed = true;
       this.$refs["modal"].hide();
       this.slideInTitle();
     },
     startTutorial() {
-      this.tutorial.proposed = true;
+      localStorage.tutorialProposed = true;
       this.tutorial.isRunning = true;
       this.$refs["modal"].hide();
       this.$refs["notification"].classList.add("notification-visible");
@@ -586,7 +586,7 @@ export default {
     },
     calculatePoints() {
       var points =
-        (this.progress.difficulty - 1) * 5 + this.progress.currLevel - 1;
+        (this.progress.difficulty - 1) * 5 + this.progress.currLevel;
       console.log("Points: " + points);
       return points;
     }
