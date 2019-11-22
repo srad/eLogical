@@ -586,7 +586,7 @@ export default {
     },
     calculatePoints() {
       var points =
-        (this.progress.difficulty - 1) * 5 + this.progress.currLevel - 1;
+        (this.progress.difficulty - 1) * 5 + this.progress.currLevel;
       console.log("Points: " + points);
       return points;
     }
