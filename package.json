@@ -6,9 +6,9 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
-    "test:junit": "vue-cli-service test:unit --reporter=node_modules\\mocha-junit-reporter --reporter-options mochaFile=./tests/results.xml",
+    "test:junit": "vue-cli-service test:unit --reporter=node_modules/mocha-junit-reporter --reporter-options mochaFile=./tests/results.xml",
     "lint": "vue-cli-service lint",
-    "server": "pm2 stop ./src/server.js && pm2 start ./src/server.js"
+    "server": "pm2 start ./src/server.js -f"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.25",
