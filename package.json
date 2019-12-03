@@ -7,7 +7,8 @@
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "test:junit": "vue-cli-service test:unit --reporter=node_modules\\mocha-junit-reporter --reporter-options mochaFile=./tests/results.xml",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "server": "pm2 stop ./src/server.js && pm2 start ./src/server.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.25",
@@ -15,14 +16,17 @@
     "@fortawesome/vue-fontawesome": "^0.1.7",
     "animate.css": "^3.7.2",
     "axios": "^0.19.0",
-    "bootstrap": "^4.3.1",
+    "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.1.0",
     "core-js": "^2.6.5",
+    "cors": "^2.8.5",
     "crypto-js": "^3.1.9-1",
     "dotenv": "^8.2.0",
+    "express": "^4.17.1",
     "katex": "^0.11.1",
+    "pm2": "^4.2.0",
     "register-service-worker": "^1.6.2",
-    "vis-network": "^6.4.4",
+    "vis-network": "^6.4.6",
     "vue": "^2.6.10",
     "vue-router": "^3.0.3",
     "vuex": "^3.0.1"
