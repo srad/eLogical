@@ -1,7 +1,6 @@
 # eLogical
 
-[![Build Status](https://srad.visualstudio.com/elogical-node/_apis/build/status/elogical-node%20-%20CI?branchName=master)](https://srad.visualstudio.com/elogical-node/_build/latest?definitionId=2&branchName=master)
-![Azure DevOps tests](https://img.shields.io/azure-devops/tests/srad/elogical-node/2)
+[![Build Status](http://sedrad.com:8080/buildStatus/icon?job=eLogical.App)](http://sedrad.com:8080/job/eLogical.App/)
 
 Mobile elearning PWA to teach solving boolean formulas which are randomly generated and visualized as trees.
 
