@@ -16,7 +16,7 @@
 export default {
   name: "Rerolls",
   props: {
-    current: Number
+    current: Number,
   },
   data() {
     return {};
@@ -28,8 +28,8 @@ export default {
       });
       this.$refs[this.current][0].classList.add("despawning");
       this.$emit("rerolling");
-    }
-  }
+    },
+  },
 };
 </script>
 

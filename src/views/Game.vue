@@ -216,10 +216,10 @@
 </template>
 
 <script>
-import { randBoolExpr } from "@/lib/compiler/generator";
+import {randBoolExpr} from "@/lib/compiler/generator";
 import Tree from "../components/Tree";
 import Tex from "../components/Tex";
-import { ConstNode } from "../lib/compiler/tree";
+import {ConstNode} from "../lib/compiler/tree";
 import Stopwatch from "../components/Stopwatch";
 import Ressource from "../components/Ressource";
 import BlockBar from "../components/BlockBar";
@@ -227,23 +227,23 @@ import colors from "@/lib/colors";
 
 export default {
   name: "Game",
-  components: { Tree, Tex, Stopwatch, Ressource, BlockBar },
+  components: {Tree, Tex, Stopwatch, Ressource, BlockBar},
   props: {},
   data() {
     return {
       progress: {
         difficulty: 1,
         currLevel: 0,
-        maxLevel: 5
+        maxLevel: 5,
       },
       success: null,
       health: {
         current: 3,
-        max: 3
+        max: 3,
       },
       rerolls: {
         current: 3,
-        max: 3
+        max: 3,
       },
       selected: [],
       options: [],
@@ -253,35 +253,35 @@ export default {
       modalText: "Welcome!",
       loot: {
         selected: null,
-        bagpack: []
+        bagpack: [],
       },
-      treeData: { nodes: [], edges: [] },
+      treeData: {nodes: [], edges: []},
       tree: undefined,
       texOptions: [],
       difficultySettings: {
         1: ["and", "or", "not", "True", "False"],
-        2: ["and", "not", "True", "False", "xor"]
+        2: ["and", "not", "True", "False", "xor"],
       },
       tutorial: {
         proposed: localStorage.tutorialProposed || false,
         isRunning: false,
         currentStep: 0,
-        currentText: ""
-      }
+        currentText: "",
+      },
     };
   },
-    watch: {
+  watch: {
     tree(node) {
       if (node instanceof ConstNode) {
         this.select(node.v);
       }
       this.expression =
-        (this.nodeId === 0 ? "\\phi = " : "") + node.to("tex", { color: true });
-    }
+        (this.nodeId === 0 ? "\\phi = " : "") + node.to("tex", {color: true});
+    },
   },
   computed: {
     selection() {
-      let params = {};
+      const params = {};
       this.options.forEach(o => (params[o] = false));
       this.selected.forEach(s => (params[s] = true));
       return params;
@@ -289,7 +289,7 @@ export default {
     vars() {
       return new Array(this.progress.currLevel + 1)
         .fill(0)
-        .map((_, index) => "v" + index);
+        .map((_, index) => `v${index}`);
     },
     functions() {
       if (this.progress.difficulty <= 3) {
@@ -303,74 +303,74 @@ export default {
           "false",
           "xor",
           "implication",
-          "eq"
+          "eq",
         ];
       }
     },
     stopwatchTime() {
-      let minutesPerDifficulty = 0.5,
+      const minutesPerDifficulty = 0.5,
         totalSecs = minutesPerDifficulty * 60 * this.progress.difficulty,
         mins = Math.floor(totalSecs / 60),
         secs = totalSecs - mins * 60;
-      return mins + ":" + secs;
+      return `${mins}:${secs}`;
     },
     tutorialData() {
       switch (this.tutorial.currentStep) {
-        case 1:
-          return {
-            element: this.$refs["expression"],
-            text: "The goal is to make this evaluate to 'true'."
-          };
-          break;
-        case 2:
-          return {
-            element: this.$refs["tree"].$el,
-            text: "This visualizaion can be helpful, too!"
-          };
-        case 3:
-          return {
-            element: this.$refs["buttons"],
-            text: "You can configure the variables using these buttons."
-          };
-        case 4:
-          return {
-            element: this.$refs["confirm"],
-            text: "You have to confirm your configuration."
-          };
-        case 5:
-          return {
-            element: this.$refs["health"].$el,
-            text: "You can take damage if your input is wrong!"
-          };
-        case 6:
-          return {
-            element: this.$refs["rerolls"].$el,
-            text:
-              "If you don't like the current expression you can reroll it using these."
-          };
-        default:
-          return {
-            element: null,
-            text: "That's it! Have fun playing the game!"
-          };
+      case 1:
+        return {
+          element: this.$refs.expression,
+          text: "The goal is to make this evaluate to 'true'.",
+        };
+        break;
+      case 2:
+        return {
+          element: this.$refs.tree.$el,
+          text: "This visualizaion can be helpful, too!",
+        };
+      case 3:
+        return {
+          element: this.$refs.buttons,
+          text: "You can configure the variables using these buttons.",
+        };
+      case 4:
+        return {
+          element: this.$refs.confirm,
+          text: "You have to confirm your configuration.",
+        };
+      case 5:
+        return {
+          element: this.$refs.health.$el,
+          text: "You can take damage if your input is wrong!",
+        };
+      case 6:
+        return {
+          element: this.$refs.rerolls.$el,
+          text:
+              "If you don't like the current expression you can reroll it using these.",
+        };
+      default:
+        return {
+          element: null,
+          text: "That's it! Have fun playing the game!",
+        };
       }
-    }
+    },
   },
   methods: {
     toggleVariable(node, index) {
-      this.options[index].selected = !this.options[index].selected
+      this.options[index].selected = !this.options[index].selected;
     },
     rerollExpression() {
       if(this.rerolls.current > 0){
-        this.$refs["expression"].classList.add("text-reroll");
+        this.$refs.expression.classList.add("text-reroll");
         if (this.progress.currLevel === this.progress.maxLevel -1) {
-          this.$refs["stopwatch"].stopTimer();
-          this.$refs["stopwatch"].setupTimer();
+          this.$refs.stopwatch.stopTimer();
+          this.$refs.stopwatch.setupTimer();
         }
         setTimeout(() => {
           this.generateExercise();
         }, 500);
-        this.rerolls.current--
+        this.rerolls.current--;
       }
     },
     takeDamage() {
@@ -392,55 +392,55 @@ export default {
           this.progress.currLevel++;
         }
       }else {
-        this.takeDamage()
+        this.takeDamage();
       }
     },
     pickLoot(loot) {
       this.loot.selected = loot;
       switch (loot) {
-        case "dice":
-          this.$refs["dice-icon"].classList.add("dice-selected");
-          this.$refs["dice-icon"].classList.remove("loot-unselected");
-          if(this.health.current < this.health.max){
-            this.$refs["heart-icon"].classList.add("loot-unselected");
-            this.$refs["heart-icon"].classList.remove("heart-selected");
-          }
-          break;
-        case "heart":
-          this.$refs["heart-icon"].classList.add("heart-selected");
-          this.$refs["heart-icon"].classList.remove("loot-unselected");
-          if(this.rerolls.current < this.rerolls.max){
-            this.$refs["dice-icon"].classList.add("loot-unselected");
-            this.$refs["dice-icon"].classList.remove("dice-selected");
-          }
-          break;
+      case "dice":
+        this.$refs["dice-icon"].classList.add("dice-selected");
+        this.$refs["dice-icon"].classList.remove("loot-unselected");
+        if(this.health.current < this.health.max){
+          this.$refs["heart-icon"].classList.add("loot-unselected");
+          this.$refs["heart-icon"].classList.remove("heart-selected");
+        }
+        break;
+      case "heart":
+        this.$refs["heart-icon"].classList.add("heart-selected");
+        this.$refs["heart-icon"].classList.remove("loot-unselected");
+        if(this.rerolls.current < this.rerolls.max){
+          this.$refs["dice-icon"].classList.add("loot-unselected");
+          this.$refs["dice-icon"].classList.remove("dice-selected");
+        }
+        break;
       }
     },
     emptyBackpack() {
       this.loot.bagpack.forEach(loot => {
         switch (loot) {
-          case "heart":
-            if(this.health.current < this.health.max){
-              this.health.current++;
-            }
-            break;
-          case "dice":
-            if(this.rerolls.current < this.rerolls.max){
-              this.rerolls.current++; 
-            }
-            break;
+        case "heart":
+          if(this.health.current < this.health.max){
+            this.health.current++;
+          }
+          break;
+        case "dice":
+          if(this.rerolls.current < this.rerolls.max){
+            this.rerolls.current++; 
+          }
+          break;
         }
         this.loot.bagpack = [];
       });
     },
     cleanup(){
-        if(this.progress.currLevel === this.progress.maxLevel){
-          this.modalText = "Good Job! Choose your Loot";
-          this.$refs["modal"].show();
-        }
-        else {
-          this.generateExercise();
-        }
+      if(this.progress.currLevel === this.progress.maxLevel){
+        this.modalText = "Good Job! Choose your Loot";
+        this.$refs.modal.show();
+      }
+      else {
+        this.generateExercise();
+      }
 
     },
     loadNextChapter() {
@@ -455,45 +455,45 @@ export default {
         this.$refs["dice-icon"].classList.add("loot-unselected");
       }
       this.loot.selected = null;
-      this.$refs["modal"].hide();
+      this.$refs.modal.hide();
       this.generateExercise();
     },
     generateExercise() {
       this.nodeId = 0; // Reset any tree click
       // Generate tree
-      const { tree } = randBoolExpr({
+      const {tree} = randBoolExpr({
         setSize: 2,
         maxDepth: this.progress.difficulty,
         vars: this.vars,
-        expWhiteList: this.functions
+        expWhiteList: this.functions,
       });
       this.tree = tree;
       // Draw tree
-      const { nodes, edges, leafs } = this.tree.toGraph();
-      this.treeData = { nodes, edges };
+      const {nodes, edges, leafs} = this.tree.toGraph();
+      this.treeData = {nodes, edges};
       // TODO: Show only yes/no answer
       this.singleChoice = leafs.length === 0;
       if (!this.singleChoice) {
         this.options = leafs
-          .map(node => ({ name: node.v, color: node.color, selected: false }))
+          .map(node => ({name: node.v, color: node.color, selected: false}))
           .sort((a, b) => a.name.localeCompare(b.name));
         this.texOptions = leafs.map(node => node.to("tex")).sort();
       }
       this.emptyBackpack();
       if (this.progress.currLevel === this.progress.maxLevel -1) {
-          this.$refs["stopwatch"].startTimer();
+        this.$refs.stopwatch.startTimer();
       } 
       if (this.tutorial.proposed && this.progress.currLevel === 0) {
         this.slideInTitle();
       }
     },
     slideInTitle() {
-      this.$refs["difficultyTitle"].classList.add("scroll-to-right");
+      this.$refs.difficultyTitle.classList.add("scroll-to-right");
     },
     resetGame() {
       this.generateExercise();
       this.modalText = "";
-      this.$refs["modal"].hide();
+      this.$refs.modal.hide();
       this.progress.currLevel = 0;
       this.progress.difficulty = 1;
       this.health.current = 3;
@@ -501,62 +501,62 @@ export default {
     },
     gameOver() {
       this.modalText = "Game Over!";
-      this.$refs["modal"].show();
+      this.$refs.modal.show();
       this.addLeaderboardEntry("player1", this.calculatePoints());
     },
     highlightElement(el) {
-      let topDrop = this.$refs["backdropTop"],
-        botDrop = this.$refs["backdropBottom"],
-        leftDrop = this.$refs["backdropLeft"],
-        rightDrop = this.$refs["backdropRight"];
+      const topDrop = this.$refs.backdropTop,
+        botDrop = this.$refs.backdropBottom,
+        leftDrop = this.$refs.backdropLeft,
+        rightDrop = this.$refs.backdropRight;
       if (el === null) {
-        topDrop.style.height = document.documentElement.clientHeight + "px";
-        topDrop.style.width = document.documentElement.clientWidth + "px";
+        topDrop.style.height = `${document.documentElement.clientHeight}px`;
+        topDrop.style.width = `${document.documentElement.clientWidth}px`;
         topDrop.style.left = "0";
         topDrop.style.top = "0";
         botDrop.style.display = "none";
         rightDrop.style.display = "none";
         leftDrop.style.display = "none";
       } else {
-        let bounds = el.getBoundingClientRect();
-        topDrop.style.height = bounds.top + "px";
-        topDrop.style.width = bounds.width + "px";
-        topDrop.style.left = bounds.left + "px";
+        const bounds = el.getBoundingClientRect();
+        topDrop.style.height = `${bounds.top}px`;
+        topDrop.style.width = `${bounds.width}px`;
+        topDrop.style.left = `${bounds.left}px`;
         topDrop.style.top = "0";
         botDrop.style.height =
-          document.documentElement.clientHeight - bounds.bottom + "px";
-        botDrop.style.width = bounds.width + "px";
-        botDrop.style.left = bounds.left + "px";
-        botDrop.style.top = bounds.bottom + "px";
+          `${document.documentElement.clientHeight - bounds.bottom}px`;
+        botDrop.style.width = `${bounds.width}px`;
+        botDrop.style.left = `${bounds.left}px`;
+        botDrop.style.top = `${bounds.bottom}px`;
         leftDrop.style.left = "0";
         leftDrop.style.top = "0";
-        leftDrop.style.height = document.documentElement.clientHeight + "px";
-        leftDrop.style.width = bounds.left + "px";
+        leftDrop.style.height = `${document.documentElement.clientHeight}px`;
+        leftDrop.style.width = `${bounds.left}px`;
         rightDrop.style.top = "0";
-        rightDrop.style.left = bounds.left + bounds.width + "px";
+        rightDrop.style.left = `${bounds.left + bounds.width}px`;
         rightDrop.style.width =
-          document.documentElement.clientWidth -
-          (bounds.left + bounds.width) +
-          "px";
-        rightDrop.style.height = document.documentElement.clientHeight + "px";
+          `${document.documentElement.clientWidth -
+          (bounds.left + bounds.width) 
+          }px`;
+        rightDrop.style.height = `${document.documentElement.clientHeight}px`;
       }
     },
     skipTutorial() {
       localStorage.tutorialProposed = true;
-      this.$refs["modal"].hide();
+      this.$refs.modal.hide();
       this.slideInTitle();
     },
     startTutorial() {
       localStorage.tutorialProposed = true;
       this.tutorial.isRunning = true;
-      this.$refs["modal"].hide();
-      this.$refs["notification"].classList.add("notification-visible");
+      this.$refs.modal.hide();
+      this.$refs.notification.classList.add("notification-visible");
       this.progressTutorial();
     },
     progressTutorial() {
       this.tutorial.currentStep++;
       if (this.tutorial.currentStep < 8) {
-        let tutorialData = this.tutorialData;
+        const tutorialData = this.tutorialData;
         this.tutorial.currentText = tutorialData.text;
         this.highlightElement(tutorialData.element);
       } else {
@@ -564,52 +564,52 @@ export default {
       }
     },
     stopTutorial() {
-      let topDrop = this.$refs["backdropTop"],
-        botDrop = this.$refs["backdropBottom"],
-        leftDrop = this.$refs["backdropLeft"],
-        rightDrop = this.$refs["backdropRight"];
+      const topDrop = this.$refs.backdropTop,
+        botDrop = this.$refs.backdropBottom,
+        leftDrop = this.$refs.backdropLeft,
+        rightDrop = this.$refs.backdropRight;
       this.tutorial.isRunning = false;
       topDrop.style.display = "none";
       botDrop.style.display = "none";
       leftDrop.style.display = "none";
       rightDrop.style.display = "none";
-      this.$refs["notification"].classList.add("notification-hidden");
-      this.$refs["notification"].classList.remove("notification-visible");
+      this.$refs.notification.classList.add("notification-hidden");
+      this.$refs.notification.classList.remove("notification-visible");
       this.slideInTitle();
     },
     addLeaderboardEntry(name, points) {
       this.$api.saveAnswer({
-        level: { current: this.progress.currLevel },
-        progress: { current: this.progress.difficulty },
-        score: points
+        level: {current: this.progress.currLevel},
+        progress: {current: this.progress.difficulty},
+        score: points,
       });
     },
     calculatePoints() {
       var points =
         (this.progress.difficulty - 1) * 5 + this.progress.currLevel;
-      console.log("Points: " + points);
+      console.log(`Points: ${points}`);
       return points;
-    }
+    },
   },
   mounted() {
     this.generateExercise();
     if (!this.tutorial.proposed) {
       this.modalText = "Welcome!";
-      this.$refs["modal"].show();
+      this.$refs.modal.show();
     }
-    //configure what should happen after the various animations
-    this.$refs["difficultyTitle"].addEventListener("animationend", () => {
-      this.$refs["difficultyTitle"].classList.remove("scroll-to-right");
+    // configure what should happen after the various animations
+    this.$refs.difficultyTitle.addEventListener("animationend", () => {
+      this.$refs.difficultyTitle.classList.remove("scroll-to-right");
     });
     
-    this.$refs["expression"].addEventListener("animationend", () => {
-      this.$refs["expression"].classList.remove("tada");
-      this.$refs["expression"].classList.remove("shake");
-      this.$refs["expression"].classList.remove("animated");
-      this.$refs["expression"].classList.remove("text-reroll");
-      this.success = undefined
+    this.$refs.expression.addEventListener("animationend", () => {
+      this.$refs.expression.classList.remove("tada");
+      this.$refs.expression.classList.remove("shake");
+      this.$refs.expression.classList.remove("animated");
+      this.$refs.expression.classList.remove("text-reroll");
+      this.success = undefined;
     });
-  }
+  },
 };
 </script>
 

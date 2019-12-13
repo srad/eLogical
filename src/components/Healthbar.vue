@@ -16,7 +16,7 @@
 export default {
   name: "Healthbar",
   props: {
-    current: Number
+    current: Number,
   },
   methods: {
     despawnLife() {
@@ -27,8 +27,8 @@ export default {
         this.$emit("damage-taken");
       });
       this.$refs[this.current][0].classList.add("despawning");
-    }
-  }
+    },
+  },
 };
 </script>
 

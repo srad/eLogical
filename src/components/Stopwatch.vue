@@ -13,22 +13,22 @@ export default {
   name: "Stopwatch",
   props: {
     time: String,
-    countingDown: Boolean
+    countingDown: Boolean,
   },
   data() {
     return {
       currMs: null,
       totalMs: null,
       isRunning: false,
-      variant: "success"
+      variant: "success",
     };
   },
   computed: {
     currTime() {
-      let currMins = Math.floor(this.currMs / 60000);
-      let currSec = Math.floor((this.currMs - currMins * 60000) / 1000);
-      return currMins + ":" + currSec;
-    }
+      const currMins = Math.floor(this.currMs / 60000);
+      const currSec = Math.floor((this.currMs - currMins * 60000) / 1000);
+      return `${currMins}:${currSec}`;
+    },
   },
   methods: {
     updateTime() {
@@ -63,15 +63,15 @@ export default {
       this.$emit("timer-stopped", this.time);
     },
     setupTimer() {
-      let minToMs = Number(this.time.split(":")[0]) * 60000,
+      const minToMs = Number(this.time.split(":")[0]) * 60000,
         secsToMs = Number(this.time.split(":")[1]) * 1000;
       this.totalMs = minToMs + secsToMs;
       this.currMs = this.totalMs;
-    }
+    },
   },
   mounted() {
     this.setupTimer();
-  }
+  },
 };
 </script>
 

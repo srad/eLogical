@@ -10,13 +10,13 @@ export default {
   props: {
     treeData: Object,
     moveView: Boolean,
-    moveNode: Boolean
+    moveNode: Boolean,
   },
   watch: {
     treeData: function(treeData) {
       const data = {
         nodes: new vis.DataSet(treeData.nodes),
-        edges: new vis.DataSet(treeData.edges)
+        edges: new vis.DataSet(treeData.edges),
       };
       this.network = new vis.Network(this.$refs.tree, data, this.config);
 
@@ -27,11 +27,11 @@ export default {
           this.$emit("click-node", {
             node: clickedNodes[0].type,
             id: clickedNodes[0].id,
-            rawNode: clickedNodes[0]
+            rawNode: clickedNodes[0],
           });
         }
       });
-    }
+    },
   },
   data() {
     return {
@@ -40,30 +40,30 @@ export default {
         layout: {
           hierarchical: {
             direction: "UD",
-            sortMethod: "directed"
-          }
+            sortMethod: "directed",
+          },
         },
         edges: {
           width: 3,
           color: "dimgrey",
           smooth: {
             roundness: 0.05,
-            type: "continuous"
-          }
+            type: "continuous",
+          },
         },
         interaction: {
           dragNodes: this.moveNode || false,
-          dragView: this.moveView || false
+          dragView: this.moveView || false,
         },
         nodes: {
           physics: true,
           borderWidth: 0,
-          font: { size: 19, color: "white" },
-          color: { border: "dimgrey" }
-        }
-      }
+          font: {size: 19, color: "white"},
+          color: {border: "dimgrey"},
+        },
+      },
     };
-  }
+  },
 };
 </script>
 

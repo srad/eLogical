@@ -103,17 +103,17 @@
 </template>
 
 <script>
-import { randBoolExpr } from "@/lib/compiler/generator";
+import {randBoolExpr} from "@/lib/compiler/generator";
 import Tree from "../components/Tree";
 import Tex from "../components/Tex";
 import Ressource from "../components/Ressource";
 import colors from "@/lib/colors";
-import { ConstNode } from "../lib/compiler/tree";
+import {ConstNode} from "../lib/compiler/tree";
 import BlockBar from "../components/BlockBar";
 
 export default {
   name: "Game2",
-  components: { Tree, Tex, Ressource, BlockBar },
+  components: {Tree, Tex, Ressource, BlockBar},
   props: {},
   data() {
     return {
@@ -121,7 +121,7 @@ export default {
         text: "",
         title: "",
         variant: "primary",
-        ok: () => {}
+        ok: () => {},
       },
       tree: undefined,
       nodeId: 0,
@@ -139,11 +139,11 @@ export default {
       retryMax: 3,
       options: [],
       texOptions: [],
-      treeData: { nodes: [], edges: [] },
+      treeData: {nodes: [], edges: []},
       difficultySettings: {
         1: ["and", "or", "not", "True", "False"],
-        2: ["and", "not", "True", "False", "xor"]
-      }
+        2: ["and", "not", "True", "False", "xor"],
+      },
     };
   },
   watch: {
@@ -152,11 +152,11 @@ export default {
         this.select(node.v);
       }
       this.expression =
-        (this.nodeId === 0 ? "\\phi = " : "") + node.to("tex", { color: true });
+        (this.nodeId === 0 ? "\\phi = " : "") + node.to("tex", {color: true});
     },
     message() {
       this.$bvModal.show("message");
-    }
+    },
   },
   computed: {
     cardHeader() {
@@ -177,14 +177,14 @@ export default {
     vars() {
       return new Array(this.progressCurrent + 1)
         .fill(0)
-        .map((_, index) => "v" + index);
+        .map((_, index) => `v${index}`);
     },
     expFilter() {
       if (this.levelCurrent <= 3) {
         return this.difficultySettings[this.levelCurrent];
       }
       return undefined;
-    }
+    },
   },
   methods: {
     select(node, index) {
@@ -212,7 +212,7 @@ export default {
         this.$api.saveAnswer({
           level: this.level,
           progress: this.progress,
-          score: 1
+          score: 1,
         });
         if (this.isSectionComplete) {
           if (this.hasWon) {
@@ -221,7 +221,7 @@ export default {
               text: "You have won! Press ok to restart the game!",
               icon: "trophy",
               variant: "warning",
-              ok: this.restart
+              ok: this.restart,
             };
             return;
           } else {
@@ -252,36 +252,36 @@ export default {
           text: "You lost!",
           icon: "heart-broken",
           variant: "danger",
-          ok: this.restart
+          ok: this.restart,
         };
       }
     },
     generateExercise() {
       this.nodeId = 0; // Reset any tree click
       // Generate tree
-      const { tree } = randBoolExpr({
+      const {tree} = randBoolExpr({
         setSize: 2,
         maxDepth: this.levelCurrent,
         vars: this.vars,
-        expWhiteList: this.expFilter
+        expWhiteList: this.expFilter,
       });
       this.tree = tree;
       // Draw tree
-      const { nodes, edges, leafs } = this.tree.toGraph();
-      this.treeData = { nodes, edges };
+      const {nodes, edges, leafs} = this.tree.toGraph();
+      this.treeData = {nodes, edges};
       // TODO: Show only yes/no answer
       this.singleChoice = leafs.length === 0;
       if (!this.singleChoice) {
         this.options = leafs
-          .map(node => ({ name: node.v, color: node.color, selected: false }))
+          .map(node => ({name: node.v, color: node.color, selected: false}))
           .sort((a, b) => a.name.localeCompare(b.name));
         this.texOptions = leafs.map(node => node.to("tex")).sort();
       }
-    }
+    },
   },
   mounted() {
     this.generateExercise();
-  }
+  },
 };
 </script>
 

@@ -6,10 +6,10 @@ import router from "./router";
 import store from "./store";
 import "./registerServiceWorker";
 import BootstrapVue from "bootstrap-vue";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faHeart, faAward, faStar, faCheck, faRobot, faTimes, faMedal, faLaughBeam, faHeartBroken, faTrophy, faStopwatch, faDice, faQuestion, faSkullCrossbones } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { ElogicalApi } from "./services/elogical";
+import {library} from "@fortawesome/fontawesome-svg-core";
+import {faHeart, faAward, faStar, faCheck, faRobot, faTimes, faMedal, faLaughBeam, faHeartBroken, faTrophy, faStopwatch, faDice, faQuestion, faSkullCrossbones} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import {ElogicalApi} from "./services/elogical";
 
 Vue.use(BootstrapVue);
 
@@ -30,7 +30,7 @@ api.authenticate()
     console.log("Authenticated");
   })
   .catch(error => {
-    console.log("Token could not be requested:" + error);
+    console.log(`Token could not be requested:${error}`);
   });
 
 new Vue({

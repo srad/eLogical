@@ -48,7 +48,7 @@ class Node extends TreeNode {
     // [false, true, ...] => {v0: false, v1: true, ...}
     if (Array.isArray(environment)) {
       const params = {};
-      environment.forEach((val, index) => params["v" + index] = environment[index]);
+      environment.forEach((val, index) => params[`v${index}`] = environment[index]);
       environment = params;
     }
     const results = this.children.map(node => node.evaluate(environment));
@@ -76,12 +76,12 @@ class Node extends TreeNode {
     const space = new Array((depth + 1) * indent).join(" ");
 
     if (depth === 0) {
-      this.output("(defn expresion [" + this.vars + "]");
+      this.output(`(defn expresion [${this.vars}]`);
     }
 
-    this.output(space + "(" + this.name);
+    this.output(`${space}(${this.name}`);
     this.children.forEach((node) => node.display(depth + 1, indent));
-    this.output(space + ")");
+    this.output(`${space})`);
 
     if (depth === 0) {
       this.output(")");

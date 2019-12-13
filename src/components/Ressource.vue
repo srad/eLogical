@@ -28,7 +28,7 @@ export default {
     size: String,
     current: Number,
     icon: String,
-    color: String
+    color: String,
   },
   data() {
     return {
@@ -41,7 +41,7 @@ export default {
       localMax: this.max,
       localSize: this.size || "2x",
       localIcon: this.icon,
-      localColor: this.color
+      localColor: this.color,
     };
   },
   watch: {
@@ -61,20 +61,20 @@ export default {
       } else {
         this.localCurrent = val;
       }
-    }
+    },
   },
   methods: {
     delayCallback(index) {
       if (!this.rendered) {
-        return (index + 1) * this.localDelay + "ms";
+        return `${(index + 1) * this.localDelay}ms`;
       }
-    }
+    },
   },
   mounted() {
     setTimeout(() => {
       this.rendered = true;
     }, this.localMax * this.localDelay * 2);
-  }
+  },
 };
 </script>
 <style scoped>
