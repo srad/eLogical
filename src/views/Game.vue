@@ -268,6 +268,12 @@ export default {
         currentStep: 0,
         currentText: "",
       },
+      trackingParams: {
+        allowed: localStorage.trackingAllowed || false,
+        runID: null,
+        levelStartTime: null,
+        gameStartTime: null
+      },
     };
   },
   watch: {
@@ -354,11 +360,24 @@ export default {
           text: "That's it! Have fun playing the game!",
         };
       }
-    },
+    }
   },
   methods: {
     toggleVariable(node, index) {
       this.options[index].selected = !this.options[index].selected;
+      if(localStorage.trackingAllowed === "true"){
+        //TODO: tracking (toggle any variable)
+        let toggleTracking = {
+          "runID": this.trackingParams.runID,
+          "event": "toggleVariable",
+          "levelTime": Math.abs(this.trackingParams.levelStartTime - new Date()),
+          "difficulty" : this.progress.difficulty,
+          "level": this.progress.currLevel,
+          "difficultySettings": this.functions,
+          "variableCount": this.options.length
+        }
+        console.warn(toggleTracking)
+      }
     },
     rerollExpression() {
       if(this.rerolls.current > 0){
@@ -393,6 +412,20 @@ export default {
         }
       }else {
         this.takeDamage();
+      }
+      if(localStorage.trackingAllowed === "true"){
+        //TODO: tracking (confirm-button)
+        let confirmTracking = {
+          "runID": this.trackingParams.runID,
+          "event": "confirmInput",
+          "levelTime": Math.abs(this.trackingParams.levelStartTime - new Date()),
+          "success": this.success,
+          "difficulty" : this.progress.difficulty,
+          "level": this.progress.currLevel,
+          "difficultySettings": this.functions,
+          "variableCount": this.options.length
+        }
+        console.warn(confirmTracking);
       }
     },
     pickLoot(loot) {
@@ -444,6 +477,18 @@ export default {
 
     },
     loadNextChapter() {
+      if(localStorage.trackingAllowed === "true"){
+      //TODO: Tracking (ChapterEnd)
+        let chapterTracking = {
+          "runID": this.trackingParams.runID,
+          "event": "difficultyCompleted",
+          "difficulty": this.progress.difficulty,
+          "difficultySettings" : this.functions,
+          "gameTime": this.trackingParams.gameStartTime - new Date(),
+          "loot": this.loot.selected
+        }
+        console.warn(chapterTracking);
+      }
       this.progress.currLevel = 0;
       this.progress.difficulty++;
       this.loot.bagpack.push(this.loot.selected);
@@ -486,22 +531,49 @@ export default {
       if (this.tutorial.proposed && this.progress.currLevel === 0) {
         this.slideInTitle();
       }
+      this.trackingParams.levelStartTime = new Date();
+      if(this.progress.currLevel === 0 && this.progress.difficulty === 1){
+        this.trackingParams.gameStartTime = new Date();
+        this.trackingParams.runID = new Date().valueOf();
+        //TODO: tracking (gameStart)
+        if(localStorage.trackingAllowed === "true"){
+          let startTracking = {
+            "runID": this.trackingParams.runID,
+            "event": "gameStart",
+            "startTime": this.trackingParams.gameStartTime,
+            "maxLevel": this.progress.maxLevel,
+            "health": this.health.max,
+            "rerolls": this.rerolls.max,
+            "difficultySettings": this.difficultySettings
+          }
+          console.warn(startTracking)
+        }
+      }
     },
     slideInTitle() {
       this.$refs.difficultyTitle.classList.add("scroll-to-right");
     },
     resetGame() {
-      this.generateExercise();
       this.modalText = "";
       this.$refs.modal.hide();
       this.progress.currLevel = 0;
       this.progress.difficulty = 1;
       this.health.current = 3;
       this.rerolls.current = 3;
+      this.generateExercise();
     },
     gameOver() {
       this.modalText = "Game Over!";
       this.$refs.modal.show();
+      //TODO: Tracking (End of Game)
+      if(localStorage.trackingAllowed === "true"){
+        let endTracking = {
+          "runID": this.trackingParams.runID,
+          "event" : "gameEnd",
+          "gameTime": Math.abs(this.trackingParams.gameStartTime - new Date())
+        }
+        console.warn(endTracking);
+      }
       this.addLeaderboardEntry("player1", this.calculatePoints());
     },
     highlightElement(el) {

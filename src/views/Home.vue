@@ -26,6 +26,34 @@
         <b-col></b-col>
       </b-row>
     </b-col>
+    <b-modal
+      ref="modal"
+      title="Welcome!"
+      hide-header-close
+      hide-footer
+      no-close-on-backdrop
+      no-close-on-esc
+    >
+      <b-container>
+        <b-row align-h="center">
+          <b-container>
+            <b-row>
+              <b-col
+                class="text-center"
+              >Welcome to eLogical! To improve your experience we track anonymous data from activities of our users. Are you ok with that?</b-col>
+            </b-row>
+            <b-row class="mt-4">
+              <b-col>
+                <b-button variant="success" size="lg" block @click="setTrackingPreferances(true)">Sure</b-button>
+              </b-col>
+              <b-col>
+                <b-button variant="danger" size="lg" block @click="setTrackingPreferances(false)">No</b-button>
+              </b-col>
+            </b-row>
+          </b-container>
+        </b-row>
+      </b-container>
+    </b-modal>
   </b-row>
 </template>
 
@@ -33,6 +61,23 @@
 export default {
   name: "Home",
   components: {},
+  data(){
+    return{
+      trackingAsked: false,
+    }
+  },
+  methods: {
+    setTrackingPreferances(val){
+      localStorage.trackingAllowed = val;
+      this.trackingAsked = true;
+      this.$refs.modal.hide();
+    }
+  },
+  mounted (){
+    if(!localStorage.trackingAllowed && !this.trackingAsked){
+      this.$refs.modal.show();
+    }
+  }
 };
 </script>
 
