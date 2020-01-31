@@ -23,10 +23,10 @@
     </b-row>
     <b-row>
       <b-col cols="6">
-        <random-chart></random-chart>
+        <random-chart type="line"></random-chart>
       </b-col>
       <b-col cols="6">
-        <random-chart></random-chart>
+        <random-chart type="bar"></random-chart>
       </b-col>
     </b-row>
   </div>
