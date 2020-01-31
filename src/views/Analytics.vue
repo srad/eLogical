@@ -1,23 +1,56 @@
 <template>
-  <div>
+  <b-container class="text-center">
     <h1>App Dashboard</h1>
     <hr/>
     <b-row>
-      <b-col cols="6">
-        <h2>Runs Started (last 30 days):</h2>
-        <random-chart type="bar"></random-chart>
+      <b-col>
+        <b-card>
+          <h2>Runs completed:</h2>
+          <span>504</span>
+        </b-card>
       </b-col>
-      <b-col cols="6">
-        <h2>Another Graph:</h2>
-        <random-chart type="line"></random-chart>
+      <b-col>
+        <b-card>
+          <h2>Avg. Runs per user:</h2>
+          <span>38</span>
+        </b-card>
+      </b-col>
+      <b-col>
+        <b-card>
+          <h2>Total Levels completed</h2>
+          <span>10215</span>
+        </b-card>
       </b-col>
     </b-row>
     <b-row>
-      <b-col>
-        <random-chart type="pie"></random-chart>
+      <b-col cols="6">
+        <b-card>
+          <h2>Deaths by difficulty:</h2>
+          <random-chart type="bar"></random-chart>
+        </b-card>
+      </b-col>
+      <b-col cols="6">
+        <b-card>
+          <h2>Another Graph:</h2>
+          <random-chart type="line"></random-chart>
+        </b-card>
       </b-col>
     </b-row>
-  </div>
+    <b-row class="m-t">
+      <b-col cols="6">
+        <b-card>
+          <h2>Mistakes by Operator:</h2>
+          <random-chart type="doughnut"></random-chart>
+        </b-card>
+      </b-col>
+      <b-col cols="6">
+        <b-card>
+          <h2>Rewards Selected:</h2>
+          <random-chart type="doughnut"></random-chart>
+        </b-card>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
