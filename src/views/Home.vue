@@ -64,20 +64,20 @@ export default {
   data(){
     return{
       trackingAsked: false,
-    }
+    };
   },
   methods: {
     setTrackingPreferances(val){
       localStorage.trackingAllowed = val;
       this.trackingAsked = true;
       this.$refs.modal.hide();
-    }
+    },
   },
   mounted (){
     if(!localStorage.trackingAllowed && !this.trackingAsked){
       this.$refs.modal.show();
     }
-  }
+  },
 };
 </script>
 

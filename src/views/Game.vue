@@ -1,13 +1,15 @@
 <template>
   <div style="margin-top: -0.5rem">
-      <b-row align-v="center" class="notification tutorial-text-row ml-0" ref="notification" v-on:click="progressTutorial">
-        <b-col cols="12" class="text-center">{{tutorial.currentText}}</b-col>
-      </b-row>
+    <b-row align-v="center" class="notification tutorial-text-row ml-0" ref="notification" v-on:click="progressTutorial">
+      <b-col cols="12" class="text-center">{{tutorial.currentText}}</b-col>
+    </b-row>
+
     <div class="backdrop-click" v-if="tutorial.isRunning" v-on:click="progressTutorial"></div>
-    <div class="backdrop" ref="backdropTop" v-show="tutorial.isRunning"></div>
-    <div class="backdrop" ref="backdropLeft" v-show="tutorial.isRunning"></div>
-    <div class="backdrop" ref="backdropRight" v-show="tutorial.isRunning"></div>
-    <div class="backdrop" ref="backdropBottom" v-show="tutorial.isRunning"></div>
+    <div class="backdrop" ref="backdropTop" v-if="drop.top.display" v-show="tutorial.isRunning" v-bind:style="{top: drop.top.top,height: drop.top.height, width: drop.top.width, left: drop.top.left}"></div>
+    <div class="backdrop" ref="backdropLeft" v-if="drop.left.display" v-show="tutorial.isRunning" v-bind:style="{top: drop.left.top,height: drop.left.height, width: drop.left.width, left: drop.left.left}"></div>
+    <div class="backdrop" ref="backdropRight" v-if="drop.right.display" v-show="tutorial.isRunning" v-bind:style="{top: drop.right.top,height: drop.right.height, width: drop.right.width, left: drop.right.left}"></div>
+    <div class="backdrop" ref="backdropBottom" v-if="drop.bottom.display" v-show="tutorial.isRunning" v-bind:style="{top: drop.bottom.top,height: drop.bottom.height, width: drop.bottom.width, left: drop.bottom.left}"></div>
+
     <h1 ref="difficultyTitle" class="title-difficulty">Chapter {{progress.difficulty}}</h1>
     <b-row class="pt-3 pb-2 bg-white p-0 mb-3 border-bottom shadow-sm" align-v="center">
       <b-col cols="3">
@@ -17,12 +19,8 @@
       </b-col>
 
       <b-col aria-colcount="9" class="pl-0 ml-0">
-        <b-progress
-          class="bg-secondary h-75 shadow-sm"
-          :current="progress.currLevel"
-          :max="progress.maxLevel"
-        >
-          <block-bar :colors="colors" :current="progress.currLevel" :max="progress.maxLevel" v-on:level-finished="cleanup" />
+        <b-progress class="bg-secondary h-75 shadow-sm" :current="progress.currLevel" :max="progress.maxLevel">
+          <block-bar :colors="colors" :current="progress.currLevel" :max="progress.maxLevel" v-on:level-finished="cleanup"/>
         </b-progress>
       </b-col>
     </b-row>
@@ -30,61 +28,57 @@
     <b-row class="mb-3">
       <b-col cols="6" class="text-left">
         <ressource
-          animate
-          hide-animation-class="flash"
-          icon="heart"
-          color="darkred"
-          class="text-danger"
-          v-bind:max="health.max"
-          v-bind:current="health.current"
-          ref="health"
-        />
+            animate
+            hide-animation-class="flash"
+            icon="heart"
+            color="darkred"
+            class="text-danger"
+            v-bind:max="health.max"
+            v-bind:current="health.current"
+            ref="health"/>
       </b-col>
       <b-col cols="6" class="text-right">
         <ressource
-          animate
-          hide-animation-class="swing"
-          icon="dice"
-          v-on:click="rerollExpression"
-          color="goldenrod"
-          class="text-warning"
-          v-bind:max="rerolls.max"
-          v-bind:current="rerolls.current"
-          ref="rerolls"
-        />
+            animate
+            hide-animation-class="swing"
+            icon="dice"
+            v-on:click="rerollExpression"
+            color="goldenrod"
+            class="text-warning"
+            v-bind:max="rerolls.max"
+            v-bind:current="rerolls.current"
+            ref="rerolls"/>
       </b-col>
     </b-row>
 
     <b-row class="mb-3">
       <b-col>
         <b-card
-          v-bind:class="{'animated slow shake': success===false, 'animated tada': success===true}"
-          body-class="p-1"
-          bg-variant="white"
-          header="Make this formula true"
-          :header-bg-variant="success===false?'danger':'primary'"
-          header-class="p-1 text-center text-white"
-          class="shadow-sm border-dark"
-          ref="expression"
-        >
+            v-bind:class="{'animated slow shake': success===false, 'animated tada': success===true}"
+            body-class="p-1"
+            bg-variant="white"
+            header="Make this formula true"
+            :header-bg-variant="success===false?'danger':'primary'"
+            header-class="p-1 text-center text-white"
+            class="shadow-sm border-dark"
+            ref="expression">
           <b-card-text class="p-0 m-0 text-center">
             <tex v-bind:expression="expression"></tex>
           </b-card-text>
         </b-card>
       </b-col>
     </b-row>
-    <b-row class="mb-3"  v-if="progress.currLevel === progress.maxLevel - 1" align-h="start">
+    <b-row class="mb-3" v-if="progress.currLevel === progress.maxLevel - 1" align-h="start">
       <b-col cols="1" class="text-right bones-icon">
-        <font-awesome-icon icon="skull-crossbones" size="lg" />
+        <font-awesome-icon icon="skull-crossbones" size="lg"/>
       </b-col>
       <b-col cols="11" class="text-left">
         <stopwatch
-          ref="stopwatch"
-          class="stopwatch"
-          :time="stopwatchTime"
-          :countingDown="true"
-          v-on:timer-ended="gameOver"
-        ></stopwatch>
+            ref="stopwatch"
+            class="stopwatch"
+            :time="stopwatchTime"
+            :countingDown="true"
+            v-on:timer-ended="gameOver"></stopwatch>
       </b-col>
     </b-row>
 
@@ -93,43 +87,43 @@
         <tree v-bind:treeData="treeData" class="tree" ref="tree"></tree>
       </b-col>
     </b-row>
-    <hr />
+    <hr/>
     <b-row class="mt-4">
       <b-col cols="9" align-self="center" class="text-center">
         <b-row ref="buttons" align-h="center" align-v="center">
           <b-col cols="3" lg="2" v-for="(node, index) in options"
-          :key="node.name" class="text-center mb-2">
-          <b-button
-            :ref="'btnSelect'+index"
-            :variant="node.selected ? 'primary true' : 'danger false'"
-            @click="toggleVariable(node.name, index)"
-            size="lg"
-            class="p-2 pl-3 pr-3 faster"
-        >{{node.name}}</b-button>
+                 :key="node.name" class="text-center mb-2">
+            <b-button
+                :ref="'btnSelect'+index"
+                :variant="node.selected ? 'primary true' : 'danger false'"
+                @click="toggleVariable(node.name, index)"
+                size="lg"
+                class="p-2 pl-3 pr-3 faster"
+            >{{node.name}}
+            </b-button>
           </b-col>
         </b-row>
       </b-col>
       <b-col cols="3" md="2" lg="1" align-self="end">
         <b-button
-          variant="primary"
-          class="confirm shadow-sm"
-          ref="confirm"
-          size="lg"
-          v-on:click="confirm"
+            variant="primary"
+            class="confirm shadow-sm"
+            ref="confirm"
+            size="lg"
+            v-on:click="confirm"
         >
-          <font-awesome-icon icon="check" />
+          <font-awesome-icon icon="check"/>
         </b-button>
       </b-col>
     </b-row>
 
     <b-modal
-      ref="modal"
-      :title="modalText"
-      hide-header-close
-      hide-footer
-      no-close-on-backdrop
-      no-close-on-esc
-    >
+        ref="modal"
+        :title="modalText"
+        hide-header-close
+        hide-footer
+        no-close-on-backdrop
+        no-close-on-esc>
       <b-container>
         <b-row align-h="center" block v-if="modalText === 'Game Over!'" class="mb-3">
           <b-col cols="6">
@@ -148,10 +142,10 @@
             <b-row v-if="rerolls.current === rerolls.max && health.current === health.max">
               <b-col class="text-center">
                 <font-awesome-icon
-                  ref="dice-icon"
-                  size="6x"
-                  class="dice-selected"
-                  icon="trophy"
+                    ref="dice-icon"
+                    size="6x"
+                    class="dice-selected"
+                    icon="trophy"
                 ></font-awesome-icon>
               </b-col>
             </b-row>
@@ -163,32 +157,33 @@
             <b-row>
               <b-col cols="6" v-if="rerolls.current < rerolls.max">
                 <font-awesome-icon
-                  ref="dice-icon"
-                  size="6x"
-                  class="loot-unselected"
-                  icon="dice"
-                  v-on:click="pickLoot('dice')"
+                    ref="dice-icon"
+                    size="6x"
+                    class="loot-unselected"
+                    icon="dice"
+                    v-on:click="pickLoot('dice')"
                 ></font-awesome-icon>
               </b-col>
               <b-col cols="6" v-if="health.current < health.max">
                 <font-awesome-icon
-                  ref="heart-icon"
-                  size="6x"
-                  class="loot-unselected"
-                  icon="heart"
-                  v-on:click="pickLoot('heart')"
+                    ref="heart-icon"
+                    size="6x"
+                    class="loot-unselected"
+                    icon="heart"
+                    v-on:click="pickLoot('heart')"
                 ></font-awesome-icon>
               </b-col>
             </b-row>
             <b-row class="mt-4" align-h="center">
               <b-col cols="6">
                 <b-button
-                  variant="primary"
-                  size="lg"
-                  block
-                  v-on:click="loadNextChapter"
-                  :disabled="(health.current < health.max || rerolls.current < rerolls.max) && loot.selected === null"
-                >Next Chapter</b-button>
+                    variant="primary"
+                    size="lg"
+                    block
+                    v-on:click="loadNextChapter"
+                    :disabled="(health.current < health.max || rerolls.current < rerolls.max) && loot.selected === null"
+                >Next Chapter
+                </b-button>
               </b-col>
             </b-row>
           </b-container>
@@ -197,8 +192,9 @@
           <b-container>
             <b-row>
               <b-col
-                class="text-center"
-              >Welcome to eLogical! Do you want to play through a quick tutorial?</b-col>
+                  class="text-center"
+              >Welcome to eLogical! Do you want to play through a quick tutorial?
+              </b-col>
             </b-row>
             <b-row class="mt-4">
               <b-col>
@@ -224,6 +220,7 @@ import Stopwatch from "../components/Stopwatch";
 import Ressource from "../components/Ressource";
 import BlockBar from "../components/BlockBar";
 import colors from "@/lib/colors";
+import event from "@/services/events";
 
 export default {
   name: "Game",
@@ -270,9 +267,14 @@ export default {
       },
       trackingParams: {
         allowed: localStorage.trackingAllowed || false,
-        runID: null,
         levelStartTime: null,
-        gameStartTime: null
+        gameStartTime: null,
+      },
+      drop: {
+        top: {height: 0, width: 0, left: 0, top: 0, display: false},
+        left: {height: 0, width: 0, left: 0, top: 0, display: false},
+        right: {height: 0, width: 0, left: 0, top: 0, display: false},
+        bottom: {height: 0, width: 0, left: 0, top: 0, display: false},
       },
     };
   },
@@ -286,12 +288,6 @@ export default {
     },
   },
   computed: {
-    selection() {
-      const params = {};
-      this.options.forEach(o => (params[o] = false));
-      this.selected.forEach(s => (params[s] = true));
-      return params;
-    },
     vars() {
       return new Array(this.progress.currLevel + 1)
         .fill(0)
@@ -301,16 +297,7 @@ export default {
       if (this.progress.difficulty <= 3) {
         return this.difficultySettings[this.progress.difficulty];
       } else {
-        return [
-          "and",
-          "or",
-          "not",
-          "true",
-          "false",
-          "xor",
-          "implication",
-          "eq",
-        ];
+        return ["and", "or", "not", "true", "false", "xor", "implication", "eq"];
       }
     },
     stopwatchTime() {
@@ -320,69 +307,38 @@ export default {
         secs = totalSecs - mins * 60;
       return `${mins}:${secs}`;
     },
+    steps() {
+      return [
+        {ref: this.$refs.expression, text: "The goal is to make this evaluate to 'true'."},
+        {ref: this.$refs.tree.$el, text: "This visualization can be helpful, too!"},
+        {ref: this.$refs.buttons, text: "You can configure the variables using these buttons."},
+        {ref: this.$refs.confirm, text: "You have to confirm your configuration."},
+        {ref: this.$refs.health.$el, text: "You can take damage if your input is wrong!"},
+        {ref: this.$refs.rerolls.$el, text: "If you don't like the current expression you can reroll it using these."},
+      ];
+    },
     tutorialData() {
-      switch (this.tutorial.currentStep) {
-      case 1:
-        return {
-          element: this.$refs.expression,
-          text: "The goal is to make this evaluate to 'true'.",
-        };
-        break;
-      case 2:
-        return {
-          element: this.$refs.tree.$el,
-          text: "This visualizaion can be helpful, too!",
-        };
-      case 3:
-        return {
-          element: this.$refs.buttons,
-          text: "You can configure the variables using these buttons.",
-        };
-      case 4:
-        return {
-          element: this.$refs.confirm,
-          text: "You have to confirm your configuration.",
-        };
-      case 5:
-        return {
-          element: this.$refs.health.$el,
-          text: "You can take damage if your input is wrong!",
-        };
-      case 6:
-        return {
-          element: this.$refs.rerolls.$el,
-          text:
-              "If you don't like the current expression you can reroll it using these.",
-        };
-      default:
-        return {
-          element: null,
-          text: "That's it! Have fun playing the game!",
-        };
-      }
-    }
+      return this.steps[this.tutorial.currentStep] || {ref: null, text: "That's it! Have fun playing the game!"};
+    },
   },
   methods: {
     toggleVariable(node, index) {
       this.options[index].selected = !this.options[index].selected;
-      if(localStorage.trackingAllowed === "true"){
-        //TODO: tracking (toggle any variable)
-        let toggleTracking = {
-          "runID": this.trackingParams.runID,
-          "event": "toggleVariable",
-          "levelTime": Math.abs(this.trackingParams.levelStartTime - new Date()),
-          "difficulty" : this.progress.difficulty,
+      this.$api.saveTrack({
+        starTime: this.trackingParams.levelStartTime,
+        data: {
+          "event": event.toggleVariable,
+          "difficulty": this.progress.difficulty,
           "level": this.progress.currLevel,
           "difficultySettings": this.functions,
-          "variableCount": this.options.length
-        }
-        console.warn(toggleTracking)
-      }
+          "variableCount": this.options.length,
+        },
+      });
     },
     rerollExpression() {
-      if(this.rerolls.current > 0){
+      if (this.rerolls.current > 0) {
         this.$refs.expression.classList.add("text-reroll");
-        if (this.progress.currLevel === this.progress.maxLevel -1) {
+        if (this.progress.currLevel === this.progress.maxLevel - 1) {
           this.$refs.stopwatch.stopTimer();
           this.$refs.stopwatch.setupTimer();
         }
@@ -407,34 +363,32 @@ export default {
       const isAnswerCorrect = this.tree.evaluate(selection);
       this.success = isAnswerCorrect;
       if (this.success) {
-        if(this.progress.currLevel < this.progress.maxLevel){
+        if (this.progress.currLevel < this.progress.maxLevel) {
           this.progress.currLevel++;
         }
-      }else {
+      } else {
         this.takeDamage();
       }
-      if(localStorage.trackingAllowed === "true"){
-        //TODO: tracking (confirm-button)
-        let confirmTracking = {
-          "runID": this.trackingParams.runID,
-          "event": "confirmInput",
-          "levelTime": Math.abs(this.trackingParams.levelStartTime - new Date()),
+      this.$api.saveTrack({
+        starTime: this.trackingParams.levelStartTime,
+        data: {
+          "event": event.confirmInput,
+          "ops": this.tree.ops(),
           "success": this.success,
-          "difficulty" : this.progress.difficulty,
+          "difficulty": this.progress.difficulty,
           "level": this.progress.currLevel,
           "difficultySettings": this.functions,
-          "variableCount": this.options.length
-        }
-        console.warn(confirmTracking);
-      }
+          "variableCount": this.options.length,
+        },
+      });
     },
     pickLoot(loot) {
       this.loot.selected = loot;
-      switch (loot) {
+      switch(loot) {
       case "dice":
         this.$refs["dice-icon"].classList.add("dice-selected");
         this.$refs["dice-icon"].classList.remove("loot-unselected");
-        if(this.health.current < this.health.max){
+        if (this.health.current < this.health.max) {
           this.$refs["heart-icon"].classList.add("loot-unselected");
           this.$refs["heart-icon"].classList.remove("heart-selected");
         }
@@ -442,7 +396,7 @@ export default {
       case "heart":
         this.$refs["heart-icon"].classList.add("heart-selected");
         this.$refs["heart-icon"].classList.remove("loot-unselected");
-        if(this.rerolls.current < this.rerolls.max){
+        if (this.rerolls.current < this.rerolls.max) {
           this.$refs["dice-icon"].classList.add("loot-unselected");
           this.$refs["dice-icon"].classList.remove("dice-selected");
         }
@@ -451,51 +405,47 @@ export default {
     },
     emptyBackpack() {
       this.loot.bagpack.forEach(loot => {
-        switch (loot) {
+        switch(loot) {
         case "heart":
-          if(this.health.current < this.health.max){
+          if (this.health.current < this.health.max) {
             this.health.current++;
           }
           break;
         case "dice":
-          if(this.rerolls.current < this.rerolls.max){
-            this.rerolls.current++; 
+          if (this.rerolls.current < this.rerolls.max) {
+            this.rerolls.current++;
           }
           break;
         }
         this.loot.bagpack = [];
       });
     },
-    cleanup(){
-      if(this.progress.currLevel === this.progress.maxLevel){
+    cleanup() {
+      if (this.progress.currLevel === this.progress.maxLevel) {
         this.modalText = "Good Job! Choose your Loot";
         this.$refs.modal.show();
-      }
-      else {
+      } else {
         this.generateExercise();
       }
 
     },
     loadNextChapter() {
-      if(localStorage.trackingAllowed === "true"){
-      //TODO: Tracking (ChapterEnd)
-        let chapterTracking = {
-          "runID": this.trackingParams.runID,
-          "event": "difficultyCompleted",
+      this.$api.saveTrack({
+        data: {
+          "event": event.stageCompleted,
           "difficulty": this.progress.difficulty,
-          "difficultySettings" : this.functions,
+          "difficultySettings": this.functions,
           "gameTime": this.trackingParams.gameStartTime - new Date(),
-          "loot": this.loot.selected
-        }
-        console.warn(chapterTracking);
-      }
+          "loot": this.loot.selected,
+        },
+      });
       this.progress.currLevel = 0;
       this.progress.difficulty++;
       this.loot.bagpack.push(this.loot.selected);
-      if(this.loot.selected === "heart"){
+      if (this.loot.selected === "heart") {
         this.$refs["heart-icon"].classList.remove("heart-selected");
         this.$refs["heart-icon"].classList.add("loot-unselected");
-      } else if(this.loot.selected === "dice"){
+      } else if (this.loot.selected === "dice") {
         this.$refs["dice-icon"].classList.remove("dice-selected");
         this.$refs["dice-icon"].classList.add("loot-unselected");
       }
@@ -525,30 +475,29 @@ export default {
         this.texOptions = leafs.map(node => node.to("tex")).sort();
       }
       this.emptyBackpack();
-      if (this.progress.currLevel === this.progress.maxLevel -1) {
+      if (this.progress.currLevel === this.progress.maxLevel - 1) {
         this.$refs.stopwatch.startTimer();
-      } 
+      }
       if (this.tutorial.proposed && this.progress.currLevel === 0) {
         this.slideInTitle();
       }
       this.trackingParams.levelStartTime = new Date();
-      if(this.progress.currLevel === 0 && this.progress.difficulty === 1){
+
+      if (this.progress.currLevel === 0 && this.progress.difficulty === 1) {
         this.trackingParams.gameStartTime = new Date();
-        this.trackingParams.runID = new Date().valueOf();
-        //TODO: tracking (gameStart)
-        if(localStorage.trackingAllowed === "true"){
-          let startTracking = {
-            "runID": this.trackingParams.runID,
-            "event": "gameStart",
+
+        this.$api.saveTrack({
+          data: {
+            "event": event.gameStart,
             "startTime": this.trackingParams.gameStartTime,
             "maxLevel": this.progress.maxLevel,
             "health": this.health.max,
             "rerolls": this.rerolls.max,
-            "difficultySettings": this.difficultySettings
-          }
-          console.warn(startTracking)
-        }
+            "difficultySettings": this.difficultySettings,
+          },
+        });
       }
+
     },
     slideInTitle() {
       this.$refs.difficultyTitle.classList.add("scroll-to-right");
@@ -565,52 +514,40 @@ export default {
     gameOver() {
       this.modalText = "Game Over!";
       this.$refs.modal.show();
-      //TODO: Tracking (End of Game)
-      if(localStorage.trackingAllowed === "true"){
-        let endTracking = {
-          "runID": this.trackingParams.runID,
-          "event" : "gameEnd",
-          "gameTime": Math.abs(this.trackingParams.gameStartTime - new Date())
-        }
-        console.warn(endTracking);
-      }
+
+      this.$api.saveTrack({data: {"event": event.gameEnd, "gameTime": Math.abs(this.trackingParams.gameStartTime - new Date())}});
       this.addLeaderboardEntry("player1", this.calculatePoints());
     },
     highlightElement(el) {
-      const topDrop = this.$refs.backdropTop,
-        botDrop = this.$refs.backdropBottom,
-        leftDrop = this.$refs.backdropLeft,
-        rightDrop = this.$refs.backdropRight;
+      const size = {h: document.documentElement.clientHeight, w: document.documentElement.clientWidth};
+      this.drop.top.display = true;
+      this.drop.bottom.display = el !== null;
+      this.drop.right.display = el !== null;
+      this.drop.left.display = el !== null;
+
       if (el === null) {
-        topDrop.style.height = `${document.documentElement.clientHeight}px`;
-        topDrop.style.width = `${document.documentElement.clientWidth}px`;
-        topDrop.style.left = "0";
-        topDrop.style.top = "0";
-        botDrop.style.display = "none";
-        rightDrop.style.display = "none";
-        leftDrop.style.display = "none";
+        this.drop.top.height = `${size.h}px`;
+        this.drop.top.width = `${size.w}px`;
+        this.drop.top.left = "0";
+        this.drop.top.top = "0";
       } else {
         const bounds = el.getBoundingClientRect();
-        topDrop.style.height = `${bounds.top}px`;
-        topDrop.style.width = `${bounds.width}px`;
-        topDrop.style.left = `${bounds.left}px`;
-        topDrop.style.top = "0";
-        botDrop.style.height =
-          `${document.documentElement.clientHeight - bounds.bottom}px`;
-        botDrop.style.width = `${bounds.width}px`;
-        botDrop.style.left = `${bounds.left}px`;
-        botDrop.style.top = `${bounds.bottom}px`;
-        leftDrop.style.left = "0";
-        leftDrop.style.top = "0";
-        leftDrop.style.height = `${document.documentElement.clientHeight}px`;
-        leftDrop.style.width = `${bounds.left}px`;
-        rightDrop.style.top = "0";
-        rightDrop.style.left = `${bounds.left + bounds.width}px`;
-        rightDrop.style.width =
-          `${document.documentElement.clientWidth -
-          (bounds.left + bounds.width) 
-          }px`;
-        rightDrop.style.height = `${document.documentElement.clientHeight}px`;
+        this.drop.top.height = `${bounds.top}px`;
+        this.drop.top.width = `${bounds.width}px`;
+        this.drop.top.left = `${bounds.left}px`;
+        this.drop.top.top = "0";
+        this.drop.bottom.height = `${size.h - bounds.bottom}px`;
+        this.drop.bottom.width = `${bounds.width}px`;
+        this.drop.bottom.left = `${bounds.left}px`;
+        this.drop.bottom.top = `${bounds.bottom}px`;
+        this.drop.left.left = "0";
+        this.drop.left.top = "0";
+        this.drop.left.height = `${size.h}px`;
+        this.drop.left.width = `${bounds.left}px`;
+        this.drop.right.top = "0";
+        this.drop.right.left = `${bounds.left + bounds.width}px`;
+        this.drop.right.width = `${size.w - (bounds.left + bounds.width)}px`;
+        this.drop.right.height = `${size.h}px`;
       }
     },
     skipTutorial() {
@@ -626,25 +563,22 @@ export default {
       this.progressTutorial();
     },
     progressTutorial() {
-      this.tutorial.currentStep++;
-      if (this.tutorial.currentStep < 8) {
+      if (this.tutorial.currentStep <= this.steps.length) {
         const tutorialData = this.tutorialData;
         this.tutorial.currentText = tutorialData.text;
-        this.highlightElement(tutorialData.element);
+        this.highlightElement(tutorialData.ref);
       } else {
         this.stopTutorial();
       }
+      this.tutorial.currentStep++;
     },
     stopTutorial() {
-      const topDrop = this.$refs.backdropTop,
-        botDrop = this.$refs.backdropBottom,
-        leftDrop = this.$refs.backdropLeft,
-        rightDrop = this.$refs.backdropRight;
       this.tutorial.isRunning = false;
-      topDrop.style.display = "none";
-      botDrop.style.display = "none";
-      leftDrop.style.display = "none";
-      rightDrop.style.display = "none";
+      this.drop.top.display = false;
+      this.drop.bottom.display = false;
+      this.drop.left.display = false;
+      this.drop.right.display = false;
+
       this.$refs.notification.classList.add("notification-hidden");
       this.$refs.notification.classList.remove("notification-visible");
       this.slideInTitle();
@@ -657,9 +591,8 @@ export default {
       });
     },
     calculatePoints() {
-      var points =
-        (this.progress.difficulty - 1) * 5 + this.progress.currLevel;
-      console.log(`Points: ${points}`);
+      const points = (this.progress.difficulty - 1) * 5 + this.progress.currLevel;
+      this.$log(`Points: ${points}`);
       return points;
     },
   },
@@ -673,12 +606,9 @@ export default {
     this.$refs.difficultyTitle.addEventListener("animationend", () => {
       this.$refs.difficultyTitle.classList.remove("scroll-to-right");
     });
-    
+
     this.$refs.expression.addEventListener("animationend", () => {
-      this.$refs.expression.classList.remove("tada");
-      this.$refs.expression.classList.remove("shake");
-      this.$refs.expression.classList.remove("animated");
-      this.$refs.expression.classList.remove("text-reroll");
+      ["tada", "shake", "animated", "text-reroll"].forEach(className => this.$refs.expression.classList.remove(className));
       this.success = undefined;
     });
   },
@@ -689,31 +619,37 @@ export default {
 .tree {
   height: 40vh;
 }
+
 .tex {
   font-size: 1.5em;
 }
+
 .tree,
 .confirm,
 .bones-icon,
 .stopwatch {
   animation: slideInFromTop 1s;
 }
+
 .notification {
   z-index: 1032;
   position: fixed;
   top: -3.5em;
   width: 90%;
 }
+
 .notification-hidden {
   top: -3.5em;
   opacity: 1;
   transition: all 0.5s;
 }
+
 .notification-visible {
   top: 0;
   opacity: 1;
   transition: all 0.5s;
 }
+
 .tutorial-text-row {
   height: 3em;
   background-color: #fefefe;
@@ -722,6 +658,7 @@ export default {
   -moz-box-shadow: 2px 3px 2px 0px rgba(0, 0, 0, 0.5);
   box-shadow: 2px 3px 2px 0px rgba(0, 0, 0, 0.5);
 }
+
 .backdrop-click {
   z-index: 1032;
   position: absolute;
@@ -731,6 +668,7 @@ export default {
   width: 100%;
   height: 100%;
 }
+
 .backdrop {
   z-index: 1031;
   position: absolute;
@@ -739,40 +677,49 @@ export default {
   width: 100%;
   height: 100%;
 }
+
 .true {
   color: white;
   animation: spinTrue 0.5s;
   animation-fill-mode: forwards;
 }
+
 .true:hover {
   background-color: #1e7e34;
   color: white;
 }
+
 .false {
   color: white;
   animation: spinFalse 0.5s;
   animation-fill-mode: forwards;
 }
+
 .false:hover {
   background-color: #c82333;
   color: white;
 }
+
 .dice-selected {
   color: goldenrod;
   transition: all 1s;
 }
+
 .heart-selected {
   color: darkred;
   transition: all 1s;
 }
+
 .loot-unselected {
   color: darkgray;
   transition: all 1s;
 }
+
 .text-reroll {
   animation: textReroll 1s;
   animation-iteration-count: 1;
 }
+
 .title-difficulty {
   z-index: 999;
   font-size: 4em;
@@ -780,11 +727,13 @@ export default {
   top: 50vh;
   left: -5em;
 }
+
 .scroll-to-right {
   animation-name: scrollToRight;
   animation-duration: 1.5s;
   animation-timing-function: cubic-bezier(0.11, 1.23, 0.98, 0.01);
 }
+
 @keyframes textReroll {
   0% {
     transform: translate(1px, 1px) rotate(0deg);
@@ -842,6 +791,7 @@ export default {
     text-shadow: 0 0 0px rgba(0, 0, 0, 0.5);
   }
 }
+
 @keyframes spinTrue {
   0% {
     transform: rotate3d(0, 1, 0, 0deg);
@@ -852,6 +802,7 @@ export default {
     background-color: #28a745;
   }
 }
+
 @keyframes spinFalse {
   0% {
     transform: rotate3d(0, 1, 0, 0deg);
@@ -862,6 +813,7 @@ export default {
     background-color: #dc3545;
   }
 }
+
 @keyframes slideInFromTop {
   0% {
     transform: translateY(-3em);
@@ -872,6 +824,7 @@ export default {
     opacity: 1;
   }
 }
+
 @keyframes scrollToRight {
   0% {
     transform: translateX(0);

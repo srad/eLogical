@@ -78,6 +78,13 @@ class ElogicalApi {
   }
 
   /**
+   * @returns {Promise<AxiosResponse<T>>}
+   */
+  getTracker() {
+    return this.axios.get(`${API_URL}/tracker`);
+  }
+
+  /**
    * @returns {string}
    */
   getUser() {
@@ -89,6 +96,26 @@ class ElogicalApi {
    */
   getToken() {
     return store.getItem(JWTName);
+  }
+
+  /**
+   * Posts tracking data to the server. Optionally the startTime can be provided
+   * and the timespan is also calculated and posted to the server until right now.
+   * @param {Date} [starTime]
+   * @param {Object} data
+   * @returns {Promise<AxiosResponse<T>>}
+   */
+  saveTrack({starTime, data}) {
+    if (localStorage.trackingAllowed === "true") {
+      if (starTime) {
+        data.levelTime = Math.abs(starTime - new Date());
+      }
+      return this.axios.post(`${API_URL}/tracker`, data);
+    }
+    return new Promise(resolve => {
+      window.console.info(data);
+      resolve();
+    });
   }
 }
 

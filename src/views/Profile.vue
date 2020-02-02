@@ -5,7 +5,7 @@
     <b-row>
       <b-col>
         <div class="text-center" v-if="loading">
-          <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" />
+          <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading"/>
         </div>
         <div v-else>
           <h5>
@@ -31,7 +31,8 @@
 </template>
 
 <script>
-import RandomChart from '../components/RandomChart'
+import RandomChart from "../components/RandomChart";
+
 export default {
   name: "Profile",
   components: {RandomChart},
@@ -44,25 +45,38 @@ export default {
       charts: {
         pointsHistory: {
           chartData: {
-            labels: ['20.01.2020','21.01.2020','22.01.2020','23.01.2020','24.01.2020','25.01.2020'],
-            data: [15, 12, 17, 25, 26, 26]
+            labels: ["20.01.2020", "21.01.2020", "22.01.2020", "23.01.2020", "24.01.2020", "25.01.2020"],
+            data: [15, 12, 17, 25, 26, 26],
           },
-          options: {
-
-          }
-        }
-      }
+          options: {},
+        },
+      },
     };
   },
   mounted() {
-    this.$api
-      .getStats()
+    Promise.all([this.$api.getStats(), this.$api.getTracker()])
       .then(response => {
+        const stats = response[0];
+        const tracker = response[1].data;
+        // Frequency of total number correctly answered
+        const successTrue = tracker.groupBySuccess.filter(t => t._id.success);
+        // Frequency of total number wrongly answered
+        const successFalse = tracker.groupBySuccess.filter(t => !t._id.success);
+        // Frequency of total numbers correctly answered of a certain operator sequence
+        const successTrueByOp = tracker.groupBySuccessAndOp.filter(t => t._id.success);
+        // Frequency of total numbers wrongly answered of a certain operator sequence
+        const successFalseByOp = tracker.groupBySuccessAndOp.filter(t => t._id.success);
+
+        console.log(successTrue);
+        console.log(successFalse);
+        console.log(successTrueByOp);
+        console.log(successFalseByOp);
+
         this.loading = false;
-        if (response.data.length > 0) {
-          this.hasScore = response.data.length > 0;
+        if (stats.data.length > 0) {
+          this.hasScore = stats.data.length > 0;
           if (this.hasScore) {
-            this.entry = response.data[0];
+            this.entry = stats.data[0];
           }
         }
       })
