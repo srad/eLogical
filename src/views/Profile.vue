@@ -29,15 +29,23 @@
         <random-chart type="bar"></random-chart>
       </b-col>
     </b-row>
+    <b-row v-if="!loading">
+      <b-col>
+        <b-card>
+          <pie-chart :chart-data="charts.successRate.chartData"></pie-chart>
+        </b-card>
+      </b-col>
+    </b-row>
   </div>
 </template>
 
 <script>
 import RandomChart from "../components/RandomChart";
+import PieChart from "../lib/charts/PieChart.js"
 
 export default {
   name: "Profile",
-  components: {RandomChart},
+  components: {RandomChart, PieChart},
   data() {
     return {
       loading: true,
@@ -52,6 +60,17 @@ export default {
           },
           options: {},
         },
+        successRate: {
+          chartData: {
+            labels: ["right", "wrong"],
+            datasets: [
+              {
+                backgroundColor: ["#00cc00","#cc0000"],
+                data: []
+              }
+            ]
+          }
+        }
       },
     };
   },
@@ -73,6 +92,9 @@ export default {
         console.log(successFalse);
         console.log(successTrueByOp);
         console.log(successFalseByOp);
+
+        this.charts.successRate.chartData.datasets.data.push(successTrue[0].frequency)
+        this.charts.successRate.chartData.datasets.data.push(successFalse[0].frequency)
 
         this.loading = false;
         if (stats.data.length > 0) {
