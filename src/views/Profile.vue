@@ -29,10 +29,10 @@
         <random-chart type="bar"></random-chart>
       </b-col>
     </b-row>
-    <b-row v-if="!loading">
+    <b-row v-if="charts.successRate.chartData.length > 0">
       <b-col>
         <b-card>
-          <pie-chart :chart-data="charts.successRate.chartData"></pie-chart>
+          <doughnut-chart :chart-data="charts.successRate.chartData"></doughnut-chart>
         </b-card>
       </b-col>
     </b-row>
@@ -42,10 +42,11 @@
 <script>
 import RandomChart from "../components/RandomChart";
 import PieChart from "../lib/charts/PieChart.js"
+import DoughnutChart from "../lib/charts/DoughnutChart"
 
 export default {
   name: "Profile",
-  components: {RandomChart, PieChart},
+  components: {RandomChart, DoughnutChart},
   data() {
     return {
       loading: true,
@@ -93,8 +94,10 @@ export default {
         console.log(successTrueByOp);
         console.log(successFalseByOp);
 
-        this.charts.successRate.chartData.datasets[0].data.push(successTrue[0].frequency)
-        this.charts.successRate.chartData.datasets[0].data.push(successFalse[0].frequency)
+        if(successTrue[0].frequency && successFalse[0].frequency){
+            this.charts.successRate.chartData.datasets[0].data.push(successTrue[0].frequency)
+            this.charts.successRate.chartData.datasets[0].data.push(successFalse[0].frequency)
+        }
 
         this.loading = false;
         if (stats.data.length > 0) {
