@@ -29,7 +29,7 @@
         <random-chart type="bar"></random-chart>
       </b-col>
     </b-row>
-    <b-row v-if="charts.successRate.chartData.length > 0">
+    <b-row v-if="charts.successRate.chartData.datasets[0].data.length > 0">
       <b-col>
         <b-card>
           <doughnut-chart :chart-data="charts.successRate.chartData"></doughnut-chart>
@@ -94,7 +94,7 @@ export default {
         console.log(successTrueByOp);
         console.log(successFalseByOp);
 
-        if(successTrue[0].frequency && successFalse[0].frequency){
+        if(successTrue[0] && successTrue[0].hasOwnProperty("frequency") && successFalse[0] && successFalse[0].hasOwnProperty("frequency")){
             this.charts.successRate.chartData.datasets[0].data.push(successTrue[0].frequency)
             this.charts.successRate.chartData.datasets[0].data.push(successFalse[0].frequency)
         }
