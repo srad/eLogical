@@ -26,6 +26,7 @@ const fnOr = new FnWrapper({
     str: ({l}) => `${l[0]} || ${l[1]}`,
     obj: ({l}) => ({name: "\u2228", children: l}),
     py: ({l}) => `${l[0]} or ${l[1]}`,
+    array: ({l}) => ["or", l],
   },
 });
 
@@ -39,6 +40,7 @@ const fnAnd = new FnWrapper({
     str: ({l}) => `${l[0]} && ${l[1]}`,
     obj: ({l}) => ({name: "\u2227", children: l}),
     py: ({l}) => `${l[0]} and ${l[1]}`,
+    array: ({l}) => ["and", l],
   },
 });
 
@@ -52,6 +54,7 @@ const fnXor = new FnWrapper({
     str: ({l}) => `${l[0]} !== ${l[1]}`,
     obj: ({l}) => ({name: "\u2295", children: l}),
     py: ({l}) => `${l[0]} != ${l[1]}`,
+    array: ({l}) => ["xor", l],
   },
 });
 
@@ -65,6 +68,7 @@ const fnImpl = new FnWrapper({
     str: ({l}) => `!(${l[0]} && !${l[1]})`,
     obj: ({l}) => ({name: "\u2192", children: l}),
     py: ({l}) => `${l[0]} and (not ${l[1]}`,
+    array: ({l}) => ["implication", l],
   },
 });
 
@@ -78,6 +82,7 @@ const fnEq = new FnWrapper({
     str: ({l}) => `${l[0]} === ${l[1]}`,
     obj: ({l}) => ({name: "\u27F7", children: l}),
     py: ({l}) => `${l[0]} == ${l[1]}`,
+    array: ({l}) => ["eq", l],
   },
 });
 
@@ -94,6 +99,7 @@ const fnStart = new FnWrapper({
     str: ({l}) => `${l[0]}`,
     obj: ({l}) => ({name: "start", children: l}),
     py: (l, vars) => `lambda ${vars.join(", ")}: ${l[0]}`,
+    array: ({l}) => l,
   },
 });
 
@@ -106,6 +112,7 @@ const fnParens = new FnWrapper({
     str: ({l}) => `(${l[0]})`,
     obj: ({l}) => ({name: "paren", children: l}),
     py: ({l}) => `(${l[0]})`,
+    array: ({l}) => l,
   },
 });
 
@@ -119,6 +126,7 @@ const fnNot = new FnWrapper({
     str: ({l}) => `!(${l[0]})`,
     obj: ({l}) => ({name: "\u00AC", children: l}),
     py: ({l}) => `(not ${l[0]}`,
+    array: ({l}) => ["not", l],
   },
 });
 
@@ -135,6 +143,7 @@ const fnTrue = new FnWrapper({
     str: () => "true",
     obj: () => ({name: "1", children: []}),
     py: () => "True",
+    array: ({l}) => "true",
   },
 });
 
@@ -147,6 +156,7 @@ const fnFalse = new FnWrapper({
     str: () => "false",
     obj: () => ({name: "0", children: []}),
     py: () => "False",
+    array: ({l}) => "false",
   },
 });
 

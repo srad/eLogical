@@ -96,4 +96,11 @@ describe("generator.js", () => {
   it("eval expression: NOT(false AND false) => true", () => expect(notAnd.evaluate({v1: false})).to.be.true);
   it("eval expression: NOT(false AND false) => true", () => expect(notAnd.evaluate({})).to.be.true);
   it("eval expression: NOT(true  AND  true) => false", () => expect(notAnd.evaluate({v0: true, v1: true})).to.be.false);
+
+  it("(not (and ...)) ops", () => expect(notAnd.ops()).deep.equal(["not", "and"]));
+  it("(and ...) ops", () => expect(or.ops()).deep.equal(["or"]));
+  it("(and ...) ops", () => expect(and.ops()).deep.equal(["and"]));
+  it("(eq ...) ops", () => expect(eq.ops()).deep.equal(["eq"]));
+  it("(xor ...) ops", () => expect(xor.ops()).deep.equal(["xor"]));
+  it("(implication ...) ops", () => expect(impl.ops()).deep.equal(["implication"]));
 });

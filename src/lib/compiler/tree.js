@@ -60,11 +60,22 @@ class Node extends TreeNode {
    * @param {String} [type]
    * @param {Number} [depth]
    * @param {Boolean} [color]
-   * @returns {String}
+   * @returns {String|Array<*>}
    */
   to(type = "str", {depth = -1, color = false} = {}) {
     const results = this.children.map(node => node.to(type, {depth: depth + 1}));
     return this.fw.template[type]({l: results, vars: this.vars, depth, children: this.children, color: this.fw.color});
+  }
+
+  /**
+   * Returns a string array with all the operators in the formula.
+   * @returns {Array<String>}
+   */
+  ops() {
+    return this.to("array")
+      .join()
+      .split(",")
+      .filter(node => !/^v\d+$/.test(node)); // Slightly ghetto, but it's not worth rewriting code generator.
   }
 
   /**
