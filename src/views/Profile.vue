@@ -22,9 +22,11 @@
       </b-col>
     </b-row>
     <b-row>
-      <b-col>
-        <random-chart></random-chart>
-
+      <b-col cols="6">
+        <random-chart type="line"></random-chart>
+      </b-col>
+      <b-col cols="6">
+        <random-chart type="bar"></random-chart>
       </b-col>
     </b-row>
   </div>

@@ -7,6 +7,7 @@ import Help from "./views/Help";
 import Leaderboard from "./views/Leaderboard.vue";
 import About from "./views/About.vue";
 import Profile from "./views/Profile.vue";
+import Analytics from './views/Analytics.vue'
 
 Vue.use(Router);
 
@@ -19,5 +20,6 @@ export default new Router({
     {path: "/leaderboard", name: "leaderboard", component: Leaderboard, title: "Leaderboard"},
     {path: "/help", name: "help", component: Help, title: "Help"},
     {path: "/about", name: "about", component: About, title: "About"},
+    {path: "/analytics", name: "analytics", component: Analytics, title: "Analytics"},
   ],
 });
