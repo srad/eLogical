@@ -93,8 +93,8 @@ export default {
         console.log(successTrueByOp);
         console.log(successFalseByOp);
 
-        this.charts.successRate.chartData.datasets.data.push(successTrue[0].frequency)
-        this.charts.successRate.chartData.datasets.data.push(successFalse[0].frequency)
+        this.charts.successRate.chartData.datasets[0].data.push(successTrue[0].frequency)
+        this.charts.successRate.chartData.datasets[0].data.push(successFalse[0].frequency)
 
         this.loading = false;
         if (stats.data.length > 0) {
