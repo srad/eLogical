@@ -29,7 +29,7 @@
       </b-col>
       <b-col cols="6">
         <b-card>
-          <bar-chart :chart-data="charts.successByOp" ref="successByOp"></bar-chart>
+          <bar-chart :chart-data="charts.successByOp"></bar-chart>
         </b-card>
       </b-col>
     </b-row>
@@ -147,7 +147,6 @@ export default {
 
     this.charts.successByOp.datasets[0].data = successArray
     this.charts.successByOp.datasets[1].data = failArray
-    this.$refs.successByOp.renderChart(this.charts.successByOp)
     }
   },
   mounted() {
