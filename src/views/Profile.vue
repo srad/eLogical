@@ -102,6 +102,8 @@ export default {
   methods: {
     getDataSuccessByOps(successTrueByOp, successFalseByOp){
     //increment successCounts for each occurance of successfully answered operators
+    console.log("success", successTrueByOp)
+    console.log("fail", successFalseByOp)
     console.log("successLength", successTrueByOp.length)
     console.log("type",typeof(successTrueByOp))
     for(let i = 0; i < successTrueByOp.length; i++){
