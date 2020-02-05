@@ -175,7 +175,7 @@ export default {
         }
 
         if(successTrueByOp[0] && successTrueByOp[0].hasOwnProperty("_id") && successFalseByOp[0] && successFalseByOp[0].hasOwnProperty("_id")){
-            this.getDataSuccessByOps(successTrue, successFalse)
+            this.getDataSuccessByOps(successTrueByOp, successFalseByOp)
         }
 
         this.loading = false;
