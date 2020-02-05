@@ -25,14 +25,18 @@
       <b-col cols="6">
         <random-chart type="line"></random-chart>
       </b-col>
-      <b-col cols="6">
-        <random-chart type="bar"></random-chart>
-      </b-col>
     </b-row>
     <b-row v-if="charts.successRate.chartData.datasets[0].data.length > 0">
       <b-col>
         <b-card>
           <doughnut-chart :chart-data="charts.successRate.chartData"></doughnut-chart>
+        </b-card>
+      </b-col>
+    </b-row>
+    <b-row v-if="charts.successByOp.datasets[0].data.length > 0">
+      <b-col>
+        <b-card>
+          <bar-chart :chart-data="charts.successByOp" ref="successByOp"></bar-chart>
         </b-card>
       </b-col>
     </b-row>
@@ -43,10 +47,10 @@
 import RandomChart from "../components/RandomChart";
 import PieChart from "../lib/charts/PieChart.js"
 import DoughnutChart from "../lib/charts/DoughnutChart"
-
+import BarChart from "../lib/charts/BarChart"
 export default {
   name: "Profile",
-  components: {RandomChart, DoughnutChart},
+  components: {RandomChart, DoughnutChart, BarChart},
   data() {
     return {
       loading: true,
@@ -71,9 +75,75 @@ export default {
               }
             ]
           }
+        },
+        successByOp: {
+          labels: ["and", "or", "not", "true", "false", "xor", "implication", "eq"],
+          datasets: [{
+            label: "answered correctly",
+            backgroundColor: 'rgb(77, 186, 135)',
+            data: []
+          },
+          {
+            label: "answered wrong",
+            backgroundColor: 'rgb(255, 99, 132)',
+            data: []
+          }
+          ],
+          successCounts: {
+            "and": 0, "or": 0, "not": 0, "true": 0, "false": 0, "xor": 0, "implication": 0, "eq":0
+          },
+          failCounts: {
+            "and": 0, "or": 0, "not": 0, "true": 0, "false": 0, "xor": 0, "implication": 0, "eq":0
+          }
         }
       },
     };
+  },
+  methods: {
+    getDataSuccessByOps(successTrueByOp, successFalseByOp){
+    //increment successCounts for each occurance of successfully answered operators
+    for(let i = 0; i < successTrueByOp.length; i++){
+      let currData = successTrueByOp[i]
+      for(let j = 0; j < currData._id.op.length; j++){
+        this.charts.successByOp.successCounts[currData._id.op[j]]++
+      }
+    }
+
+    //do the same for failed operators
+    for(let i = 0; i < successFalseByOp.length; i++){
+      let currData = successFalseByOp[i]
+      for(let j = 0; j < currData._id.op.length; j++){
+        this.charts.successByOp.failCounts[currData._id.op[j]]--
+      }
+    }
+
+    //transfer them to arrays for the bar-chart
+    let successArray = [
+      this.charts.successByOp.successCounts.and,
+      this.charts.successByOp.successCounts.or,
+      this.charts.successByOp.successCounts.not,
+      this.charts.successByOp.successCounts.true,
+      this.charts.successByOp.successCounts.false,
+      this.charts.successByOp.successCounts.xor,
+      this.charts.successByOp.successCounts.implication,
+      this.charts.successByOp.successCounts.eq
+    ]
+
+    let failArray = [
+      this.charts.successByOp.failCounts.and,
+      this.charts.successByOp.failCounts.or,
+      this.charts.successByOp.failCounts.not,
+      this.charts.successByOp.failCounts.true,
+      this.charts.successByOp.failCounts.false,
+      this.charts.successByOp.failCounts.xor,
+      this.charts.successByOp.failCounts.implication,
+      this.charts.successByOp.failCounts.eq
+    ]
+
+    this.charts.successByOp.datasets[0].data = successArray
+    this.charts.successByOp.datasets[1].data = failArray
+    this.$refs.successByOp.renderChart(this.charts.successByOp)
+    }
   },
   mounted() {
     Promise.all([this.$api.getStats(), this.$api.getTracker()])
@@ -97,6 +167,10 @@ export default {
         if(successTrue[0] && successTrue[0].hasOwnProperty("frequency") && successFalse[0] && successFalse[0].hasOwnProperty("frequency")){
             this.charts.successRate.chartData.datasets[0].data.push(successTrue[0].frequency)
             this.charts.successRate.chartData.datasets[0].data.push(successFalse[0].frequency)
+        }
+
+        if(successTrueByOp[0] && successTrueByOp[0].hasOwnProperty("_id") && successFalseByOp[0] && successFalseByOp[0].hasOwnProperty("_id")){
+            this.getDataSuccessByOps(successTrue, successFalse)
         }
 
         this.loading = false;
