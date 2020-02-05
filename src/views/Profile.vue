@@ -102,8 +102,11 @@ export default {
   methods: {
     getDataSuccessByOps(successTrueByOp, successFalseByOp){
     //increment successCounts for each occurance of successfully answered operators
+    console.log("successLength", successTrueByOp.length)
+    console.log("type",typeof(successTrueByOp))
     for(let i = 0; i < successTrueByOp.length; i++){
       let currData = successTrueByOp[i]
+      console.log("successLength", currData._id.op.length)
       for(let j = 0; j < currData._id.op.length; j++){
         this.charts.successByOp.successCounts[currData._id.op[j]]++
       }
