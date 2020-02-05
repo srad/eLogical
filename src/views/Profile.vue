@@ -21,22 +21,22 @@
         </div>
       </b-col>
     </b-row>
-    <b-row>
+    <b-row v-if="!loading">
       <b-col cols="6">
-        <random-chart type="line"></random-chart>
-      </b-col>
-    </b-row>
-    <b-row v-if="charts.successRate.chartData.datasets[0].data.length > 0">
-      <b-col>
         <b-card>
           <doughnut-chart :chart-data="charts.successRate.chartData"></doughnut-chart>
         </b-card>
       </b-col>
-    </b-row>
-    <b-row v-if="!loading">
-      <b-col>
+      <b-col cols="6">
         <b-card>
           <bar-chart :chart-data="charts.successByOp" ref="successByOp"></bar-chart>
+        </b-card>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col cols="6">
+        <b-card>
+          <random-chart type="line"></random-chart>
         </b-card>
       </b-col>
     </b-row>
