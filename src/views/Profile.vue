@@ -33,7 +33,7 @@
         </b-card>
       </b-col>
     </b-row>
-    <b-row v-if="charts.successByOp.datasets[0].data.length > 0">
+    <b-row v-if="!loading">
       <b-col>
         <b-card>
           <bar-chart :chart-data="charts.successByOp" ref="successByOp"></bar-chart>
