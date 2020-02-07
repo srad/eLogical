@@ -70,6 +70,13 @@ class ElogicalApi {
   }
 
   /**
+   * @returns {Promise<AxiosResponse<T>>}
+   */
+  getAnalytics() {
+    return this.axios.get(`${API_URL}/analytics`);
+  }
+
+  /**
    * @param {Object} data
    * @returns {Promise<AxiosResponse<T>>}
    */
