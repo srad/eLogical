@@ -515,7 +515,11 @@ export default {
       this.modalText = "Game Over!";
       this.$refs.modal.show();
 
-      this.$api.saveTrack({data: {"event": event.gameEnd, "gameTime": Math.abs(this.trackingParams.gameStartTime - new Date())}});
+      this.$api.saveTrack({
+        data: {
+          "event": event.gameEnd, 
+          "gameTime": Math.abs(this.trackingParams.gameStartTime - new Date()), 
+          "difficulty" : this.progress.difficulty}});
       this.addLeaderboardEntry("player1", this.calculatePoints());
     },
     highlightElement(el) {
