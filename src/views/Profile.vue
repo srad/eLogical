@@ -29,14 +29,7 @@
       </b-col>
       <b-col cols="6">
         <b-card>
-          <bar-chart :chart-data="charts.successByOp"></bar-chart>
-        </b-card>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="6">
-        <b-card>
-          <random-chart type="line"></random-chart>
+          <bar-chart :chart-data="charts.successByOp"></bar-chart>  
         </b-card>
       </b-col>
     </b-row>
@@ -44,13 +37,12 @@
 </template>
 
 <script>
-import RandomChart from "../components/RandomChart";
 import PieChart from "../lib/charts/PieChart.js"
 import DoughnutChart from "../lib/charts/DoughnutChart"
 import BarChart from "../lib/charts/BarChart"
 export default {
   name: "Profile",
-  components: {RandomChart, DoughnutChart, BarChart},
+  components: {DoughnutChart, BarChart},
   data() {
     return {
       loading: true,
@@ -58,13 +50,6 @@ export default {
       hasScore: false,
       localusername: localStorage.username,
       charts: {
-        pointsHistory: {
-          chartData: {
-            labels: ["20.01.2020", "21.01.2020", "22.01.2020", "23.01.2020", "24.01.2020", "25.01.2020"],
-            data: [15, 12, 17, 25, 26, 26],
-          },
-          options: {},
-        },
         successRate: {
           chartData: {
             labels: ["right", "wrong"],
@@ -81,7 +66,7 @@ export default {
           datasets: [{
             label: "answered correctly",
             backgroundColor: 'rgb(77, 186, 135)',
-            data: []
+            data: [],
           },
           {
             label: "answered wrong",
@@ -101,16 +86,17 @@ export default {
   },
   methods: {
     getDataSuccessByOps(successTrueByOp, successFalseByOp){
-    //increment successCounts for each occurance of successfully answered operators
     console.log("success", successTrueByOp)
     console.log("fail", successFalseByOp)
     console.log("successLength", successTrueByOp.length)
     console.log("type",typeof(successTrueByOp))
+
+    //increment successCounts for each occurance of successfully answered operators
     for(let i = 0; i < successTrueByOp.length; i++){
       let currData = successTrueByOp[i]
-      console.log("successLength", currData._id.op.length)
+      // console.log("successLength", currData._id.op.length)
       for(let j = 0; j < currData._id.op.length; j++){
-        this.charts.successByOp.successCounts[currData._id.op[j]]++
+        this.charts.successByOp.successCounts[currData._id.op[j]] += currData.frequency;
       }
     }
 
@@ -118,7 +104,7 @@ export default {
     for(let i = 0; i < successFalseByOp.length; i++){
       let currData = successFalseByOp[i]
       for(let j = 0; j < currData._id.op.length; j++){
-        this.charts.successByOp.failCounts[currData._id.op[j]]--
+        this.charts.successByOp.failCounts[currData._id.op[j]] += currData.frequency;
       }
     }
 
@@ -161,12 +147,12 @@ export default {
         // Frequency of total numbers correctly answered of a certain operator sequence
         const successTrueByOp = tracker.groupBySuccessAndOp.filter(t => t._id.success);
         // Frequency of total numbers wrongly answered of a certain operator sequence
-        const successFalseByOp = tracker.groupBySuccessAndOp.filter(t => t._id.success);
+        const successFalseByOp = tracker.groupBySuccessAndOp.filter(t => !t._id.success);
 
-        console.log(successTrue);
-        console.log(successFalse);
-        console.log(successTrueByOp);
-        console.log(successFalseByOp);
+        console.log("successTrue", successTrue);
+        console.log("successFalse", successFalse);
+        console.log("successTrueByOp", successTrueByOp);
+        console.log("successFalseByOp", successFalseByOp);
 
         if(successTrue[0] && successTrue[0].hasOwnProperty("frequency") && successFalse[0] && successFalse[0].hasOwnProperty("frequency")){
             this.charts.successRate.chartData.datasets[0].data.push(successTrue[0].frequency)
