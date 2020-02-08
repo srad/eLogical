@@ -136,7 +136,7 @@ export default {
     }
   },
   mounted() {
-    Promise.all([this.$api.getStats(), this.$api.getTracker()])
+    Promise.all([this.$api.getStats(), this.$api.getTracker(), this.$api.getAnalytics()])
       .then(response => {
         const stats = response[0];
         const tracker = response[1].data;
