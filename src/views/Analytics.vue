@@ -7,48 +7,55 @@
         <b-card>
           <h2>Runs completed:</h2>
           <span id="spanRunsCompleted"></span>
+          <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-if="loading" />
         </b-card>
       </b-col>
       <b-col>
         <b-card>
           <h2>Avg. Runs per user:</h2>
           <span id="spanAvgRuns"></span>
+          <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-if="loading" />
         </b-card>
       </b-col>
       <b-col>
         <b-card>
           <h2>Levels completed</h2>
           <span id="spanLevelsCompleted"></span>
+          <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-if="loading" />
         </b-card>
       </b-col>
     </b-row>
-    <b-row class="mb-4" v-if="!loading">
+    <b-row class="mb-4">
       <b-col>
         <b-card>
           <h2>Game Over by difficulty:</h2>
-          <bar-chart :chart-data="charts.difficultyComparison"></bar-chart>
+          <bar-chart :chart-data="charts.difficultyComparison"  v-if="!loading"></bar-chart>
+          <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else />
         </b-card>
       </b-col>
     </b-row>
-    <b-row class="mb-4" v-if="!loading">
+    <b-row class="mb-4">
       <b-col>
         <b-card>
           <h2>Games played by date:</h2>
-          <bar-chart :chart-data="charts.gamesByDate"></bar-chart>
+          <bar-chart :chart-data="charts.gamesByDate" v-if="!loading"></bar-chart>
+          <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else />
         </b-card>
       </b-col>
     </b-row>
-    <b-row class="m-t" v-if="!loading">
+    <b-row class="m-t">
       <b-col cols="6">
         <b-card>
           <h2>Mistakes by Operator:</h2>
-          <doughnut-chart :chart-data="charts.mistakesByOperator"></doughnut-chart>
+          <doughnut-chart :chart-data="charts.mistakesByOperator" v-if="!loading"></doughnut-chart>
+          <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else />
         </b-card>
       </b-col>
       <b-col cols="6">
         <b-card>
           <h2>Rewards Selected:</h2>
-          <doughnut-chart :chart-data="charts.rewardsSelected"></doughnut-chart>
+          <doughnut-chart :chart-data="charts.rewardsSelected" v-if="!loading"></doughnut-chart>
+          <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else />
         </b-card>
       </b-col>
     </b-row>

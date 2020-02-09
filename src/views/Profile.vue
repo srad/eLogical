@@ -1,35 +1,39 @@
 <template>
-  <div>
+  <div class="text-center">
     <h1>My Profile</h1>
     <hr />
     <b-row>
       <b-col>
-        <div class="text-center" v-if="loading">
-          <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" />
-        </div>
-        <div v-else>
-          <h5>
-            Your username is
-            <b-badge variant="info" v-if="hasScore">{{entry.client.name}}</b-badge>
-            <b-badge variant="info" v-else>{{localusername}}</b-badge>
-          </h5>
-          <h5 v-if="hasScore">
-            Your highscore is
-            <b-badge variant="warning">{{entry.total}}</b-badge>
-          </h5>
-          <h4 v-else>You don't have a highscore yet!</h4>
-        </div>
+        <b-card>
+          <div v-if="loading">
+            <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" />
+          </div>
+          <div v-else>
+            <h5>
+              Your username is
+              <b-badge variant="info" v-if="hasScore">{{entry.client.name}}</b-badge>
+              <b-badge variant="info" v-else>{{localusername}}</b-badge>
+            </h5>
+            <h5 v-if="hasScore">
+              Your highscore is
+              <b-badge variant="warning">{{entry.total}}</b-badge>
+            </h5>
+            <h4 v-else>You don't have a highscore yet!</h4>
+          </div>
+        </b-card>
       </b-col>
     </b-row>
-    <b-row v-if="!loading">
+    <b-row>
       <b-col cols="6">
         <b-card>
-          <doughnut-chart :chart-data="charts.successRate.chartData"></doughnut-chart>
+          <doughnut-chart :chart-data="charts.successRate.chartData" v-if="!loading"></doughnut-chart>
+          <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else />
         </b-card>
       </b-col>
       <b-col cols="6">
         <b-card>
-          <bar-chart :chart-data="charts.successByOp"></bar-chart>
+          <bar-chart :chart-data="charts.successByOp" v-if="!loading"></bar-chart>
+          <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else />
         </b-card>
       </b-col>
     </b-row>
