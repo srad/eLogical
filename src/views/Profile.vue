@@ -218,8 +218,6 @@ export default {
             this.entry = stats.data[0];
           }
         }
-        console.log(this.charts.successByOp.datasets[0].data);
-        console.log(this.charts.successByOp.datasets[1].data);
       })
       .catch(error => {
         this.loading = false;

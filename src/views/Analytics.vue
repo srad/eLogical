@@ -22,7 +22,7 @@
         </b-card>
       </b-col>
     </b-row>
-    <b-row class="mb-4">
+    <b-row class="mb-4" v-if="!loading">
       <b-col>
         <b-card>
           <h2>Game Over by difficulty:</h2>
@@ -30,7 +30,7 @@
         </b-card>
       </b-col>
     </b-row>
-    <b-row class="mb-4">
+    <b-row class="mb-4" v-if="!loading">
       <b-col>
         <b-card>
           <h2>Games played by date:</h2>
@@ -38,7 +38,7 @@
         </b-card>
       </b-col>
     </b-row>
-    <b-row class="m-t">
+    <b-row class="m-t" v-if="!loading">
       <b-col cols="6">
         <b-card>
           <h2>Mistakes by Operator:</h2>
@@ -143,13 +143,10 @@ export default {
         const finishedRunsByDate = analytics.groupEventsByDay.filter(
           x => x._id.event == "game-end"
         );
-        // console.log("finishedRunsByDate", finishedRunsByDate);
-        finishedRunsByDate.forEach(element => {
-          this.charts.gamesByDate.labels.push(element._id.day);
-          this.charts.gamesByDate.datasets[0].data.push(element.frequency);
-        });
-        console.log(this.charts.gamesByDate.labels);
-        console.log(this.charts.gamesByDate.datasets[0].data);
+        this.charts.gamesByDate.labels = finishedRunsByDate.map(x => x._id.day);
+        this.charts.gamesByDate.datasets[0].data = finishedRunsByDate.map(
+          x => x.frequency
+        );
 
         this.loading = false;
       })
