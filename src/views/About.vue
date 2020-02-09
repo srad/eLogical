@@ -31,6 +31,7 @@ export default {
         ["https://github.com/visjs/vis-network", "vis-network"],
         ["https://github.com/axios/axios", "axios"],
         ["https://www.chaijs.com/", "Chai"],
+        ["https://vue-chartjs.org/", "Vue-Chartjs"]
       ],
     };
   },
