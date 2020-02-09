@@ -1,38 +1,40 @@
 <template>
   <b-container class="text-center">
     <h1>App Dashboard</h1>
-    <hr/>
-    <b-row>
+    <hr />
+    <b-row class="mb-4">
       <b-col>
         <b-card>
           <h2>Runs completed:</h2>
-          <span>504</span>
+          <span id="spanRunsCompleted"></span>
         </b-card>
       </b-col>
       <b-col>
         <b-card>
           <h2>Avg. Runs per user:</h2>
-          <span>38</span>
+          <span id="spanAvgRuns"></span>
         </b-card>
       </b-col>
       <b-col>
         <b-card>
-          <h2>Total Levels completed</h2>
-          <span>10215</span>
+          <h2>Levels completed</h2>
+          <span id="spanLevelsCompleted"></span>
         </b-card>
       </b-col>
     </b-row>
-    <b-row>
-      <b-col cols="6">
+    <b-row class="mb-4">
+      <b-col>
         <b-card>
-          <h2>Deaths by difficulty:</h2>
-          <random-chart type="bar"></random-chart>
+          <h2>Game Over by difficulty:</h2>
+          <bar-chart :chart-data="charts.difficultyComparison"></bar-chart>
         </b-card>
       </b-col>
-      <b-col cols="6">
+    </b-row>
+    <b-row class="mb-4">
+      <b-col>
         <b-card>
-          <h2>Another Graph:</h2>
-          <random-chart type="line"></random-chart>
+          <h2>Games played by date:</h2>
+          <bar-chart :chart-data="charts.gamesByDate"></bar-chart>
         </b-card>
       </b-col>
     </b-row>
@@ -40,13 +42,13 @@
       <b-col cols="6">
         <b-card>
           <h2>Mistakes by Operator:</h2>
-          <random-chart type="doughnut"></random-chart>
+          <doughnut-chart :chart-data="charts.mistakesByOperator"></doughnut-chart>
         </b-card>
       </b-col>
       <b-col cols="6">
         <b-card>
           <h2>Rewards Selected:</h2>
-          <random-chart type="doughnut"></random-chart>
+          <doughnut-chart :chart-data="charts.rewardsSelected"></doughnut-chart>
         </b-card>
       </b-col>
     </b-row>
@@ -54,53 +56,107 @@
 </template>
 
 <script>
-import RandomChart from '../components/RandomChart'
+import BarChart from "../lib/charts/BarChart";
+import DoughnutChart from "../lib/charts/DoughnutChart";
 export default {
   name: "Profile",
-  components: {RandomChart},
+  components: { DoughnutChart, BarChart },
   data() {
     return {
       loading: true,
       charts: {
-        pointsHistory: {
-          chartData: {
-            labels: ['20.01.2020','21.01.2020','22.01.2020','23.01.2020','24.01.2020','25.01.2020'],
-            datasets: [15, 12, 17, 25, 26, 26]
-          },
-          options: {
-
-          }
+        difficultyComparison: {
+          labels: [],
+          datasets: [
+            {
+              label: `Number of "Game Over"s`,
+              backgroundColor: "rgb(77, 186, 135)",
+              data: []
+            }
+          ]
         },
-        difficultyComparison:{
-          chartData: {
-            datasets: [{
-              barPercentage: 0.5,
-              barThickness: 6,
-              maxBarThickness: 8,
-              minBarLength: 2,
-              data: [10, 20, 30, 40, 50, 60, 70]
-            }]
-          }
+        gamesByDate: {
+          labels: [],
+          datasets: [
+            {
+              label: "Number of games played",
+              backgroundColor: "rgb(77, 186, 135)",
+              data: []
+            }
+          ]
+        },
+        mistakesByOperator: {
+          labels: [
+            "AND",
+            "OR",
+            "IMPLICATION",
+            "NOT",
+            "TRUE",
+            "FALSE",
+            "XOR",
+            "EQUAL"
+          ],
+          datasets: [
+            {
+              backgroundColor: [
+                "#0066ff",
+                "#ff00ff",
+                "#66ff33",
+                "#ff6600",
+                "#cc33ff",
+                "#33ffff",
+                "#ffff33",
+                "#ff3333"
+              ],
+              data: [0, 0, 0, 0, 0, 0, 0, 0]
+            }
+          ]
+        },
+        rewardsSelected: {
+          labels: ["life", "reroll"],
+          datasets: [
+            {
+              backgroundColor: ["#00cc00", "#cc0000"],
+              data: [0, 0]
+            }
+          ]
         }
       }
     };
   },
   mounted() {
-    this.$api
-      .getStats()
+    Promise.all([this.$api.getAnalytics()])
       .then(response => {
+        const analytics = response[0].data;
+        // console.log("analytics", analytics);
+
+        const runsCompleted = analytics.groupByEvents[1].frequency;
+        const avgRuns = runsCompleted / analytics.countUsers;
+        const levelsCompleted = analytics.groupBySuccess[1].frequency;
+
+        document.getElementById("spanRunsCompleted").innerText = runsCompleted;
+        document.getElementById("spanAvgRuns").innerText = avgRuns;
+        document.getElementById(
+          "spanLevelsCompleted"
+        ).innerText = levelsCompleted;
+
+        const finishedRunsByDate = analytics.groupEventsByDay.filter(
+          x => x._id.event == "game-end"
+        );
+        // console.log("finishedRunsByDate", finishedRunsByDate);
+        finishedRunsByDate.forEach(element => {
+          this.charts.gamesByDate.labels.push(element._id.day);
+          this.charts.gamesByDate.datasets[0].data.push(element.frequency);
+        });
+        console.log(this.charts.gamesByDate.labels);
+        console.log(this.charts.gamesByDate.datasets[0].data);
+
         this.loading = false;
-        if (response.data.length > 0) {
-          this.hasScore = response.data.length > 0;
-          if (this.hasScore) {
-            this.entry = response.data[0];
-          }
-        }
       })
       .catch(error => {
         this.loading = false;
         alert(error);
       });
-  },
+  }
 };
 </script>
