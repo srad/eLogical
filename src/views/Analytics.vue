@@ -94,11 +94,22 @@ export default {
             datasets: [
               {
                 backgroundColor: "rgb(77, 186, 135)",
+                label: "Game Overs",
                 data: []
               }
             ]
           },
-          options: {}
+          options: {
+            scales: {
+              yAxes: [
+                {
+                  ticks: {
+                    beginAtZero: true
+                  }
+                }
+              ]
+            }
+          }
         },
         gamesByDate: {
           data: {
