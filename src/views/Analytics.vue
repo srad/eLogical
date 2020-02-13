@@ -148,7 +148,13 @@ export default {
             ],
             datasets: [
               {
+                label: "answered correctly",
                 backgroundColor: 'rgb(255, 99, 132)',
+                data: [0, 0, 0, 0, 0, 0, 0, 0]
+              },
+              {
+                label: "answered wrong",
+                backgroundColor: 'rgb(77, 186, 135)',
                 data: [0, 0, 0, 0, 0, 0, 0, 0]
               }
             ]
@@ -223,15 +229,35 @@ export default {
             xor: 0,
             implication: 0,
             eq: 0
+        },
+
+          correctCount = {
+            and: 0,
+            or: 0,
+            not: 0,
+            true: 0,
+            false: 0,
+            xor: 0,
+            implication: 0,
+            eq: 0
         }
 
+        let correctByOperator = analytics.groupBySuccessAndOperator.filter(el => el._id.success === true)
+        console.log("correctByOperator", mistakesByOperator)
+        correctByOperator.forEach(
+          el => el._id.op.forEach(op => correctCount[op] = correctCount[op] +  el.frequency)
+        )
+        console.log("correctCount", correctCount)
+        this.charts.mistakesByOperator.data.datasets[0].data = [correctCount.and, correctCount.or, correctCount.implication,
+        correctCount.not, correctCount.true, correctCount.false, correctCount.xor, correctCount.eq]
+
         let mistakesByOperator = analytics.groupBySuccessAndOperator.filter(el => el._id.success === false)
-        console.log("successByOperator", mistakesByOperator)
+        console.log("mistakesByOperator", mistakesByOperator)
         mistakesByOperator.forEach(
           el => el._id.op.forEach(op => mistakeCount[op] = mistakeCount[op] +  el.frequency)
         )
         console.log("mistakeCount", mistakeCount)
-        this.charts.mistakesByOperator.data.datasets[0].data = [mistakeCount.and, mistakeCount.or, mistakeCount.implication,
+        this.charts.mistakesByOperator.data.datasets[1].data = [mistakeCount.and, mistakeCount.or, mistakeCount.implication,
         mistakeCount.not, mistakeCount.true, mistakeCount.false, mistakeCount.xor, mistakeCount.eq]
 
         document.getElementById("spanRunsStarted").innerText = runsStarted;
