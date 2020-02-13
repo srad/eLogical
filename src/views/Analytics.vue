@@ -37,24 +37,40 @@
     <b-card-group class="mb-4">
       <b-card>
         <h2>Game Over by difficulty</h2>
-        <bar-chart :chart-data="charts.difficultyComparison" v-if="!loading"></bar-chart>
+        <bar-chart
+          :chart-data="charts.difficultyComparison.data"
+          :options="charts.difficultyComparison.options"
+          v-if="!loading"
+        ></bar-chart>
         <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else />
       </b-card>
       <b-card>
         <h2>Games played by date</h2>
-        <bar-chart :chart-data="charts.gamesByDate" v-if="!loading"></bar-chart>
+        <bar-chart
+          :chart-data="charts.gamesByDate.data"
+          :options="charts.gamesByDate.options"
+          v-if="!loading"
+        ></bar-chart>
         <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else />
       </b-card>
     </b-card-group>
     <b-card-group class="mb-4">
       <b-card>
         <h2>Mistakes by operator</h2>
-        <doughnut-chart :chart-data="charts.mistakesByOperator" v-if="!loading"></doughnut-chart>
+        <doughnut-chart
+          :chart-data="charts.mistakesByOperator.data"
+          :options="charts.mistakesByOperator.options"
+          v-if="!loading"
+        ></doughnut-chart>
         <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else />
       </b-card>
       <b-card>
         <h2>Rewards selected</h2>
-        <doughnut-chart :chart-data="charts.rewardsSelected" v-if="!loading"></doughnut-chart>
+        <doughnut-chart
+          :chart-data="charts.rewardsSelected.data"
+          :options="charts.rewardsSelected.options"
+          v-if="!loading"
+        ></doughnut-chart>
         <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else />
       </b-card>
     </b-card-group>
@@ -72,60 +88,82 @@ export default {
       loading: true,
       charts: {
         difficultyComparison: {
-          labels: [],
-          datasets: [
-            {
-              label: `Number of "Game Over"s`,
-              backgroundColor: "rgb(77, 186, 135)",
-              data: []
-            }
-          ]
+          data: {
+            labels: [],
+            datasets: [
+              {
+                label: `Number of "Game Over"s`,
+                backgroundColor: "rgb(77, 186, 135)",
+                data: []
+              }
+            ]
+          },
+          options: {}
         },
         gamesByDate: {
-          labels: [],
-          datasets: [
-            {
-              label: "Number of games played",
-              backgroundColor: "rgb(77, 186, 135)",
-              data: []
+          data: {
+            labels: [],
+            datasets: [
+              {
+                label: "Number of games played",
+                backgroundColor: "rgb(77, 186, 135)",
+                data: []
+              }
+            ]
+          },
+          options: {
+            scales: {
+              yAxes: [
+                {
+                  ticks: {
+                    beginAtZero: true
+                  }
+                }
+              ]
             }
-          ]
+          }
         },
         mistakesByOperator: {
-          labels: [
-            "AND",
-            "OR",
-            "IMPLICATION",
-            "NOT",
-            "TRUE",
-            "FALSE",
-            "XOR",
-            "EQUAL"
-          ],
-          datasets: [
-            {
-              backgroundColor: [
-                "#0066ff",
-                "#ff00ff",
-                "#66ff33",
-                "#ff6600",
-                "#cc33ff",
-                "#33ffff",
-                "#ffff33",
-                "#ff3333"
-              ],
-              data: [0, 0, 0, 0, 0, 0, 0, 0]
-            }
-          ]
+          data: {
+            labels: [
+              "AND",
+              "OR",
+              "IMPLICATION",
+              "NOT",
+              "TRUE",
+              "FALSE",
+              "XOR",
+              "EQUAL"
+            ],
+            datasets: [
+              {
+                backgroundColor: [
+                  "#0066ff",
+                  "#ff00ff",
+                  "#66ff33",
+                  "#ff6600",
+                  "#cc33ff",
+                  "#33ffff",
+                  "#ffff33",
+                  "#ff3333"
+                ],
+                data: [0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ]
+          },
+          options: {}
         },
         rewardsSelected: {
-          labels: ["life", "reroll"],
-          datasets: [
-            {
-              backgroundColor: ["rgb(77, 186, 135)", "rgb(255, 99, 132)"],
-              data: [0, 0]
-            }
-          ]
+          data: {
+            labels: ["life", "reroll"],
+            datasets: [
+              {
+                backgroundColor: ["rgb(77, 186, 135)", "rgb(255, 99, 132)"],
+                data: [0, 0]
+              }
+            ]
+          },
+          options: {}
         }
       }
     };
@@ -158,8 +196,10 @@ export default {
           return 0;
         });
 
-        this.charts.gamesByDate.labels = finishedRunsByDate.map(x => x._id.day);
-        this.charts.gamesByDate.datasets[0].data = finishedRunsByDate.map(
+        this.charts.gamesByDate.data.labels = finishedRunsByDate.map(
+          x => x._id.day
+        );
+        this.charts.gamesByDate.data.datasets[0].data = finishedRunsByDate.map(
           x => x.frequency
         );
 

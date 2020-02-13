@@ -26,12 +26,20 @@
     <b-card-group>
       <b-card>
         <h2>Answers submitted</h2>
-        <doughnut-chart :chart-data="charts.successRate.chartData" v-if="!loading"></doughnut-chart>
+        <doughnut-chart
+          :chart-data="charts.successRate.chartData"
+          :options="charts.successRate.options"
+          v-if="!loading"
+        ></doughnut-chart>
         <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else />
       </b-card>
       <b-card>
         <h2>Mistakes by operator</h2>
-        <bar-chart :chart-data="charts.successByOp" v-if="!loading"></bar-chart>
+        <bar-chart
+          :chart-data="charts.successByOp.data"
+          :otions="charts.successByOp.options"
+          v-if="!loading"
+        ></bar-chart>
         <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else />
       </b-card>
     </b-card-group>
@@ -61,10 +69,11 @@ export default {
                 data: []
               }
             ]
-          }
+          },
+          options: {}
         },
         successByOp: {
-          labels: [
+          data:{labels: [
             "and",
             "or",
             "not",
@@ -85,7 +94,8 @@ export default {
               backgroundColor: "rgb(255, 99, 132)",
               data: []
             }
-          ],
+          ],},
+          options: {},          
           successCounts: {
             and: 0,
             or: 0,
@@ -159,8 +169,8 @@ export default {
         this.charts.successByOp.failCounts.eq
       ];
 
-      this.charts.successByOp.datasets[0].data = successArray;
-      this.charts.successByOp.datasets[1].data = failArray;
+      this.charts.successByOp.data.datasets[0].data = successArray;
+      this.charts.successByOp.data.datasets[1].data = failArray;
     }
   },
   mounted() {
