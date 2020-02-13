@@ -157,7 +157,17 @@ export default {
               }
             ]
           },
-          options: {}
+          options: {
+            scales: {
+              yAxes: [
+                {
+                  ticks: {
+                    beginAtZero: true
+                  }
+                }
+              ]
+            }
+          }
         },
         rewardsSelected: {
           data: {
