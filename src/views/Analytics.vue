@@ -4,8 +4,8 @@
     <hr />
     <b-card-group class="mb-4">
       <b-card>
-        <h2>Runs completed</h2>
-        <h3 id="spanRunsCompleted"></h3>
+        <h2>Runs started</h2>
+        <h3 id="spanRunsStarted"></h3>
         <b-spinner
           style="width: 3rem; height: 3rem;"
           variant="primary"
@@ -174,11 +174,11 @@ export default {
         const analytics = response[0].data;
         console.log("analytics", analytics);
 
-        const runsCompleted = analytics.groupByEvents[1].frequency;
+        const runsStarted = analytics.groupByEvents[1].frequency;
         const avgRuns = runsCompleted / analytics.countUsers;
         const levelsCompleted = analytics.groupBySuccess[1].frequency;
 
-        document.getElementById("spanRunsCompleted").innerText = runsCompleted;
+        document.getElementById("spanRunsStarted").innerText = runsStarted;
         document.getElementById("spanAvgRuns").innerText = avgRuns.toFixed(2);
         document.getElementById(
           "spanLevelsCompleted"
