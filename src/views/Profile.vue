@@ -2,7 +2,7 @@
   <div class="text-center">
     <h1>My Profile</h1>
     <hr />
-    <b-row>
+    <b-row class="mb-4">
       <b-col>
         <b-card>
           <div v-if="loading">
@@ -23,20 +23,18 @@
         </b-card>
       </b-col>
     </b-row>
-    <b-row>
-      <b-col cols="6">
-        <b-card>
-          <doughnut-chart :chart-data="charts.successRate.chartData" v-if="!loading"></doughnut-chart>
-          <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else />
-        </b-card>
-      </b-col>
-      <b-col cols="6">
-        <b-card>
-          <bar-chart :chart-data="charts.successByOp" v-if="!loading"></bar-chart>
-          <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else />
-        </b-card>
-      </b-col>
-    </b-row>
+    <b-card-group>
+      <b-card>
+        <h2>Answers submitted</h2>
+        <doughnut-chart :chart-data="charts.successRate.chartData" v-if="!loading"></doughnut-chart>
+        <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else />
+      </b-card>
+      <b-card>
+        <h2>Mistakes by operator</h2>
+        <bar-chart :chart-data="charts.successByOp" v-if="!loading"></bar-chart>
+        <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else />
+      </b-card>
+    </b-card-group>
   </div>
 </template>
 
