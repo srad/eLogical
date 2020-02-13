@@ -77,8 +77,6 @@ export default {
             "and",
             "or",
             "not",
-            "true",
-            "false",
             "xor",
             "implication",
             "eq"
@@ -100,8 +98,6 @@ export default {
             and: 0,
             or: 0,
             not: 0,
-            true: 0,
-            false: 0,
             xor: 0,
             implication: 0,
             eq: 0
@@ -110,8 +106,6 @@ export default {
             and: 0,
             or: 0,
             not: 0,
-            true: 0,
-            false: 0,
             xor: 0,
             implication: 0,
             eq: 0
@@ -151,8 +145,6 @@ export default {
         this.charts.successByOp.successCounts.and,
         this.charts.successByOp.successCounts.or,
         this.charts.successByOp.successCounts.not,
-        this.charts.successByOp.successCounts.true,
-        this.charts.successByOp.successCounts.false,
         this.charts.successByOp.successCounts.xor,
         this.charts.successByOp.successCounts.implication,
         this.charts.successByOp.successCounts.eq
@@ -162,8 +154,6 @@ export default {
         this.charts.successByOp.failCounts.and,
         this.charts.successByOp.failCounts.or,
         this.charts.successByOp.failCounts.not,
-        this.charts.successByOp.failCounts.true,
-        this.charts.successByOp.failCounts.false,
         this.charts.successByOp.failCounts.xor,
         this.charts.successByOp.failCounts.implication,
         this.charts.successByOp.failCounts.eq

@@ -141,8 +141,6 @@ export default {
               "OR",
               "IMPLICATION",
               "NOT",
-              "TRUE",
-              "FALSE",
               "XOR",
               "EQUAL"
             ],
@@ -150,12 +148,12 @@ export default {
               {
                 label: "answered correctly",
                 backgroundColor: 'rgb(77, 186, 135)',
-                data: [0, 0, 0, 0, 0, 0, 0, 0]
+                data: [0, 0, 0, 0, 0, 0]
               },
               {
                 label: "answered wrong",
                 backgroundColor: 'rgb(255, 99, 132)',
-                data: [0, 0, 0, 0, 0, 0, 0, 0]
+                data: [0, 0, 0, 0, 0, 0]
               }
             ]
           },
@@ -224,8 +222,6 @@ export default {
             and: 0,
             or: 0,
             not: 0,
-            true: 0,
-            false: 0,
             xor: 0,
             implication: 0,
             eq: 0
@@ -235,8 +231,6 @@ export default {
             and: 0,
             or: 0,
             not: 0,
-            true: 0,
-            false: 0,
             xor: 0,
             implication: 0,
             eq: 0
