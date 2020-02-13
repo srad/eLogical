@@ -149,12 +149,12 @@ export default {
             datasets: [
               {
                 label: "answered correctly",
-                backgroundColor: 'rgb(255, 99, 132)',
+                backgroundColor: 'rgb(77, 186, 135)',
                 data: [0, 0, 0, 0, 0, 0, 0, 0]
               },
               {
                 label: "answered wrong",
-                backgroundColor: 'rgb(77, 186, 135)',
+                backgroundColor: 'rgb(255, 99, 132)',
                 data: [0, 0, 0, 0, 0, 0, 0, 0]
               }
             ]
