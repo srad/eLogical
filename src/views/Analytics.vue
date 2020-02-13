@@ -175,7 +175,7 @@ export default {
         console.log("analytics", analytics);
 
         const runsStarted = analytics.groupByEvents[1].frequency;
-        const avgRuns = runsCompleted / analytics.countUsers;
+        const avgRuns = runsStarted / analytics.countUsers;
         const levelsCompleted = analytics.groupBySuccess[1].frequency;
 
         const rewardsSelected = {}
