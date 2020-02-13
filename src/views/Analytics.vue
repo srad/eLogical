@@ -155,11 +155,11 @@ export default {
         },
         rewardsSelected: {
           data: {
-            labels: ["life", "reroll"],
+            labels: ["life", "reroll", "none"],
             datasets: [
               {
-                backgroundColor: ["rgb(77, 186, 135)", "rgb(255, 99, 132)"],
-                data: [0, 0]
+                backgroundColor: ["rgb(77, 186, 135)", "rgb(255, 99, 132)", "rgb(60, 60, 60)"],
+                data: [0,0,0]
               }
             ]
           },
@@ -177,6 +177,57 @@ export default {
         const runsStarted = analytics.groupByEvents[1].frequency;
         const avgRuns = runsCompleted / analytics.countUsers;
         const levelsCompleted = analytics.groupBySuccess[1].frequency;
+
+        const rewardsSelected = {}
+        analytics.groupByLootSelected.forEach(el => {
+          if(el._id.loot === null){
+            rewardsSelected.none = el.frequency
+          }else{
+            rewardsSelected[el._id.loot] = el.frequency
+          }
+        })
+        if(!rewardsSelected.hasOwnProperty("heart")){
+          rewardsSelected.heart = 0;
+        }
+        if(!rewardsSelected.hasOwnProperty("none")){
+          rewardsSelected.none = 0;
+        }
+        if(!rewardsSelected.hasOwnProperty("dice")){
+          rewardsSelected.dice = 0;
+        }
+
+        console.log("rewards formatted", rewardsSelected)
+        this.charts.rewardsSelected.data.datasets[0].data = [rewardsSelected.heart, rewardsSelected.dice, rewardsSelected.none]
+
+        const deathsByDifficulty = []
+        analytics.groupByGameEndAndDifficulty.forEach(el => deathsByDifficulty.push({"difficulty": el._id.difficulty, "frequency": el.frequency}))
+        //sort ascending by difficulty for viz
+        deathsByDifficulty.sort(function(a, b){return a.difficulty-b.difficulty});
+        console.log("deaths sorted", deathsByDifficulty)
+        let difficultyComparisonData = []
+        deathsByDifficulty.forEach(el => difficultyComparisonData.push(el.frequency))
+        console.log("deathsByDifficulty formatted", difficultyComparisonData)
+        this.charts.difficultyComparison.data.datasets[0].data = difficultyComparisonData
+
+        let mistakeCount = {
+            and: 0,
+            or: 0,
+            not: 0,
+            true: 0,
+            false: 0,
+            xor: 0,
+            implication: 0,
+            eq: 0
+        }
+
+        let mistakesByOperator = analytics.groupBySuccessAndOperator.filter(el => el._id.success === false)
+        console.log("successByOperator", mistakesByOperator)
+        mistakesByOperator.forEach(
+          el => el._id.op.forEach(op => mistakeCount[op] = mistakeCount[op] +=  el.frequency)
+        )
+        console.log("mistakeCount", mistakeCount)
+        this.charts.mistakeCount.datasets[0].data = [mistakeCount.and, mistakeCount.or, mistakeCount.implication,
+        mistakeCount.not, mistakeCount.true, mistakeCount.false, mistakeCount.xor, mistakeCount.eq]
 
         document.getElementById("spanRunsStarted").innerText = runsStarted;
         document.getElementById("spanAvgRuns").innerText = avgRuns.toFixed(2);
