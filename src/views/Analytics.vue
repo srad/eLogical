@@ -122,7 +122,7 @@ export default {
           labels: ["life", "reroll"],
           datasets: [
             {
-              backgroundColor: ["#00cc00", "#cc0000"],
+              backgroundColor: ["rgb(77, 186, 135)", "rgb(255, 99, 132)"],
               data: [0, 0]
             }
           ]
