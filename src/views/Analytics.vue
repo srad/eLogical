@@ -57,11 +57,11 @@
     <b-card-group class="mb-4">
       <b-card>
         <h2>Mistakes by operator</h2>
-        <doughnut-chart
+        <bar-chart
           :chart-data="charts.mistakesByOperator.data"
           :options="charts.mistakesByOperator.options"
           v-if="!loading"
-        ></doughnut-chart>
+        ></bar-chart>
         <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else />
       </b-card>
       <b-card>
@@ -80,9 +80,10 @@
 <script>
 import BarChart from "../lib/charts/BarChart";
 import DoughnutChart from "../lib/charts/DoughnutChart";
+import LineChart from "../lib/charts/LineChart";
 export default {
   name: "Profile",
-  components: { DoughnutChart, BarChart },
+  components: { DoughnutChart, BarChart, LineChart },
   data() {
     return {
       loading: true,
@@ -137,16 +138,7 @@ export default {
             ],
             datasets: [
               {
-                backgroundColor: [
-                  "#0066ff",
-                  "#ff00ff",
-                  "#66ff33",
-                  "#ff6600",
-                  "#cc33ff",
-                  "#33ffff",
-                  "#ffff33",
-                  "#ff3333"
-                ],
+                backgroundColor: 'rgb(255, 99, 132)',
                 data: [0, 0, 0, 0, 0, 0, 0, 0]
               }
             ]
@@ -223,7 +215,7 @@ export default {
         let mistakesByOperator = analytics.groupBySuccessAndOperator.filter(el => el._id.success === false)
         console.log("successByOperator", mistakesByOperator)
         mistakesByOperator.forEach(
-          el => el._id.op.forEach(op => mistakeCount[op] = mistakeCount[op] +=  el.frequency)
+          el => el._id.op.forEach(op => mistakeCount[op] = mistakeCount[op] +  el.frequency)
         )
         console.log("mistakeCount", mistakeCount)
         this.charts.mistakesByOperator.data.datasets[0].data = [mistakeCount.and, mistakeCount.or, mistakeCount.implication,
