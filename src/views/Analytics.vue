@@ -172,14 +172,14 @@ export default {
     Promise.all([this.$api.getAnalytics()])
       .then(response => {
         const analytics = response[0].data;
-        // console.log("analytics", analytics);
+        console.log("analytics", analytics);
 
         const runsCompleted = analytics.groupByEvents[1].frequency;
         const avgRuns = runsCompleted / analytics.countUsers;
         const levelsCompleted = analytics.groupBySuccess[1].frequency;
 
         document.getElementById("spanRunsCompleted").innerText = runsCompleted;
-        document.getElementById("spanAvgRuns").innerText = avgRuns;
+        document.getElementById("spanAvgRuns").innerText = avgRuns.toFixed(2);
         document.getElementById(
           "spanLevelsCompleted"
         ).innerText = levelsCompleted;
