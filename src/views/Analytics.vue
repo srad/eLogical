@@ -149,6 +149,15 @@ export default {
         const finishedRunsByDate = analytics.groupEventsByDay.filter(
           x => x._id.event == "game-end"
         );
+
+        finishedRunsByDate.sort(function(a, b) {
+          var dateA = a._id.day.toLowerCase(),
+            dateB = b._id.day.toLowerCase();
+          if (dateA < dateB) return -1;
+          if (dateA > dateB) return 1;
+          return 0;
+        });
+
         this.charts.gamesByDate.labels = finishedRunsByDate.map(x => x._id.day);
         this.charts.gamesByDate.datasets[0].data = finishedRunsByDate.map(
           x => x.frequency
