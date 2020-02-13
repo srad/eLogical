@@ -34,7 +34,7 @@
         <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else />
       </b-card>
       <b-card>
-        <h2>Mistakes by operator</h2>
+        <h2>Correctness by operator</h2>
         <bar-chart
           :chart-data="charts.successByOp.data"
           :otions="charts.successByOp.options"

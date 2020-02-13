@@ -56,7 +56,7 @@
     </b-card-group>
     <b-card-group class="mb-4">
       <b-card>
-        <h2>Mistakes by operator</h2>
+        <h2>Correctness by operator</h2>
         <bar-chart
           :chart-data="charts.mistakesByOperator.data"
           :options="charts.mistakesByOperator.options"
