@@ -249,20 +249,20 @@ export default {
         let correctByOperator = analytics.groupBySuccessAndOperator.filter(el => el._id.success === true)
         console.log("correctByOperator", mistakesByOperator)
         correctByOperator.forEach(
-          el => el._id.op.forEach(op => correctCount[op] = correctCount[op] +  el.frequency)
+          el => el._id.op.forEach(op => correctCount[op] = correctCount[op] +  1)
         )
         console.log("correctCount", correctCount)
         this.charts.mistakesByOperator.data.datasets[0].data = [correctCount.and, correctCount.or, correctCount.implication,
-        correctCount.not, correctCount.true, correctCount.false, correctCount.xor, correctCount.eq]
+        correctCount.not, correctCount.xor, correctCount.eq]
 
         let mistakesByOperator = analytics.groupBySuccessAndOperator.filter(el => el._id.success === false)
         console.log("mistakesByOperator", mistakesByOperator)
         mistakesByOperator.forEach(
-          el => el._id.op.forEach(op => mistakeCount[op] = mistakeCount[op] +  el.frequency)
+          el => el._id.op.forEach(op => mistakeCount[op] = mistakeCount[op] +  1)
         )
         console.log("mistakeCount", mistakeCount)
         this.charts.mistakesByOperator.data.datasets[1].data = [mistakeCount.and, mistakeCount.or, mistakeCount.implication,
-        mistakeCount.not, mistakeCount.true, mistakeCount.false, mistakeCount.xor, mistakeCount.eq]
+        mistakeCount.not, mistakeCount.xor, mistakeCount.eq]
 
         document.getElementById("spanRunsStarted").innerText = runsStarted;
         document.getElementById("spanAvgRuns").innerText = avgRuns.toFixed(2);
