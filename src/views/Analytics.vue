@@ -93,7 +93,6 @@ export default {
             labels: [],
             datasets: [
               {
-                label: `Number of "Game Over"s`,
                 backgroundColor: "rgb(77, 186, 135)",
                 data: []
               }
@@ -197,7 +196,10 @@ export default {
         deathsByDifficulty.sort(function(a, b){return a.difficulty-b.difficulty});
         console.log("deaths sorted", deathsByDifficulty)
         let difficultyComparisonData = []
-        deathsByDifficulty.forEach(el => difficultyComparisonData.push(el.frequency))
+        deathsByDifficulty.forEach(el => {
+          this.charts.difficultyComparison.data.labels.push(el.difficulty);
+          difficultyComparisonData.push(el.frequency);
+          });
         console.log("deathsByDifficulty formatted", difficultyComparisonData)
         this.charts.difficultyComparison.data.datasets[0].data = difficultyComparisonData
 
