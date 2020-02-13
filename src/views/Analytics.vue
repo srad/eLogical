@@ -226,7 +226,7 @@ export default {
           el => el._id.op.forEach(op => mistakeCount[op] = mistakeCount[op] +=  el.frequency)
         )
         console.log("mistakeCount", mistakeCount)
-        this.charts.mistakeCount.datasets[0].data = [mistakeCount.and, mistakeCount.or, mistakeCount.implication,
+        this.charts.mistakesByOperator.data.datasets[0].data = [mistakeCount.and, mistakeCount.or, mistakeCount.implication,
         mistakeCount.not, mistakeCount.true, mistakeCount.false, mistakeCount.xor, mistakeCount.eq]
 
         document.getElementById("spanRunsStarted").innerText = runsStarted;
