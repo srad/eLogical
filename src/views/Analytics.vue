@@ -189,7 +189,7 @@ export default {
     Promise.all([this.$api.getAnalytics()])
       .then(response => {
         const analytics = response[0].data;
-        console.log("analytics", analytics);
+        // console.log("analytics", analytics);
 
         const runsStarted = analytics.groupByEvents[1].frequency;
         const avgRuns = runsStarted / analytics.countUsers;
@@ -213,20 +213,20 @@ export default {
           rewardsSelected.dice = 0;
         }
 
-        console.log("rewards formatted", rewardsSelected)
+        // console.log("rewards formatted", rewardsSelected)
         this.charts.rewardsSelected.data.datasets[0].data = [rewardsSelected.heart, rewardsSelected.dice, rewardsSelected.none]
 
         const deathsByDifficulty = []
         analytics.groupByGameEndAndDifficulty.forEach(el => deathsByDifficulty.push({"difficulty": el._id.difficulty, "frequency": el.frequency}))
         //sort ascending by difficulty for viz
         deathsByDifficulty.sort(function(a, b){return a.difficulty-b.difficulty});
-        console.log("deaths sorted", deathsByDifficulty)
+        // console.log("deaths sorted", deathsByDifficulty)
         let difficultyComparisonData = []
         deathsByDifficulty.forEach(el => {
           this.charts.difficultyComparison.data.labels.push(el.difficulty);
           difficultyComparisonData.push(el.frequency);
           });
-        console.log("deathsByDifficulty formatted", difficultyComparisonData)
+        // console.log("deathsByDifficulty formatted", difficultyComparisonData)
         this.charts.difficultyComparison.data.datasets[0].data = difficultyComparisonData
 
         let mistakeCount = {
@@ -248,20 +248,20 @@ export default {
         }
 
         let correctByOperator = analytics.groupBySuccessAndOperator.filter(el => el._id.success === true)
-        console.log("correctByOperator", mistakesByOperator)
+        // console.log("correctByOperator", correctByOperator)
         correctByOperator.forEach(
-          el => el._id.op.forEach(op => correctCount[op] = correctCount[op] +  1)
+          el => el._id.op.forEach(op => correctCount[op] = correctCount[op] +  el.frequency)
         )
-        console.log("correctCount", correctCount)
+        // console.log("correctCount", correctCount)
         this.charts.mistakesByOperator.data.datasets[0].data = [correctCount.and, correctCount.or, correctCount.implication,
         correctCount.not, correctCount.xor, correctCount.eq]
 
         let mistakesByOperator = analytics.groupBySuccessAndOperator.filter(el => el._id.success === false)
-        console.log("mistakesByOperator", mistakesByOperator)
+        // console.log("mistakesByOperator", mistakesByOperator)
         mistakesByOperator.forEach(
-          el => el._id.op.forEach(op => mistakeCount[op] = mistakeCount[op] +  1)
+          el => el._id.op.forEach(op => mistakeCount[op] = mistakeCount[op] +  el.frequency)
         )
-        console.log("mistakeCount", mistakeCount)
+        // console.log("mistakeCount", mistakeCount)
         this.charts.mistakesByOperator.data.datasets[1].data = [mistakeCount.and, mistakeCount.or, mistakeCount.implication,
         mistakeCount.not, mistakeCount.xor, mistakeCount.eq]
 
