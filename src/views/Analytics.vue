@@ -46,11 +46,11 @@
       </b-card>
       <b-card>
         <h2>Games played by date</h2>
-        <bar-chart
+        <line-chart
           :chart-data="charts.gamesByDate.data"
           :options="charts.gamesByDate.options"
           v-if="!loading"
-        ></bar-chart>
+        ></line-chart>
         <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else />
       </b-card>
     </b-card-group>
@@ -117,7 +117,8 @@ export default {
             datasets: [
               {
                 label: "Number of games played",
-                backgroundColor: "rgb(77, 186, 135)",
+                // backgroundColor: "rgb(77, 186, 135)",
+                borderColor: "rgb(77, 186, 135)",
                 data: []
               }
             ]
