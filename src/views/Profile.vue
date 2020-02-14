@@ -1,12 +1,12 @@
 <template>
   <div class="text-center">
     <h1>My Profile</h1>
-    <hr />
+    <hr/>
     <b-row class="mb-4">
       <b-col>
         <b-card>
           <div v-if="loading">
-            <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" />
+            <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading"/>
           </div>
           <div v-else>
             <h5>
@@ -27,20 +27,20 @@
       <b-card>
         <h2>Answers submitted</h2>
         <doughnut-chart
-          :chart-data="charts.successRate.chartData"
-          :options="charts.successRate.options"
-          v-if="!loading"
+            :chart-data="charts.successRate.chartData"
+            :options="charts.successRate.options"
+            v-if="!loading"
         ></doughnut-chart>
-        <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else />
+        <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else/>
       </b-card>
       <b-card>
         <h2>Correctness by operator</h2>
         <bar-chart
-          :chart-data="charts.successByOp.data"
-          :otions="charts.successByOp.options"
-          v-if="!loading"
+            :chart-data="charts.successByOp.data"
+            :otions="charts.successByOp.options"
+            v-if="!loading"
         ></bar-chart>
-        <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else />
+        <b-spinner style="width: 3rem; height: 3rem;" variant="primary" label="Loading" v-else/>
       </b-card>
     </b-card-group>
   </div>
@@ -50,9 +50,10 @@
 // import PieChart from "../lib/charts/PieChart.js";
 import DoughnutChart from "../lib/charts/DoughnutChart";
 import BarChart from "../lib/charts/BarChart";
+
 export default {
   name: "Profile",
-  components: { DoughnutChart, BarChart },
+  components: {DoughnutChart, BarChart},
   data() {
     return {
       loading: true,
@@ -66,41 +67,43 @@ export default {
             datasets: [
               {
                 backgroundColor: ["rgb(77, 186, 135)", "rgb(255, 99, 132)"],
-                data: []
-              }
-            ]
+                data: [],
+              },
+            ],
           },
-          options: {}
+          options: {},
         },
         successByOp: {
-          data:{labels: [
-            "and",
-            "or",
-            "not",
-            "xor",
-            "implication",
-            "eq"
-          ],
-          datasets: [
-            {
-              label: "answered correctly",
-              backgroundColor: "rgb(77, 186, 135)",
-              data: []
-            },
-            {
-              label: "answered wrong",
-              backgroundColor: "rgb(255, 99, 132)",
-              data: []
-            }
-          ],},
-          options: {},          
+          data: {
+            labels: [
+              "and",
+              "or",
+              "not",
+              "xor",
+              "implication",
+              "eq",
+            ],
+            datasets: [
+              {
+                label: "answered correctly",
+                backgroundColor: "rgb(77, 186, 135)",
+                data: [],
+              },
+              {
+                label: "answered wrong",
+                backgroundColor: "rgb(255, 99, 132)",
+                data: [],
+              },
+            ],
+          },
+          options: {},
           successCounts: {
             and: 0,
             or: 0,
             not: 0,
             xor: 0,
             implication: 0,
-            eq: 0
+            eq: 0,
           },
           failCounts: {
             and: 0,
@@ -108,10 +111,10 @@ export default {
             not: 0,
             xor: 0,
             implication: 0,
-            eq: 0
-          }
-        }
-      }
+            eq: 0,
+          },
+        },
+      },
     };
   },
   methods: {
@@ -147,7 +150,7 @@ export default {
         this.charts.successByOp.successCounts.not,
         this.charts.successByOp.successCounts.xor,
         this.charts.successByOp.successCounts.implication,
-        this.charts.successByOp.successCounts.eq
+        this.charts.successByOp.successCounts.eq,
       ];
 
       let failArray = [
@@ -156,19 +159,15 @@ export default {
         this.charts.successByOp.failCounts.not,
         this.charts.successByOp.failCounts.xor,
         this.charts.successByOp.failCounts.implication,
-        this.charts.successByOp.failCounts.eq
+        this.charts.successByOp.failCounts.eq,
       ];
 
       this.charts.successByOp.data.datasets[0].data = successArray;
       this.charts.successByOp.data.datasets[1].data = failArray;
-    }
+    },
   },
   mounted() {
-    Promise.all([
-      this.$api.getStats(),
-      this.$api.getTracker(),
-      this.$api.getAnalytics()
-    ])
+    Promise.all([this.$api.getStats(), this.$api.getTracker()])
       .then(response => {
         const stats = response[0];
         const tracker = response[1].data;
@@ -178,11 +177,11 @@ export default {
         const successFalse = tracker.groupBySuccess.filter(t => !t._id.success);
         // Frequency of total numbers correctly answered of a certain operator sequence
         const successTrueByOp = tracker.groupBySuccessAndOp.filter(
-          t => t._id.success
+          t => t._id.success,
         );
         // Frequency of total numbers wrongly answered of a certain operator sequence
         const successFalseByOp = tracker.groupBySuccessAndOp.filter(
-          t => !t._id.success
+          t => !t._id.success,
         );
 
         // console.log("successTrue", successTrue);
@@ -197,10 +196,10 @@ export default {
           successFalse[0].hasOwnProperty("frequency")
         ) {
           this.charts.successRate.chartData.datasets[0].data.push(
-            successTrue[0].frequency
+            successTrue[0].frequency,
           );
           this.charts.successRate.chartData.datasets[0].data.push(
-            successFalse[0].frequency
+            successFalse[0].frequency,
           );
         }
 
@@ -225,6 +224,6 @@ export default {
         this.loading = false;
         alert(error);
       });
-  }
+  },
 };
 </script>

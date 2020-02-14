@@ -384,7 +384,7 @@ export default {
     },
     pickLoot(loot) {
       this.loot.selected = loot;
-      switch(loot) {
+      switch (loot) {
       case "dice":
         this.$refs["dice-icon"].classList.add("dice-selected");
         this.$refs["dice-icon"].classList.remove("loot-unselected");
@@ -405,7 +405,7 @@ export default {
     },
     emptyBackpack() {
       this.loot.bagpack.forEach(loot => {
-        switch(loot) {
+        switch (loot) {
         case "heart":
           if (this.health.current < this.health.max) {
             this.health.current++;
@@ -517,9 +517,11 @@ export default {
 
       this.$api.saveTrack({
         data: {
-          "event": event.gameEnd, 
-          "gameTime": Math.abs(this.trackingParams.gameStartTime - new Date()), 
-          "difficulty" : this.progress.difficulty}});
+          "event": event.gameEnd,
+          "gameTime": Math.abs(this.trackingParams.gameStartTime - new Date()),
+          "difficulty": this.progress.difficulty,
+        },
+      });
       this.addLeaderboardEntry("player1", this.calculatePoints());
     },
     highlightElement(el) {
@@ -620,6 +622,8 @@ export default {
 </script>
 
 <style>
+@import "~animate.css/animate.min.css";
+
 .tree {
   height: 40vh;
 }
