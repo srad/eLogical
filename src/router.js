@@ -18,8 +18,8 @@ export default new Router({
     {path: "/game", name: "game", component: Game, title: "Game 1"},
     // {path: "/game2", name: "game2", component: Game2, title: "Game 2"},
     {path: "/leaderboard", name: "leaderboard", component: Leaderboard, title: "Leaderboard"},
+    {path: "/analytics", name: "analytics", component: Analytics, title: "Analytics"},
     {path: "/help", name: "help", component: Help, title: "Help"},
     {path: "/about", name: "about", component: About, title: "About"},
-    {path: "/analytics", name: "analytics", component: Analytics, title: "Analytics"},
   ],
 });
