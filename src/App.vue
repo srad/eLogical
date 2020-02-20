@@ -12,7 +12,7 @@
       <b-collapse id="nav-text-collapse" is-nav>
         <b-navbar-nav>
           <!-- <b-nav-item v-for="route in $router.options.routes" :key="route.path"> -->
-          <b-nav-item v-for="route in menuroutes" :key="route.path">
+          <b-nav-item v-for="route in menuItems" :key="route.path">
             <router-link
                 :to="route.path"
                 class="btn btn-block text-left text-white"
@@ -38,17 +38,8 @@ export default {
   name: "App",
   data() {
     return {
-      allroutes: router.options.routes,
+      menuItems: router.options.routes.filter(route => !route.hide),
     };
-  },
-  computed: {
-    menuroutes: function () {
-      return this.allroutes.filter(function (u) {
-        if (!u.path.includes("game")) {
-          return u;
-        }
-      });
-    },
   },
 };
 </script>
