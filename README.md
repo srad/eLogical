@@ -1,6 +1,6 @@
 # eLogical
 
-[![Build Status](http://sedrad.com:8080/buildStatus/icon?job=eLogical.App)](http://sedrad.com:8080/job/eLogical.App/)
+[![Build Status](https://jenkins.sedrad.com/buildStatus/icon?job=eLogical.App)](https://jenkins.sedrad.com/job/eLogical.App/)
 
 Mobile elearning PWA to teach solving boolean formulas which are randomly generated and visualized as trees.
 
