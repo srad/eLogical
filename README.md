@@ -1,8 +1,6 @@
 # eLogical
 
-[![Build Status](https://jenkins.sedrad.com/buildStatus/icon?job=eLogical.App)](https://jenkins.sedrad.com/job/eLogical.App/)
-
-Mobile elearning PWA to teach solving boolean formulas which are randomly generated and visualized as trees.
+Mobile eLearning PWA to teach solving boolean formulas which are randomly generated and visualized as trees.
 
 <img src="/../master/assets/media/0.jpg?raw=true" width="30%"> <img src="/../master/assets/media/1.jpg?raw=true" width="30%"> <img src="/../master/assets/media/2.jpg?raw=true" width="30%">
 
@@ -10,7 +8,20 @@ The application is build on Vue 2.x and many other libraries for the visualizati
 
 The project [eLogical.API](https://github.com/srad/eLogical.API) is used as a service to do user management and to track analytics data.
 
-## Quickstart
+## Build
+
+### Docker
+
+Since the api url and a secret key must be available statically on the client, you must create your own docker image build:
+
+```shell
+docker build \
+   --build-arg API_URL=https://api.example.com \
+   --build-arg ENCRYPT_KEY=1234 \
+   -t elogical .
+```
+
+### Dev environment
 
 ```bash
 git clone https://github.com/srad/eLogical.git
