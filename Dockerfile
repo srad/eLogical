@@ -1,7 +1,7 @@
 FROM node:lts-alpine
 
 # npm build dependencies
-RUN apk add --no-cache python make g++
+RUN apk add --no-cache python3 make g++
 
 # install simple http server for serving static content
 RUN npm install -g http-server
