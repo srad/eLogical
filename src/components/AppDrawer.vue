@@ -9,7 +9,10 @@
   <!-- Side Drawer Menu -->
   <div :class="['drawer', { 'drawer-open': isOpen }]">
     <div class="drawer-header">
-      <h5 class="m-0">Menu</h5>
+      <h5 class="m-0 p-1 d-flex justify-content-between align-items-center gap-2">
+        <span>eLogical</span>
+        <font-awesome-icon icon="robot" size="1x" class="robot-icon" />
+      </h5>
       <button
         class="btn-close btn-close-white"
         aria-label="Close menu"
@@ -80,7 +83,7 @@ const currentRoute = computed(() => {
   width: 280px;
   background-color: #fff;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
+  z-index: 10000;
   transform: translateX(-100%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-y: auto;

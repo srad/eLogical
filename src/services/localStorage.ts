@@ -1,6 +1,6 @@
 /**
  * Local Storage Service using IndexedDB
- * Provides persistent offline storage for game data, leaderboard, stats, and analytics
+ * Provides persistent offline storage for game scores, tracking events, and user preferences
  */
 
 /**
@@ -37,11 +37,9 @@ function validateRequired(obj: Record<string, unknown>, requiredFields: string[]
 
 interface GameScore {
   id?: number;
-  name: string;
   total: number;
   difficulty: number;
   timestamp: number;
-  client: Array<{ name: string }>;
 }
 
 interface TrackingEvent {
@@ -51,19 +49,9 @@ interface TrackingEvent {
   data: Record<string, unknown>;
 }
 
-interface AnalyticsData {
-  timestamp: number;
-  event: string;
-  difficulty: number;
-  level: number;
-  success?: boolean;
-  operator?: string;
-  loot?: string;
-}
-
 class LocalStorageService {
   private dbName = 'eLogical';
-  private version = 1;
+  private version = 3;
   private db: IDBDatabase | null = null;
 
   async initialize(): Promise<void> {
@@ -82,14 +70,23 @@ class LocalStorageService {
 
       request.onupgradeneeded = (event) => {
         const db = (event.target as IDBOpenDBRequest).result;
+        const oldVersion = event.oldVersion;
 
-        // Leaderboard store
-        if (!db.objectStoreNames.contains('leaderboard')) {
-          const leaderboardStore = db.createObjectStore('leaderboard', {
+        // Migration: v1 to v2 - rename leaderboard to score
+        if (oldVersion < 2 && db.objectStoreNames.contains('leaderboard')) {
+          // Delete old stores that are being removed
+          if (db.objectStoreNames.contains('analytics')) {
+            db.deleteObjectStore('analytics');
+          }
+        }
+
+        // Score store
+        if (!db.objectStoreNames.contains('score')) {
+          const scoreStore = db.createObjectStore('score', {
             keyPath: 'id',
             autoIncrement: true,
           });
-          leaderboardStore.createIndex('timestamp', 'timestamp', {
+          scoreStore.createIndex('timestamp', 'timestamp', {
             unique: false,
           });
         }
@@ -105,34 +102,24 @@ class LocalStorageService {
           });
         }
 
-        // Analytics store
-        if (!db.objectStoreNames.contains('analytics')) {
-          const analyticsStore = db.createObjectStore('analytics', {
-            keyPath: 'id',
-            autoIncrement: true,
-          });
-          analyticsStore.createIndex('timestamp', 'timestamp', {
-            unique: false,
-          });
-        }
-
         // User preferences
         if (!db.objectStoreNames.contains('preferences')) {
           db.createObjectStore('preferences', { keyPath: 'key' });
+        }
+
+        // Delete old leaderboard store after migration
+        if (oldVersion < 2 && db.objectStoreNames.contains('leaderboard')) {
+          db.deleteObjectStore('leaderboard');
         }
       };
     });
   }
 
   async saveGameScore(
-    name: string,
     total: number,
     difficulty: number
   ): Promise<number> {
     // Validate required fields
-    if (!name || name.trim() === '') {
-      throw new Error('saveGameScore: name is required and cannot be empty');
-    }
     if (typeof total !== 'number' || total < 0) {
       throw new Error('saveGameScore: total must be a non-negative number');
     }
@@ -143,15 +130,13 @@ class LocalStorageService {
     if (!this.db) await this.initialize();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['leaderboard'], 'readwrite');
-      const store = transaction.objectStore('leaderboard');
+      const transaction = this.db!.transaction(['score'], 'readwrite');
+      const store = transaction.objectStore('score');
 
       const score: GameScore = {
-        name,
         total,
         difficulty,
         timestamp: Date.now(),
-        client: [{ name }],
       };
 
       const request = store.add(toPlainObject<GameScore>(score));
@@ -164,8 +149,8 @@ class LocalStorageService {
     if (!this.db) await this.initialize();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['leaderboard'], 'readonly');
-      const store = transaction.objectStore('leaderboard');
+      const transaction = this.db!.transaction(['score'], 'readonly');
+      const store = transaction.objectStore('score');
       const index = store.index('timestamp');
 
       const request = index.getAll();
@@ -224,61 +209,6 @@ class LocalStorageService {
     });
   }
 
-  async saveAnalyticsData(data: AnalyticsData): Promise<number> {
-    // Validate required fields
-    const dataObj = data as Record<string, unknown>;
-    validateRequired(dataObj, ['timestamp', 'event', 'difficulty', 'level'], 'saveAnalyticsData');
-
-    if (typeof dataObj['timestamp'] !== 'number' || (dataObj['timestamp'] as number) <= 0) {
-      throw new Error('saveAnalyticsData: timestamp must be a positive number');
-    }
-    if (typeof dataObj['event'] !== 'string' || (dataObj['event'] as string).trim() === '') {
-      throw new Error('saveAnalyticsData: event must be a non-empty string');
-    }
-    if (typeof dataObj['difficulty'] !== 'number' || (dataObj['difficulty'] as number) < 1) {
-      throw new Error('saveAnalyticsData: difficulty must be a positive number');
-    }
-    if (typeof dataObj['level'] !== 'number' || (dataObj['level'] as number) < 0) {
-      throw new Error('saveAnalyticsData: level must be a non-negative number');
-    }
-    if (dataObj['success'] !== undefined && typeof dataObj['success'] !== 'boolean') {
-      throw new Error('saveAnalyticsData: success must be a boolean if provided');
-    }
-    if (dataObj['operator'] !== undefined && typeof dataObj['operator'] !== 'string') {
-      throw new Error('saveAnalyticsData: operator must be a string if provided');
-    }
-
-    if (!this.db) await this.initialize();
-
-    return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['analytics'], 'readwrite');
-      const store = transaction.objectStore('analytics');
-
-      const request = store.add(toPlainObject<AnalyticsData>(data));
-      request.onsuccess = () => resolve(request.result as number);
-      request.onerror = () => reject(request.error);
-    });
-  }
-
-  async getAnalyticsData(): Promise<AnalyticsData[]> {
-    if (!this.db) await this.initialize();
-
-    return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['analytics'], 'readonly');
-      const store = transaction.objectStore('analytics');
-
-      const request = store.getAll();
-
-      request.onsuccess = (event: Event) => {
-        const result = (event.target as IDBRequest).result as AnalyticsData[];
-        resolve(result);
-      };
-      request.onerror = (event: Event) => {
-        reject((event.target as IDBRequest).error);
-      };
-    });
-  }
-
   async setPreference(key: string, value: unknown): Promise<void> {
     if (!this.db) await this.initialize();
 
@@ -313,14 +243,13 @@ class LocalStorageService {
 
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction(
-        ['leaderboard', 'tracking', 'analytics', 'preferences'],
+        ['score', 'tracking', 'preferences'],
         'readwrite'
       );
 
       const stores = [
-        transaction.objectStore('leaderboard'),
+        transaction.objectStore('score'),
         transaction.objectStore('tracking'),
-        transaction.objectStore('analytics'),
         transaction.objectStore('preferences'),
       ];
 
@@ -340,4 +269,4 @@ class LocalStorageService {
 }
 
 export const localStorageService = new LocalStorageService();
-export { LocalStorageService, GameScore, TrackingEvent, AnalyticsData };
+export { LocalStorageService, GameScore, TrackingEvent };

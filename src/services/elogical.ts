@@ -15,11 +15,9 @@ export interface LeaderboardResponse {
 }
 
 interface StatsResponse {
-  data: Array<{
-    _id: string;
+  data: {
     total: number;
-    client: Array<{ name: string }>;
-  }>;
+  } | null;
 }
 
 interface AnalyticsResponse {
@@ -61,16 +59,17 @@ class ElogicalApi {
   async getStats(): Promise<StatsResponse> {
     try {
       const scores = await localStorageService.getLeaderboard(1);
+      if (scores.length === 0) {
+        return { data: null };
+      }
       return {
-        data: scores.map((score) => ({
-          _id: score.name,
-          total: score.total,
-          client: score.client,
-        })),
+        data: {
+          total: scores[0].total,
+        },
       };
     } catch (error) {
       console.warn("Failed to fetch stats:", error);
-      return { data: [] };
+      return { data: null };
     }
   }
 
@@ -368,12 +367,11 @@ class ElogicalApi {
   }
 
   async saveGameScore(
-    name: string,
     total: number,
     difficulty: number
   ): Promise<{ data: { success: boolean; id: number } }> {
     try {
-      const id = await localStorageService.saveGameScore(name, total, difficulty);
+      const id = await localStorageService.saveGameScore(total, difficulty);
       return { data: { success: true, id } };
     } catch (error) {
       console.warn("Failed to save game score:", error);

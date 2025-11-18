@@ -139,76 +139,53 @@
           </div>
           <div class="modal-body">
             <!-- Game Over modal -->
-            <div v-if="modalText === 'Game Over!'" class="container-fluid">
-              <div class="row mb-3" style="justify-content: center">
-                <div class="col-6">
-                  <button class="btn btn-primary w-100" @click="resetGame">Try Again</button>
-                </div>
-              </div>
-              <div class="row" style="justify-content: center">
-                <div class="col-6">
-                  <button class="btn btn-primary w-100" @click="goToHighscores">My High Scores</button>
-                </div>
-              </div>
+            <div v-if="modalState === ModalState.gameOver" class="d-flex gap-3 justify-content-center">
+              <button class="btn btn-primary" @click="resetGame">Try Again</button>
+              <button class="btn btn-primary" @click="goToHighscores">Show High Score</button>
             </div>
 
             <!-- Loot selection modal -->
-            <div v-if="modalState === ModalState.won" class="container-fluid">
-              <div v-if="rerolls.current === rerolls.max && health.current === health.max" class="row">
-                <div class="col text-center">
-                  <font-awesome-icon size="6x" class="trophy-icon" icon="trophy"></font-awesome-icon>
-                </div>
+            <div v-if="modalState === ModalState.won" class="d-flex flex-column gap-4">
+              <div v-if="rerolls.current === rerolls.max && health.current === health.max" class="text-center">
+                <font-awesome-icon size="6x" class="trophy-icon" icon="trophy"></font-awesome-icon>
               </div>
-              <div v-if="rerolls.current === rerolls.max && health.current === health.max" class="row">
-                <div class="col text-center">WOW! Your ressources are still maxed out! Keep it up!</div>
-              </div>
-              <div class="row loot-selection mt-4">
-                <div class="col-6 text-center" v-if="rerolls.current < rerolls.max">
+              <div v-if="rerolls.current === rerolls.max && health.current === health.max" class="text-center">WOW! Your ressources are still maxed out! Keep it up!</div>
+              <div class="loot-selection d-flex justify-content-center gap-4">
+                <div class="text-center" v-if="rerolls.current < rerolls.max">
                   <div class="loot-item-wrapper">
                     <font-awesome-icon size="6x" :class="loot.selected === 'dice' ? 'dice-selected' : 'loot-unselected'" icon="dice" @click="pickLoot('dice')"></font-awesome-icon>
                     <p class="loot-label">Reroll</p>
                   </div>
                 </div>
-                <div class="col-6 text-center" v-if="health.current < health.max">
+                <div class="text-center" v-if="health.current < health.max">
                   <div class="loot-item-wrapper">
                     <font-awesome-icon size="6x" :class="loot.selected === 'heart' ? 'heart-selected' : 'loot-unselected'" icon="heart" @click="pickLoot('heart')"></font-awesome-icon>
                     <p class="loot-label">Health</p>
                   </div>
                 </div>
               </div>
-              <div class="row mt-4" style="justify-content: center">
-                <div class="col-6">
-                  <button class="btn btn-primary w-100" @click="nextLevel" :disabled="(health.current < health.max || rerolls.current < rerolls.max) && loot.selected === null">Next Level</button>
-                </div>
+              <div class="d-flex justify-content-center">
+                <button class="btn btn-primary" @click="nextLevel" :disabled="(health.current < health.max || rerolls.current < rerolls.max) && loot.selected === null">Next Level</button>
               </div>
             </div>
 
             <!-- Welcome modal -->
-            <div v-if="modalState === ModalState.welcome" class="container-fluid">
-              <div class="row">
-                <div class="col text-center">Welcome to eLogical! Do you want to play through a quick tutorial?</div>
-              </div>
-              <div class="row mt-4">
-                <div class="col">
-                  <button class="btn btn-success w-100" @click="startTutorial">Sure</button>
-                </div>
-                <div class="col">
-                  <button class="btn btn-danger w-100" @click="skipTutorial">No</button>
-                </div>
+            <div v-if="modalState === ModalState.welcome" class="d-flex flex-column gap-4">
+              <div class="text-center">Welcome to eLogical! Do you want to play through a quick tutorial?</div>
+              <div class="d-flex gap-3">
+                <button class="btn btn-success flex-grow-1" @click="startTutorial">Sure</button>
+                <button class="btn btn-danger flex-grow-1" @click="skipTutorial">No</button>
               </div>
             </div>
 
             <!-- Game start confirmation modal -->
-            <div v-if="modalState === ModalState.ready" class="container-fluid">
-              <div class="row">
-                <div class="col text-center">
-                  <h4>Are you ready to start?</h4>
-                </div>
+            <div v-if="modalState === ModalState.ready" class="d-flex flex-column gap-4">
+              <div class="text-center">
+                <h4>Are you ready to start?</h4>
               </div>
-              <div class="row mt-4" style="justify-content: center">
-                <div class="col-6">
-                  <button class="btn btn-success w-100" @click="startGame">Let's Go!</button>
-                </div>
+              <div class="d-flex gap-3 justify-content-center">
+                <button class="btn btn-success" @click="startGame">Let's Go!</button>
+                <button class="btn btn-secondary" @click="cancelGameStart">Cancel</button>
               </div>
             </div>
           </div>
@@ -721,7 +698,7 @@ const gameOver = () => {
       difficulty: info.level,
     },
   });
-  addLeaderboardEntry("player1", calculatePoints());
+  addLeaderboardEntry(calculatePoints());
 };
 
 const goToHighscores = () => {
@@ -795,6 +772,12 @@ const startGame = () => {
   slideInTitle();
 };
 
+const cancelGameStart = () => {
+  modalState.value = ModalState.default;
+  modalText.value = "";
+  modal.value?.hide();
+};
+
 const progressTutorial = () => {
   if (tutorial.currentStep <= steps.length) {
     tutorial.currentText = tutorialData.value.text;
@@ -816,9 +799,9 @@ const stopTutorial = () => {
   showGameStartModal();
 };
 
-const addLeaderboardEntry = (name: string, points: number) => {
+const addLeaderboardEntry = (points: number) => {
   try {
-    $api.saveGameScore(name, points, info.level);
+    $api.saveGameScore(points, info.level);
   } catch (error) {
     console.warn("Failed to save game score:", error);
   }

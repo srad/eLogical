@@ -1,11 +1,12 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
-import Home from './views/Home.vue';
+
 import Game from './views/Game.vue';
 import Leaderboard from './views/Leaderboard.vue';
 import Analytics from './views/Analytics.vue';
 import Help from './views/Help.vue';
 import About from './views/About.vue';
 import Imprint from './views/Imprint.vue';
+import Settings from './views/Settings.vue';
 
 const routes: Array<RouteRecordRaw> = [
   // {
@@ -42,7 +43,13 @@ const routes: Array<RouteRecordRaw> = [
     path: '/imprint',
     name: 'imprint',
     component: Imprint,
-    meta: { title: 'Impressum & Datenschutz' },
+    meta: { title: 'Imprint & Data Privacy' },
+  },
+  {
+    path: '/settings',
+    name: 'settings',
+    component: Settings,
+    meta: { title: 'Settings' },
   },
   {
     path: '/about',
