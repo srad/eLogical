@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(npm install:*)",
+      "Bash(pnpm build:*)",
+      "Bash(done)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm test:run:*)",
+      "Bash(timeout 5 pnpm test:*)",
+      "Bash(timeout 8 pnpm dev:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm test:*)",
+      "Bash(timeout 30 pnpm test:*)",
+      "Bash(timeout 15 pnpm test:*)",
+      "Bash(timeout 20 pnpm test:*)",
+      "Bash(timeout 15 pnpm test:run:*)",
+      "Bash(timeout 5 pnpm dev:*)",
+      "Bash(timeout 60 pnpm test:run:*)",
+      "Bash(npm run build:*)",
+      "WebFetch(domain:www.chartjs.org)",
+      "WebSearch",
+      "WebFetch(domain:stackoverflow.com)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,35 +1,40 @@
 <template>
-  <b-card
-      class="logic-table shadow-sm"
-      bg-variant="primary"
-      body-bg-variant="white"
-      body-class="p-0"
-      header-class="pt-2 pb-0 pl-2 text-white"
-  >
-    <template v-slot:header>
+  <div class="card logic-table shadow-sm border-primary">
+    <div class="card-header bg-primary text-white pt-2 pb-0 ps-2">
       <h5 v-html="header"></h5>
-    </template>
-    <b-card-body body-class="p-0">
-      <b-table-lite bordered striped :items="items" :fields="fields" class="mb-0">
-        <template v-slot:head()="data">
-          <span v-html="data.label"></span>
-        </template>
-      </b-table-lite>
-    </b-card-body>
-  </b-card>
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-bordered table-striped mb-0">
+        <thead>
+          <tr>
+            <th v-for="field in fields" :key="field.key" v-html="field.label || field.key"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, index) in items" :key="index">
+            <td v-for="field in fields" :key="field.key" v-html="item[field.key]"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </template>
 
-<script>
-export default {
-  name: "LogicTable",
-  props: {
-    fields: Array,
-    items: Array,
-    header: String,
-    headerLabels: Array,
-  },
-};
+<script setup lang="ts">
+interface Field {
+  key: string;
+  label?: string;
+  sortable?: boolean;
+  class?: string;
+}
+
+interface Props {
+  fields: Field[];
+  items: Record<string, any>[];
+  header: string;
+}
+
+defineProps<Props>();
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

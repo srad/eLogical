@@ -1,59 +1,150 @@
 <template>
   <div id="app">
-    <b-navbar id="nav" toggleable="sm" type="light" variant="primary" class="navbar-default navbar-static-top">
-      <b-navbar-toggle target="nav-text-collapse"></b-navbar-toggle>
-      <router-link to="/">
-        <b-navbar-brand class="font-weight-bold text-white">
-          eLogical
-          <font-awesome-icon icon="robot" class="ml-3 text-white"/>
-        </b-navbar-brand>
-      </router-link>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar bg-primary sticky-top">
+      <div class="container-fluid">
+        <!-- Mobile/Tablet Toggle Button -->
+        <button
+          class="navbar-toggler ms-0 navbar-toggler-mobile"
+          type="button"
+          aria-label="Toggle navigation menu"
+          @click="isMenuOpen = !isMenuOpen"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
-      <b-collapse id="nav-text-collapse" is-nav>
-        <b-navbar-nav>
-          <!-- <b-nav-item v-for="route in $router.options.routes" :key="route.path"> -->
-          <b-nav-item v-for="route in menuItems" :key="route.path">
+        <!-- Brand -->
+        <router-link to="/" class="navbar-brand fw-bold text-white d-flex gap-3 align-items-center flex-grow-1 justify-content-center navbar-brand-mobile">
+          <span>eLogical</span>
+          <font-awesome-icon icon="robot" />
+        </router-link>
+
+        <!-- Spacer to balance layout on mobile -->
+        <div class="navbar-spacer"></div>
+
+        <!-- Desktop Menu (hidden on mobile) -->
+        <ul class="navbar-nav ms-auto navbar-menu-desktop">
+          <li v-for="route in menuItems" :key="route.path" class="nav-item">
             <router-link
-                :to="route.path"
-                class="btn btn-block text-left text-white"
-                :active-class="route.name!=='home'?'text-dark':''"
-            >{{route.title}}
+              :to="route.path"
+              class="nav-link text-white"
+              :class="{ active: $route.path === route.path }"
+            >
+              {{ route.meta?.title }}
             </router-link>
-          </b-nav-item>
-        </b-navbar-nav>
-      </b-collapse>
-    </b-navbar>
-    <b-container fluid>
-      <keep-alive include="Game2">
-        <router-view/>
-      </keep-alive>
-    </b-container>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- App Drawer Component -->
+    <AppDrawer :isOpen="isMenuOpen" @close="isMenuOpen = false" />
+
+    <div class="app-container">
+      <Suspense>
+        <template #default>
+          <RouterView />
+        </template>
+        <template #fallback>
+          <div class="text-center my-5">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </template>
+      </Suspense>
+    </div>
   </div>
 </template>
 
-<script>
-import router from "./router";
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import { RouterLink, RouterView, useRouter } from 'vue-router';
+import AppDrawer from './components/AppDrawer.vue';
 
-export default {
-  name: "App",
-  data() {
-    return {
-      menuItems: router.options.routes.filter(route => !route.hide),
-    };
-  },
-};
+const router = useRouter();
+const isMenuOpen = ref(false);
+
+const menuItems = computed(() => {
+  return router.getRoutes();
+});
 </script>
 
-<style lang="scss">
-@import "assets/main.scss";
-
-body {
-  overflow-x: hidden;
-  overflow-y: scroll;
-  padding-bottom: 1rem;
+<style scoped>
+/* Navbar Styling */
+.navbar {
+  padding: 0.75rem 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-#nav {
-  margin-bottom: .5em;
+.navbar-toggler-mobile {
+  padding: 0.5rem 1rem;
+  border: none;
+  margin-left: 0;
+}
+
+.navbar-toggler-mobile:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2.5' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* Mobile/Tablet layout */
+.navbar-toggler-mobile {
+  display: block;
+}
+
+.navbar-brand-mobile {
+  flex-grow: 1;
+  justify-content: center;
+}
+
+.navbar-spacer {
+  width: 40px;
+}
+
+.navbar-menu-desktop {
+  display: none;
+}
+
+.nav-link.active {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+/* App Container */
+.app-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-container > :deep(:first-child):not([class*='home']) {
+  padding: 1rem;
+}
+
+/* Responsive for tablets and up (show traditional menu) */
+@media (min-width: 768px) {
+  .navbar-toggler-mobile {
+    display: none !important;
+  }
+
+  .navbar-brand-mobile {
+    flex-grow: 0;
+    justify-content: flex-start;
+  }
+
+  .navbar-spacer {
+    display: none;
+  }
+
+  .navbar-menu-desktop {
+    display: flex !important;
+  }
 }
 </style>

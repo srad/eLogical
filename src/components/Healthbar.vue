@@ -1,35 +1,63 @@
 <template>
   <div>
     <font-awesome-icon
-      :class="{pulsating: current === 1}"
-      size="2x"
-      class="mr-1 heart"
       v-for="i in current"
       :key="i"
+      :class="{
+        pulsating: current === 1,
+        despawning: despawningIndex === i,
+      }"
+      size="2x"
+      class="mr-1 heart"
       icon="heart"
-      :ref="i"
-    ></font-awesome-icon>
+      @animationend="handleAnimationEnd(i)"
+    />
   </div>
 </template>
 
-<script>
-export default {
-  name: "Healthbar",
-  props: {
-    current: Number,
-  },
-  methods: {
-    despawnLife() {
-      if (navigator.vibrate) {
-        navigator.vibrate(250);
-      }
-      this.$refs[this.current][0].addEventListener("animationend", () => {
-        this.$emit("damage-taken");
-      });
-      this.$refs[this.current][0].classList.add("despawning");
-    },
-  },
+<script setup lang="ts">
+import { ref } from 'vue';
+
+interface HealthbarProps {
+  current?: number;
+}
+
+const props = withDefaults(defineProps<HealthbarProps>(), {
+  current: 0,
+});
+
+const emit = defineEmits<{
+  'damage-taken': [];
+}>();
+
+// Reactive state
+const despawningIndex = ref<number | null>(null);
+
+/**
+ * Trigger the despawn animation for the current health value
+ * This should be called when damage is taken
+ */
+const despawnLife = (): void => {
+  if (navigator.vibrate) {
+    navigator.vibrate(250);
+  }
+  despawningIndex.value = props.current;
 };
+
+/**
+ * Handle animation end event
+ */
+const handleAnimationEnd = (index: number): void => {
+  if (despawningIndex.value === index) {
+    emit('damage-taken');
+    despawningIndex.value = null;
+  }
+};
+
+// Expose despawnLife method for parent components
+defineExpose({
+  despawnLife,
+});
 </script>
 
 <style scoped>

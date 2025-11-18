@@ -1,0 +1,15 @@
+onlyBuiltDependencies:
+  - '@fortawesome/fontawesome-common-types'
+  - '@fortawesome/fontawesome-svg-core'
+  - '@fortawesome/free-solid-svg-icons'
+  - '@parcel/watcher'
+  - bootstrap-vue
+  - core-js
+  - ejs
+  - esbuild
+  - node-sass
+  - nodent-runtime
+  - vis-data
+  - vis-network
+  - vue-demi
+  - yorkie

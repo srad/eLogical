@@ -14,7 +14,7 @@
 
 <script>
 export default {
-  name: "Rerolls",
+  name: 'Rerolls',
   props: {
     current: Number,
   },
@@ -23,11 +23,11 @@ export default {
   },
   methods: {
     fireEvent(i) {
-      this.$refs[this.current][0].addEventListener("animationend", () => {
-        this.$emit("reroll-consumed");
+      this.$refs[this.current][0].addEventListener('animationend', () => {
+        this.$emit('reroll-consumed');
       });
-      this.$refs[this.current][0].classList.add("despawning");
-      this.$emit("rerolling");
+      this.$refs[this.current][0].classList.add('despawning');
+      this.$emit('rerolling');
     },
   },
 };
