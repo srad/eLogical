@@ -1,12 +1,12 @@
 <template>
   <div class="w-100 h-100 d-flex gap-0.5">
     <div
-      v-for="index in max"
+      v-for="index in props.max"
       :key="index"
       class="flex-grow-1 rounded-1 h-100 border-end border-white block-item bg-secondary"
-      :class="{ 'fill-animation': index <= current }"
+      :class="{ 'fill-animation': index <= props.current }"
       :style="{
-        '--fill-color': index <= current ? colors[index - 1] : '',
+        '--fill-color': index <= current ? props.colors[index - 1] : '',
         '--animation-delay': (index + 1) * 300 + 'ms',
       }"
     >
@@ -19,14 +19,12 @@
 
 <script setup lang="ts">
 interface Props {
-  delay?: number;
   max: number;
   current: number;
   colors: (string | undefined)[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  delay: 400,
 });
 </script>
 

@@ -5,10 +5,10 @@
       <div class="container-fluid">
         <!-- Mobile/Tablet Toggle Button -->
         <button
-          class="navbar-toggler ms-0 navbar-toggler-mobile"
-          type="button"
-          aria-label="Toggle navigation menu"
-          @click="isMenuOpen = !isMenuOpen"
+            class="navbar-toggler ms-0 navbar-toggler-mobile"
+            type="button"
+            aria-label="Toggle navigation menu"
+            @click="isMenuOpen = !isMenuOpen"
         >
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -16,7 +16,7 @@
         <!-- Brand -->
         <router-link to="/" class="navbar-brand fw-bold text-white d-flex gap-3 align-items-center flex-grow-1 justify-content-center navbar-brand-mobile">
           <span>eLogical</span>
-          <font-awesome-icon icon="robot" />
+          <font-awesome-icon icon="robot"/>
         </router-link>
 
         <!-- Spacer to balance layout on mobile -->
@@ -26,9 +26,9 @@
         <ul class="navbar-nav ms-auto navbar-menu-desktop">
           <li v-for="route in menuItems" :key="route.path" class="nav-item">
             <router-link
-              :to="route.path"
-              class="nav-link text-white"
-              :class="{ active: $route.path === route.path }"
+                :to="route.path"
+                class="nav-link text-white"
+                :class="{ active: $route.path === route.path }"
             >
               {{ route.meta?.title }}
             </router-link>
@@ -38,29 +38,18 @@
     </nav>
 
     <!-- App Drawer Component -->
-    <AppDrawer :isOpen="isMenuOpen" @close="isMenuOpen = false" />
+    <AppDrawer :isOpen="isMenuOpen" @close="isMenuOpen = false"/>
 
-    <div class="app-container">
-      <Suspense>
-        <template #default>
-          <RouterView />
-        </template>
-        <template #fallback>
-          <div class="text-center my-5">
-            <div class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        </template>
-      </Suspense>
+    <div class="app-container vh-100" style="background-color: #f8f9fa">
+      <RouterView/>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { RouterLink, RouterView, useRouter } from 'vue-router';
-import AppDrawer from './components/AppDrawer.vue';
+import { computed, ref } from "vue";
+import { RouterLink, RouterView, useRouter } from "vue-router";
+import AppDrawer from "./components/AppDrawer.vue";
 
 const router = useRouter();
 const isMenuOpen = ref(false);

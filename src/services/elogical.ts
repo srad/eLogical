@@ -1,10 +1,5 @@
-import { localStorageService, type GameScore, type TrackingEvent } from './localStorage';
-import EventType from './events';
-
-interface AuthResponse {
-  token: string;
-  user: string;
-}
+import { type GameScore, localStorageService, type TrackingEvent } from "./localStorage";
+import EventType from "./events";
 
 interface TrackingData {
   [key: string]: unknown;
@@ -15,7 +10,7 @@ interface SaveTrackParams {
   data: TrackingData;
 }
 
-interface LeaderboardResponse {
+export interface LeaderboardResponse {
   data: GameScore[];
 }
 
@@ -41,35 +36,14 @@ interface AnalyticsResponse {
 }
 
 class ElogicalApi {
-  private username: string = 'offline-user';
-
-  async authenticate(): Promise<AuthResponse> {
-    // Initialize local storage service
-    await localStorageService.initialize();
-
-    // Get or create username
-    const storedUsername = (await localStorageService.getPreference('username')) as
-      | string
-      | null;
-    if (storedUsername) {
-      this.username = storedUsername;
-    } else {
-      this.username = `user-${Date.now()}`;
-      await localStorageService.setPreference('username', this.username);
-    }
-
-    return Promise.resolve({
-      token: `local-${this.username}`,
-      user: this.username,
-    });
-  }
+  private username: string = "offline-user";
 
   async getLeaderBoard(): Promise<LeaderboardResponse> {
     try {
       const scores = await localStorageService.getLeaderboard(10);
       return { data: scores };
     } catch (error) {
-      console.warn('Failed to fetch leaderboard:', error);
+      console.warn("Failed to fetch leaderboard:", error);
       return { data: [] };
     }
   }
@@ -79,7 +53,7 @@ class ElogicalApi {
       const scores = await localStorageService.getLeaderboard(limit);
       return { data: scores };
     } catch (error) {
-      console.warn('Failed to fetch user high scores:', error);
+      console.warn("Failed to fetch user high scores:", error);
       return { data: [] };
     }
   }
@@ -95,7 +69,7 @@ class ElogicalApi {
         })),
       };
     } catch (error) {
-      console.warn('Failed to fetch stats:', error);
+      console.warn("Failed to fetch stats:", error);
       return { data: [] };
     }
   }
@@ -125,7 +99,7 @@ class ElogicalApi {
           const ops = data.ops as string[] | undefined;
           allAnalyticsEvents.push({
             timestamp: trackingEvent.timestamp,
-            event: 'answer',
+            event: "answer",
             difficulty: (data.difficulty as number) ?? 1,
             level: (data.level as number) ?? 0,
             success: (data.success as boolean) ?? false,
@@ -138,7 +112,7 @@ class ElogicalApi {
           const loot = (data.loot as string) ?? null;
           allAnalyticsEvents.push({
             timestamp: trackingEvent.timestamp,
-            event: 'loot-selected',
+            event: "loot-selected",
             difficulty: (data.difficulty as number) ?? 1,
             level: 0,
             loot: loot === null ? undefined : loot,
@@ -147,7 +121,7 @@ class ElogicalApi {
       });
 
       // Process analytics data - only count answer events, not loot or other events
-      const answerEvents = allAnalyticsEvents.filter((a) => a.event === 'answer');
+      const answerEvents = allAnalyticsEvents.filter((a) => a.event === "answer");
       const gameCount = leaderboard.length;
       const successCount = answerEvents.filter((a) => a.success === true).length;
       const failureCount = answerEvents.filter((a) => a.success === false).length;
@@ -157,11 +131,11 @@ class ElogicalApi {
 
       allAnalyticsEvents.forEach((event) => {
         // Process loot data
-        if (event.loot && event.event === 'loot-selected') {
+        if (event.loot && event.event === "loot-selected") {
           lootMap[event.loot] = (lootMap[event.loot] ?? 0) + 1;
         }
         // Process operator success data
-        if (event.operator && event.event === 'answer' && event.success !== undefined) {
+        if (event.operator && event.event === "answer" && event.success !== undefined) {
           operatorMap[event.operator] = (operatorMap[event.operator] ?? 0) + 1;
 
           // Aggregate by operator and success status
@@ -180,7 +154,7 @@ class ElogicalApi {
 
       // Build groupBySuccessAndOperator from aggregated data
       const groupBySuccessAndOperator = Array.from(opSuccessMap.entries())
-        .map(([op, successData]) => {
+        .map(([ op, successData ]) => {
           const successGroups = successData.reduce(
             (acc, sd) => {
               const existing = acc.find((g) => g.success === sd.success);
@@ -194,7 +168,7 @@ class ElogicalApi {
             [] as Array<{ success: boolean; frequency: number }>
           );
           return successGroups.map((sg) => ({
-            _id: { success: sg.success, op: [op] },
+            _id: { success: sg.success, op: [ op ] },
             frequency: sg.frequency,
           }));
         })
@@ -206,29 +180,29 @@ class ElogicalApi {
         const date = new Date(score.timestamp);
         const day = [
           date.getFullYear(),
-          String(date.getMonth() + 1).padStart(2, '0'),
-          String(date.getDate()).padStart(2, '0'),
-        ].join('-');
+          String(date.getMonth() + 1).padStart(2, "0"),
+          String(date.getDate()).padStart(2, "0"),
+        ].join("-");
         dayMap.set(day, (dayMap.get(day) ?? 0) + 1);
       });
 
       const groupEventsByDay = Array.from(dayMap.entries())
-        .map(([day, freq]) => ({
-          _id: { day, event: 'game-end' },
+        .map(([ day, freq ]) => ({
+          _id: { day, event: "game-end" },
           frequency: freq,
         }))
         .sort((a, b) => a._id.day.localeCompare(b._id.day));
 
       return {
         data: {
-          groupByEvents: [{ frequency: 0 }, { frequency: gameCount }],
+          groupByEvents: [ { frequency: 0 }, { frequency: gameCount } ],
           countUsers: leaderboard.length > 0 ? 1 : 0,
           groupBySuccess: [
             { frequency: failureCount },
             { frequency: successCount },
           ],
-          groupByLootSelected: Object.entries(lootMap).map(([loot, freq]) => ({
-            _id: { loot: loot === 'none' ? null : loot },
+          groupByLootSelected: Object.entries(lootMap).map(([ loot, freq ]) => ({
+            _id: { loot: loot === "none" ? null : loot },
             frequency: freq,
           })),
           groupByGameEndAndDifficulty: Object.entries(
@@ -236,12 +210,12 @@ class ElogicalApi {
               acc[score.difficulty] = (acc[score.difficulty] ?? 0) + 1;
               return acc;
             }, {} as Record<number, number>)
-          ).map(([difficulty, frequency]) => ({
+          ).map(([ difficulty, frequency ]) => ({
             _id: { difficulty: parseInt(difficulty) },
             frequency,
           })),
           groupByCorrectAnswerAndOperator: Object.entries(operatorMap).map(
-            ([operator, freq]) => ({
+            ([ operator, freq ]) => ({
               _id: { operator },
               frequency: freq,
             })
@@ -251,12 +225,12 @@ class ElogicalApi {
         },
       };
     } catch (error) {
-      console.warn('Failed to fetch analytics:', error);
+      console.warn("Failed to fetch analytics:", error);
       return {
         data: {
-          groupByEvents: [{ frequency: 0 }, { frequency: 0 }],
+          groupByEvents: [ { frequency: 0 }, { frequency: 0 } ],
           countUsers: 0,
-          groupBySuccess: [{ frequency: 0 }, { frequency: 0 }],
+          groupBySuccess: [ { frequency: 0 }, { frequency: 0 } ],
           groupByLootSelected: [],
           groupByGameEndAndDifficulty: [],
           groupByCorrectAnswerAndOperator: [],
@@ -266,7 +240,6 @@ class ElogicalApi {
       };
     }
   }
-
 
   async getTracker(): Promise<{
     data: {
@@ -287,7 +260,7 @@ class ElogicalApi {
         }
       });
 
-      const groupBySuccess = Array.from(successMap.entries()).map(([success, frequency]) => ({
+      const groupBySuccess = Array.from(successMap.entries()).map(([ success, frequency ]) => ({
         _id: { success },
         frequency,
       }));
@@ -315,9 +288,9 @@ class ElogicalApi {
         }
       });
 
-      const groupBySuccessAndOp = Array.from(opMap.entries()).map(([op, successData]) =>
+      const groupBySuccessAndOp = Array.from(opMap.entries()).map(([ op, successData ]) =>
         successData.map((sd) => ({
-          _id: { success: sd.success, op: [op] },
+          _id: { success: sd.success, op: [ op ] },
           frequency: sd.count,
         }))
       ).flat();
@@ -329,7 +302,7 @@ class ElogicalApi {
         },
       };
     } catch (error) {
-      console.warn('Failed to fetch tracker:', error);
+      console.warn("Failed to fetch tracker:", error);
       return {
         data: {
           groupBySuccess: [],
@@ -349,35 +322,35 @@ class ElogicalApi {
 
   async saveTrack({ starTime, data }: SaveTrackParams): Promise<{ data: { success: boolean } }> {
     // Validate required fields
-    if (!data || typeof data !== 'object') {
-      console.warn('saveTrack: data is required and must be an object');
+    if (!data || typeof data !== "object") {
+      console.warn("saveTrack: data is required and must be an object");
       return Promise.resolve({ data: { success: false } });
     }
 
-    const eventType = (data.event as string) ?? 'unknown';
-    if (!eventType || typeof eventType !== 'string') {
-      console.warn('saveTrack: event type must be a string');
+    const eventType = (data.event as string) ?? "unknown";
+    if (!eventType || typeof eventType !== "string") {
+      console.warn("saveTrack: event type must be a string");
       return Promise.resolve({ data: { success: false } });
     }
 
     // Validate event-specific required fields
     if (eventType === EventType.confirmInput) {
       if (data.success === undefined) {
-        console.warn('saveTrack: confirmInput event requires success field');
+        console.warn("saveTrack: confirmInput event requires success field");
         return Promise.resolve({ data: { success: false } });
       }
-      if (typeof data.difficulty !== 'number' || data.difficulty < 1) {
-        console.warn('saveTrack: confirmInput event requires valid difficulty field');
+      if (typeof data.difficulty !== "number" || data.difficulty < 1) {
+        console.warn("saveTrack: confirmInput event requires valid difficulty field");
         return Promise.resolve({ data: { success: false } });
       }
-      if (typeof data.level !== 'number' || data.level < 0) {
-        console.warn('saveTrack: confirmInput event requires valid level field');
+      if (typeof data.level !== "number" || data.level < 0) {
+        console.warn("saveTrack: confirmInput event requires valid level field");
         return Promise.resolve({ data: { success: false } });
       }
     }
 
     // Allow tracking by default for analytics to work
-    const trackingAllowed = localStorage.trackingAllowed !== 'false';
+    const trackingAllowed = localStorage.trackingAllowed !== "false";
     if (trackingAllowed) {
       if (starTime) {
         (data as Record<string, unknown>).levelTime = Math.abs(
@@ -387,7 +360,7 @@ class ElogicalApi {
       try {
         await localStorageService.saveTrackingEvent(eventType, data);
       } catch (error) {
-        console.warn('Failed to save tracking:', error);
+        console.warn("Failed to save tracking:", error);
       }
     }
 
@@ -403,7 +376,7 @@ class ElogicalApi {
       const id = await localStorageService.saveGameScore(name, total, difficulty);
       return { data: { success: true, id } };
     } catch (error) {
-      console.warn('Failed to save game score:', error);
+      console.warn("Failed to save game score:", error);
       return { data: { success: false, id: -1 } };
     }
   }
@@ -412,10 +385,10 @@ class ElogicalApi {
     try {
       return await localStorageService.getAllTrackingEvents();
     } catch (error) {
-      console.warn('Failed to fetch tracking events:', error);
+      console.warn("Failed to fetch tracking events:", error);
       return [];
     }
   }
 }
 
-export { ElogicalApi, AuthResponse, TrackingData };
+export { ElogicalApi, type TrackingData };

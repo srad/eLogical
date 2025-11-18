@@ -24,7 +24,7 @@ const routes: Array<RouteRecordRaw> = [
     path: '/highscores',
     name: 'highscores',
     component: Leaderboard,
-    meta: { title: 'My High Scores' },
+    meta: { title: 'High Score' },
   },
   {
     path: '/analytics',

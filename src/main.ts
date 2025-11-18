@@ -8,6 +8,7 @@ import {
   faHeart,
   faHeartBroken,
   faLaughBeam,
+  faStopwatch20,
   faMedal,
   faQuestion,
   faRobot,
@@ -35,6 +36,7 @@ library.add(
   faRobot,
   faTimes,
   faTimesCircle,
+  faStopwatch20,
   faMedal,
   faLaughBeam,
   faHeartBroken,
@@ -45,7 +47,7 @@ library.add(
   faSkullCrossbones
 );
 
-// Create app instance
+// Create the app instance
 const app = createApp(App);
 
 // Setup Pinia
@@ -72,16 +74,6 @@ app.provide('$log', logger);
 if (!localStorage.trackingAllowed) {
   localStorage.trackingAllowed = 'true'; // Enable tracking by default
 }
-
-// Authenticate
-api
-  .authenticate()
-  .then(() => {
-    console.log('Authenticated');
-  })
-  .catch((error: Error) => {
-    console.log(`Token could not be requested: ${error.message}`);
-  });
 
 // Mount app
 app.mount('#app');

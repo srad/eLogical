@@ -8,10 +8,10 @@
     <!-- Tutorial backdrop overlays (fixed) -->
     <div class="backdrop-click" v-if="tutorial.isRunning" @click="progressTutorial"></div>
     <div
-      class="backdrop"
-      v-if="drop.top.display"
-      v-show="tutorial.isRunning"
-      :style="{
+        class="backdrop"
+        v-if="drop.top.display"
+        v-show="tutorial.isRunning"
+        :style="{
         top: drop.top.top,
         height: drop.top.height,
         width: drop.top.width,
@@ -19,10 +19,10 @@
       }"
     ></div>
     <div
-      class="backdrop"
-      v-if="drop.left.display"
-      v-show="tutorial.isRunning"
-      :style="{
+        class="backdrop"
+        v-if="drop.left.display"
+        v-show="tutorial.isRunning"
+        :style="{
         top: drop.left.top,
         height: drop.left.height,
         width: drop.left.width,
@@ -30,10 +30,10 @@
       }"
     ></div>
     <div
-      class="backdrop"
-      v-if="drop.right.display"
-      v-show="tutorial.isRunning"
-      :style="{
+        class="backdrop"
+        v-if="drop.right.display"
+        v-show="tutorial.isRunning"
+        :style="{
         top: drop.right.top,
         height: drop.right.height,
         width: drop.right.width,
@@ -41,10 +41,10 @@
       }"
     ></div>
     <div
-      class="backdrop"
-      v-if="drop.bottom.display"
-      v-show="tutorial.isRunning"
-      :style="{
+        class="backdrop"
+        v-if="drop.bottom.display"
+        v-show="tutorial.isRunning"
+        :style="{
         top: drop.bottom.top,
         height: drop.bottom.height,
         width: drop.bottom.width,
@@ -61,25 +61,25 @@
       <div class="d-flex align-items-center gap-2 justify-content-center">
         <div class="fw-bold">Wins</div>
         <div class="flex-grow-1">
-          <BlockBar :colors="blockBarColors" :current="info.currentExercise" :max="info.totalExercises" />
+          <BlockBar :colors="blockBarColors" :current="info.currentExercise" :max="info.totalExercises"/>
         </div>
       </div>
 
       <!-- Health and rerolls section -->
       <div class="d-flex justify-content-between w-100">
-        <ressource animate hide-animation-class="flash" icon="heart" color="darkred" class="text-danger" :max="health.max" :current="health.current" />
-        <ressource animate hide-animation-class="swing" icon="dice" color="goldenrod" class="text-warning" :max="rerolls.max" :current="rerolls.current" />
+        <ressource animate hide-animation-class="flash" icon="heart" color="darkred" class="text-danger" :max="health.max" :current="health.current"/>
+        <ressource animate hide-animation-class="swing" icon="dice" color="goldenrod" class="text-warning" :max="rerolls.max" :current="rerolls.current"/>
       </div>
 
       <!-- Expression card -->
       <div>
         <div
-          :class="{
+            :class="{
             'animated slow shake': success === false,
             'animated tada': success === true,
             'text-reroll': isRerolling,
           }"
-          class="card shadow-sm border-dark"
+            class="card shadow-sm border-dark"
         >
           <div class="card-header" :class="success === false ? 'bg-danger' : 'bg-primary'" style="color: white">Make this formula true</div>
           <div class="card-body text-center">
@@ -94,9 +94,9 @@
       <Tree :treeData="treeData" class="w-100 h-100"></Tree>
 
       <!-- Stopwatch section (final level only) -->
-      <div class="d-flex text-start gap-2 position-absolute top-0 start-0" style="max-width: 50%" v-if="info.currentExercise === info.totalExercises - 1">
+      <div id="countdown" class="d-flex text-start gap-2 position-absolute top-0 start-0 w-100 py-2" style="max-width: 50%" v-if="info.currentExercise === info.totalExercises - 1">
         <div class="bones-icon">
-          <font-awesome-icon icon="skull-crossbones" size="lg" />
+          <font-awesome-icon icon="stopwatch" size="2x"/>
         </div>
         <div class="flex-grow-1">
           <stopwatch ref="stopwatch" class="stopwatch" :time="stopwatchTime" :countingDown="true" @timer-ended="gameOver"></stopwatch>
@@ -106,7 +106,7 @@
       <!-- Reroll button positioned at top-right -->
       <div class="position-absolute top-0 end-0">
         <button class="btn text-warning d-flex align-items-center justify-content-center gap-2" @click="rerollExpression" :disabled="rerolls.current === 0" title="Reroll the expression">
-          <font-awesome-icon icon="dice" size="2x" />
+          <font-awesome-icon icon="dice" size="2x"/>
           <span class="d-none d-md-inline">{{ rerolls.current }}</span>
         </button>
       </div>
@@ -122,13 +122,13 @@
         </div>
 
         <button class="btn btn-dark ms-2" @click="confirm">
-          <font-awesome-icon icon="check" size="lg" />
+          <font-awesome-icon icon="check" size="lg"/>
         </button>
       </div>
     </div>
 
     <!-- Answer feedback component -->
-    <answer-feedback :isVisible="showFeedback" :isCorrect="feedbackIsCorrect" @hide="hideFeedback" />
+    <AnswerFeedback :isVisible="showFeedback" :isCorrect="feedbackIsCorrect" @hide="hideFeedback"/>
 
     <!-- Modal dialog -->
     <div class="modal fade" ref="modalElement" tabindex="-1" role="dialog">
@@ -153,7 +153,7 @@
             </div>
 
             <!-- Loot selection modal -->
-            <div v-if="modalText === 'Good Job! Choose your Loot'" class="container-fluid">
+            <div v-if="modalState === ModalState.won" class="container-fluid">
               <div v-if="rerolls.current === rerolls.max && health.current === health.max" class="row">
                 <div class="col text-center">
                   <font-awesome-icon size="6x" class="trophy-icon" icon="trophy"></font-awesome-icon>
@@ -184,7 +184,7 @@
             </div>
 
             <!-- Welcome modal -->
-            <div v-if="modalText === 'Welcome!' && tutorial.proposed === false" class="container-fluid">
+            <div v-if="modalState === ModalState.welcome" class="container-fluid">
               <div class="row">
                 <div class="col text-center">Welcome to eLogical! Do you want to play through a quick tutorial?</div>
               </div>
@@ -199,7 +199,7 @@
             </div>
 
             <!-- Game start confirmation modal -->
-            <div v-if="modalText === 'Ready to Play?'" class="container-fluid">
+            <div v-if="modalState === ModalState.ready" class="container-fluid">
               <div class="row">
                 <div class="col text-center">
                   <h4>Are you ready to start?</h4>
@@ -234,6 +234,8 @@ import { Modal } from "bootstrap";
 import confetti from "canvas-confetti";
 
 const router = useRouter();
+
+enum ModalState { gameOver, won, default, ready, tutorial, welcome }
 
 interface LevelInfo {
   level: number;
@@ -290,6 +292,8 @@ const info = reactive<LevelInfo>({
   totalExercises: 5, // Exercises per level
 });
 
+const modalState = ref<ModalState>(ModalState.default);
+
 const success = ref<boolean | null>(null);
 const showFeedback = ref(false);
 const feedbackIsCorrect = ref(false);
@@ -327,8 +331,8 @@ const texOptions = ref<string[]>([]);
 const previousExpression = ref<string>("");
 
 const difficultySettings: Record<number, string[]> = {
-  1: ["and", "or", "not", "True", "False"],
-  2: ["and", "not", "True", "False", "xor"],
+  1: [ "and", "or", "not", "True", "False" ],
+  2: [ "and", "not", "True", "False", "xor" ],
 };
 
 const tutorial = reactive<Tutorial>({
@@ -378,10 +382,7 @@ const formatLabelWithSubscripts = (label: string): string => {
   return label.replace(/(\d)/g, (match) => subscripts[match] || match);
 };
 
-// Computed properties
-const blockBarColors = computed(() => {
-  return colors.gradient.purple;
-});
+const blockBarColors = computed(() => colors.gradient.purple.slice());
 
 const vars = computed(() => {
   return new Array(info.currentExercise + 1).fill(0).map((_, index) => `v${index}`);
@@ -391,7 +392,7 @@ const functions = computed(() => {
   if (info.level <= 3) {
     return difficultySettings[info.level];
   } else {
-    return ["and", "or", "not", "true", "false", "xor", "implication", "eq"];
+    return [ "and", "or", "not", "true", "false", "xor", "implication", "eq" ];
   }
 });
 
@@ -443,10 +444,10 @@ const getTutorialElement = (): HTMLElement | null => {
 const tutorialData = computed(() => {
   const step = steps[tutorial.currentStep];
   return (
-    step || {
-      selector: null,
-      text: "That's it! Have fun playing the game!",
-    }
+      step || {
+        selector: null,
+        text: "That's it! Have fun playing the game!",
+      }
   );
 });
 
@@ -490,9 +491,12 @@ const confirm = () => {
   showFeedback.value = true;
 
   if (success.value) {
-    showFeedback.value = false;
-    info.currentExercise++;
-    setTimeout(cleanup, 100);
+    // Delay to show feedback before moving to next exercise
+    setTimeout(() => {
+      showFeedback.value = false;
+      info.currentExercise++;
+      setTimeout(cleanup, 100);
+    }, 1000);
   } else {
     // Delay damage indication and generate new question
     setTimeout(() => {
@@ -531,31 +535,31 @@ const triggerConfetti = () => {
     particleCount: 100,
     spread: 70,
     origin: { x: 0.5, y: 0.5 },
-    colors: ["#2abb79", "#1e8a5c", "#28a745", "#20c997"],
+    colors: [ "#2abb79", "#1e8a5c", "#28a745", "#20c997" ],
   });
 
   setTimeout(
-    () =>
-      confetti_burst({
-        particleCount: 50,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0, y: 0.5 },
-        colors: ["#2abb79", "#1e8a5c", "#28a745"],
-      }),
-    150
+      () =>
+          confetti_burst({
+            particleCount: 50,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0, y: 0.5 },
+            colors: [ "#2abb79", "#1e8a5c", "#28a745" ],
+          }),
+      150
   );
 
   setTimeout(
-    () =>
-      confetti_burst({
-        particleCount: 50,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1, y: 0.5 },
-        colors: ["#2abb79", "#1e8a5c", "#28a745"],
-      }),
-    300
+      () =>
+          confetti_burst({
+            particleCount: 50,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1, y: 0.5 },
+            colors: [ "#2abb79", "#1e8a5c", "#28a745" ],
+          }),
+      300
   );
 };
 
@@ -566,16 +570,16 @@ const pickLoot = (lootType: string) => {
 const emptyBackpack = () => {
   loot.bagpack.forEach((lootItem) => {
     switch (lootItem) {
-      case "heart":
-        if (health.current < health.max) {
-          health.current++;
-        }
-        break;
-      case "dice":
-        if (rerolls.current < rerolls.max) {
-          rerolls.current++;
-        }
-        break;
+    case "heart":
+      if (health.current < health.max) {
+        health.current++;
+      }
+      break;
+    case "dice":
+      if (rerolls.current < rerolls.max) {
+        rerolls.current++;
+      }
+      break;
     }
   });
   loot.bagpack = [];
@@ -586,6 +590,7 @@ const cleanup = () => {
     triggerConfetti();
     setTimeout(() => {
       gameStarted.value = false; // Allow navigation while choosing loot
+      modalState.value = ModalState.won;
       modalText.value = "Good Job! Choose your Loot";
       modal.value?.show();
     }, 1500);
@@ -644,12 +649,12 @@ const generateExercise = () => {
 
   if (leafs.length > 0) {
     options.value = leafs
-      .map((node: any) => ({
-        name: node.v,
-        color: node.color,
-        selected: false,
-      }))
-      .sort((a: Option, b: Option) => a.name.localeCompare(b.name));
+        .map((node: any) => ({
+          name: node.v,
+          color: node.color,
+          selected: false,
+        }))
+        .sort((a: Option, b: Option) => a.name.localeCompare(b.name));
     texOptions.value = leafs.map((node: any) => node.to("tex")).sort();
   }
 
@@ -659,9 +664,9 @@ const generateExercise = () => {
     stopwatch.value?.startTimer();
   }
 
-  if (tutorial.proposed && info.currentExercise === 0) {
-    slideInTitle();
-  }
+  // if (tutorial.proposed && info.currentExercise === 0) {
+  //   slideInTitle();
+  // }
 
   trackingParams.levelStartTime = new Date();
 
@@ -687,6 +692,7 @@ const slideInTitle = () => {
 
 const resetGame = () => {
   gameStarted.value = true;
+  modalState.value = ModalState.default;
   modalText.value = "";
   modal.value?.hide();
   info.currentExercise = 0;
@@ -699,6 +705,7 @@ const resetGame = () => {
 
 const gameOver = () => {
   gameStarted.value = false;
+  modalState.value = ModalState.gameOver;
   modalText.value = "Game Over!";
   modal.value?.show();
 
@@ -770,6 +777,7 @@ const startTutorial = () => {
 };
 
 const showGameStartModal = () => {
+  modalState.value = ModalState.ready;
   modalText.value = "Ready to Play?";
   modal.value?.show();
 };
@@ -777,7 +785,7 @@ const showGameStartModal = () => {
 const startGame = () => {
   gameStarted.value = true;
   modal.value?.hide();
-  previousExpression.value = ""; // Clear previous expression for new game
+  previousExpression.value = ""; // Clear previous expression for the new game
   generateExercise();
   slideInTitle();
 };
@@ -819,37 +827,37 @@ const calculatePoints = (): number => {
 
 // Watchers
 watch(
-  () => booleanExpr.value,
-  (node) => {
-    if (node && typeof node.to === "function") {
-      expression.value = (nodeId.value === 0 ? "\\phi = " : "") + node.to("tex", { color: true });
+    () => booleanExpr.value,
+    (node) => {
+      if (node && typeof node.to === "function") {
+        expression.value = (nodeId.value === 0 ? "\\phi = " : "") + node.to("tex", { color: true });
+      }
     }
-  }
 );
 
 watch(
-  () => showTitleAnimation.value,
-  (newVal) => {
-    if (newVal) {
-      // Animation will complete in 1.5s, then reset
-      setTimeout(() => {
-        showTitleAnimation.value = false;
-      }, 1500);
+    () => showTitleAnimation.value,
+    (newVal) => {
+      if (newVal) {
+        // Animation will complete in 1.5s, then reset
+        setTimeout(() => {
+          showTitleAnimation.value = false;
+        }, 1500);
+      }
     }
-  }
 );
 
 watch(
-  () => isRerolling.value,
-  (newVal) => {
-    if (newVal) {
-      // Animation will complete in 1s, then reset
-      setTimeout(() => {
-        isRerolling.value = false;
-        success.value = undefined;
-      }, 1000);
+    () => isRerolling.value,
+    (newVal) => {
+      if (newVal) {
+        // Animation will complete in 1s, then reset
+        setTimeout(() => {
+          isRerolling.value = false;
+          success.value = false;
+        }, 1000);
+      }
     }
-  }
 );
 
 // Prevent page reload/close during the active game
@@ -873,14 +881,16 @@ onMounted(() => {
   // Add beforeunload listener
   window.addEventListener("beforeunload", handleBeforeUnload);
 
-  if (!tutorial.proposed) {
-    // First time user - show welcome/tutorial modal
-    modalText.value = "Welcome!";
-    modal.value?.show();
-  } else {
-    // Returning user - show game start confirmation
-    showGameStartModal();
-  }
+  // if (!tutorial.proposed) {
+  //   // First time user - show welcome/tutorial modal
+  //   modalState.value = ModalState.tutorial;
+  //   modalText.value = "Welcome!";
+  //   modal.value?.show();
+  // } else {
+  //   // Returning user - show game start confirmation
+  //   showGameStartModal();
+  // }
+  showGameStartModal();
 });
 
 onBeforeUnmount(() => {
@@ -893,7 +903,7 @@ onBeforeUnmount(() => {
   }
 });
 
-// Prevent navigation away during active game
+// Prevent navigation away during the active game
 onBeforeRouteLeave((to, from, next) => {
   if (isGameInProgress.value) {
     const confirmed = window.confirm("You have a game in progress. Are you sure you want to leave?");
@@ -913,8 +923,8 @@ onBeforeRouteLeave((to, from, next) => {
 .game-wrapper {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 86px); /* Subtract navbar height */
-  max-height: calc(100vh - 86px);
+  min-height: calc(100vh - 66px); /* Subtract navbar height */
+  max-height: calc(100vh - 66px);
   padding: 0.5rem 0.5rem 1rem 0.5rem; /* Extra padding at bottom */
   gap: 0.5rem;
   overflow: hidden;
@@ -946,6 +956,13 @@ onBeforeRouteLeave((to, from, next) => {
 
 .game-footer {
   flex: 0 0 auto; /* Don't grow, don't shrink, auto size */
+  padding-bottom: 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.game-footer .btn {
+  padding: 0.75rem 1.25rem;
 }
 
 /* Card styling */
@@ -1001,8 +1018,6 @@ onBeforeRouteLeave((to, from, next) => {
   }
 }
 
-.tree,
-.confirm,
 .bones-icon,
 .stopwatch {
   animation: slideInFromTop 1s;
@@ -1053,28 +1068,6 @@ onBeforeRouteLeave((to, from, next) => {
   opacity: 0.6;
   width: 100%;
   height: 100%;
-}
-
-.true {
-  color: white;
-  animation: spinTrue 0.5s;
-  animation-fill-mode: forwards;
-}
-
-.true:hover {
-  background-color: #1e7e34;
-  color: white;
-}
-
-.false {
-  color: white;
-  animation: spinFalse 0.5s;
-  animation-fill-mode: forwards;
-}
-
-.false:hover {
-  background-color: #c82333;
-  color: white;
 }
 
 .loot-unselected {
@@ -1134,15 +1127,6 @@ onBeforeRouteLeave((to, from, next) => {
 .trophy-icon {
   color: #ffc107;
   text-shadow: 0 0 15px rgba(255, 193, 7, 0.8);
-}
-
-.btn-warning:not(:disabled) {
-  transition: all 0.2s ease;
-}
-
-.btn-warning:not(:disabled):hover {
-  background-color: #ffb700;
-  transform: scale(1.05);
 }
 
 /* Button sizing */
