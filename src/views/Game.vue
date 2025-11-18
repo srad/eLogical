@@ -491,17 +491,19 @@ const confirm = () => {
   showFeedback.value = true;
 
   if (success.value) {
-    // Delay to show feedback before moving to next exercise
+    // Update progress immediately
+    info.currentExercise++;
+    // Keep feedback visible while transitioning
     setTimeout(() => {
       showFeedback.value = false;
-      info.currentExercise++;
       setTimeout(cleanup, 100);
     }, 1000);
   } else {
-    // Delay damage indication and generate new question
+    // Update health immediately
+    takeDamage();
+    // Keep feedback visible while health updates
     setTimeout(() => {
       showFeedback.value = false;
-      takeDamage();
       generateExercise();
     }, 1000);
   }
@@ -700,6 +702,9 @@ const resetGame = () => {
   health.current = 3;
   rerolls.current = 3;
   previousExpression.value = ""; // Clear previous expression for new game
+  success.value = null; // Clear animation state
+  showFeedback.value = false; // Hide feedback overlay
+  isRerolling.value = false; // Clear reroll animation
   generateExercise();
 };
 
