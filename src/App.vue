@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app-root" :class="{ 'game-view-active': $route.name === 'game' }">
     <!-- Top Navigation Bar -->
     <nav ref="navbarRef" class="navbar bg-primary fixed-top pt-5">
       <div class="container-fluid">
@@ -54,9 +54,7 @@ import AppDrawer from "./components/AppDrawer.vue";
 const router = useRouter();
 const isMenuOpen = ref(false);
 
-const menuItems = computed(() => {
-  return router.getRoutes();
-});
+const menuItems = computed(() => router.getRoutes());
 </script>
 
 <style scoped>
@@ -109,6 +107,7 @@ const menuItems = computed(() => {
 .app-container {
   width: 100%;
   display: flex;
+  height: calc(100dvh - 95px);
   flex-direction: column;
   padding-top: 95px; /* Accommodate for fixed navbar height */
 }
@@ -135,5 +134,12 @@ const menuItems = computed(() => {
   .navbar-menu-desktop {
     display: flex !important;
   }
+}
+</style>
+
+<style>
+/* Override container height for game view */
+#app-root.game-view-active .app-container {
+  height: 100dvh !important;
 }
 </style>

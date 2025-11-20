@@ -8,10 +8,10 @@
     <!-- Tutorial backdrop overlays (fixed) -->
     <div class="backdrop-click" v-if="tutorial.isRunning" @click="progressTutorial"></div>
     <div
-        class="backdrop"
-        v-if="drop.top.display"
-        v-show="tutorial.isRunning"
-        :style="{
+      class="backdrop"
+      v-if="drop.top.display"
+      v-show="tutorial.isRunning"
+      :style="{
         top: drop.top.top,
         height: drop.top.height,
         width: drop.top.width,
@@ -19,10 +19,10 @@
       }"
     ></div>
     <div
-        class="backdrop"
-        v-if="drop.left.display"
-        v-show="tutorial.isRunning"
-        :style="{
+      class="backdrop"
+      v-if="drop.left.display"
+      v-show="tutorial.isRunning"
+      :style="{
         top: drop.left.top,
         height: drop.left.height,
         width: drop.left.width,
@@ -30,10 +30,10 @@
       }"
     ></div>
     <div
-        class="backdrop"
-        v-if="drop.right.display"
-        v-show="tutorial.isRunning"
-        :style="{
+      class="backdrop"
+      v-if="drop.right.display"
+      v-show="tutorial.isRunning"
+      :style="{
         top: drop.right.top,
         height: drop.right.height,
         width: drop.right.width,
@@ -41,10 +41,10 @@
       }"
     ></div>
     <div
-        class="backdrop"
-        v-if="drop.bottom.display"
-        v-show="tutorial.isRunning"
-        :style="{
+      class="backdrop"
+      v-if="drop.bottom.display"
+      v-show="tutorial.isRunning"
+      :style="{
         top: drop.bottom.top,
         height: drop.bottom.height,
         width: drop.bottom.width,
@@ -61,25 +61,25 @@
       <div class="d-flex align-items-center gap-2 justify-content-center">
         <div class="fs-5">Points</div>
         <div class="flex-grow-1">
-          <BlockBar :colors="blockBarColors" :current="info.currentExercise" :max="info.totalExercises"/>
+          <BlockBar :colors="blockBarColors" :current="info.currentExercise" :max="info.totalExercises" />
         </div>
       </div>
 
       <!-- Health and rerolls section -->
       <div class="d-flex justify-content-between w-100">
-        <ressource animate hide-animation-class="flash" icon="heart" color="darkred" class="text-danger" :max="health.max" :current="health.current"/>
-        <ressource animate hide-animation-class="swing" icon="dice" color="goldenrod" class="text-warning" :max="rerolls.max" :current="rerolls.current"/>
+        <ressource animate hide-animation-class="flash" icon="heart" color="darkred" class="text-danger" :max="health.max" :current="health.current" />
+        <ressource animate hide-animation-class="swing" icon="dice" color="goldenrod" class="text-warning" :max="rerolls.max" :current="rerolls.current" />
       </div>
 
       <!-- Expression card -->
       <div>
         <div
-            :class="{
+          :class="{
             'animated slow shake': success === false,
             'animated tada': success === true,
             'text-reroll': isRerolling,
           }"
-            class="card shadow-sm border-dark"
+          class="card shadow-sm border-dark"
         >
           <div class="card-header text-center text-white fw-semibold" :class="success === false ? 'bg-danger' : 'bg-primary'">Make this formula true</div>
           <div class="card-body text-center">
@@ -96,7 +96,7 @@
       <!-- Stopwatch section (final level only) -->
       <div id="countdown" class="d-flex text-start gap-2 position-absolute top-0 start-0 w-100 py-2" style="max-width: 50%" v-if="info.currentExercise === info.totalExercises - 1">
         <div class="bones-icon">
-          <font-awesome-icon icon="stopwatch" size="2x"/>
+          <font-awesome-icon icon="stopwatch" size="2x" />
         </div>
         <div class="flex-grow-1">
           <stopwatch ref="stopwatch" class="stopwatch" :time="stopwatchTime" :countingDown="true" @timer-ended="gameOver"></stopwatch>
@@ -106,7 +106,7 @@
       <!-- Reroll button positioned at top-right -->
       <div class="position-absolute top-0 end-0">
         <button class="btn text-warning d-flex align-items-center justify-content-center gap-2" @click="rerollExpression" :disabled="rerolls.current === 0" title="Reroll the expression">
-          <font-awesome-icon icon="dice" size="2x"/>
+          <font-awesome-icon icon="dice" size="2x" />
           <span class="d-none d-md-inline">{{ rerolls.current }}</span>
         </button>
       </div>
@@ -122,16 +122,16 @@
         </div>
 
         <button class="btn btn-success ms-2" style="background: mediumseagreen" @click="confirm">
-          <font-awesome-icon icon="check" size="lg"/>
+          <font-awesome-icon icon="check" size="lg" />
         </button>
       </div>
     </div>
 
     <!-- Answer feedback component -->
-    <AnswerFeedback :isVisible="showFeedback" :isCorrect="feedbackIsCorrect" @hide="hideFeedback"/>
+    <AnswerFeedback :isVisible="showFeedback" :isCorrect="feedbackIsCorrect" @hide="hideFeedback" />
 
     <!-- Game start overlay -->
-    <GameStartOverlay :isVisible="modalState === ModalState.ready" @start="startGame"/>
+    <GameStartOverlay :isVisible="modalState === ModalState.ready" @start="startGame" />
 
     <!-- Modal dialog -->
     <div class="modal fade" ref="modalElement" tabindex="-1" role="dialog">
@@ -152,7 +152,7 @@
               <div v-if="rerolls.current === rerolls.max && health.current === health.max" class="text-center">
                 <font-awesome-icon size="6x" class="trophy-icon" icon="trophy"></font-awesome-icon>
               </div>
-              <div v-if="rerolls.current === rerolls.max && health.current === health.max" class="text-center">WOW! Your ressources are still maxed out! Keep it up!<br/></div>
+              <div v-if="rerolls.current === rerolls.max && health.current === health.max" class="text-center">WOW! Your ressources are still maxed out! Keep it up!<br /></div>
               <div class="loot-selection d-flex justify-content-center gap-4">
                 <div class="text-center" v-if="rerolls.current < rerolls.max">
                   <div class="loot-item-wrapper">
@@ -206,7 +206,14 @@ import { TreeNode } from "@/lib/compiler/tree.ts";
 
 const router = useRouter();
 
-enum ModalState { gameOver, won, default, ready, tutorial, welcome }
+enum ModalState {
+  gameOver,
+  won,
+  default,
+  ready,
+  tutorial,
+  welcome,
+}
 
 interface LevelInfo {
   level: number;
@@ -302,8 +309,8 @@ const texOptions = ref<string[]>([]);
 const previousExpression = ref<string>("");
 
 const difficultySettings: Record<number, string[]> = {
-  1: [ "and", "or", "not", "True", "False" ],
-  2: [ "and", "not", "True", "False", "xor" ],
+  1: ["and", "or", "not", "True", "False"],
+  2: ["and", "not", "True", "False", "xor"],
 };
 
 const tutorial = reactive<Tutorial>({
@@ -330,7 +337,7 @@ const drop = reactive({
 const modal = ref<Modal | null>(null);
 const stopwatch = ref<any>(null);
 const modalElement = ref<HTMLElement | null>(null);
-const partyHornAudio = new Audio('/sounds/party-horn.mp3');
+const partyHornAudio = new Audio("/sounds/party-horn.mp3");
 
 // Inject API
 const $api = inject("$api") as any;
@@ -364,7 +371,7 @@ const functions = computed(() => {
   if (info.level <= 3) {
     return difficultySettings[info.level];
   } else {
-    return [ "and", "or", "not", "true", "false", "xor", "implication", "eq" ];
+    return ["and", "or", "not", "true", "false", "xor", "implication", "eq"];
   }
 });
 
@@ -416,10 +423,10 @@ const getTutorialElement = (): HTMLElement | null => {
 const tutorialData = computed(() => {
   const step = steps[tutorial.currentStep];
   return (
-      step || {
-        selector: null,
-        text: "That's it! Have fun playing the game!",
-      }
+    step || {
+      selector: null,
+      text: "That's it! Have fun playing the game!",
+    }
   );
 });
 
@@ -515,31 +522,31 @@ const triggerConfetti = () => {
     particleCount: 100,
     spread: 70,
     origin: { x: 0.5, y: 0.5 },
-    colors: [ "#2abb79", "#1e8a5c", "#28a745", "#20c997" ],
+    colors: ["#2abb79", "#1e8a5c", "#28a745", "#20c997"],
   });
 
   setTimeout(
-      () =>
-          confetti_burst({
-            particleCount: 50,
-            angle: 60,
-            spread: 55,
-            origin: { x: 0, y: 0.5 },
-            colors: [ "#2abb79", "#1e8a5c", "#28a745" ],
-          }),
-      150
+    () =>
+      confetti_burst({
+        particleCount: 50,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.5 },
+        colors: ["#2abb79", "#1e8a5c", "#28a745"],
+      }),
+    150
   );
 
   setTimeout(
-      () =>
-          confetti_burst({
-            particleCount: 50,
-            angle: 120,
-            spread: 55,
-            origin: { x: 1, y: 0.5 },
-            colors: [ "#2abb79", "#1e8a5c", "#28a745" ],
-          }),
-      300
+    () =>
+      confetti_burst({
+        particleCount: 50,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.5 },
+        colors: ["#2abb79", "#1e8a5c", "#28a745"],
+      }),
+    300
   );
 };
 
@@ -550,16 +557,16 @@ const pickLoot = (lootType: string) => {
 const emptyBackpack = () => {
   loot.bagpack.forEach((lootItem) => {
     switch (lootItem) {
-    case "heart":
-      if (health.current < health.max) {
-        health.current++;
-      }
-      break;
-    case "dice":
-      if (rerolls.current < rerolls.max) {
-        rerolls.current++;
-      }
-      break;
+      case "heart":
+        if (health.current < health.max) {
+          health.current++;
+        }
+        break;
+      case "dice":
+        if (rerolls.current < rerolls.max) {
+          rerolls.current++;
+        }
+        break;
     }
   });
   loot.bagpack = [];
@@ -629,12 +636,12 @@ const generateExercise = () => {
 
   if (leafs.length > 0) {
     options.value = leafs
-        .map((node: any) => ({
-          name: node.v,
-          color: node.color,
-          selected: false,
-        }))
-        .sort((a: Option, b: Option) => a.name.localeCompare(b.name));
+      .map((node: any) => ({
+        name: node.v,
+        color: node.color,
+        selected: false,
+      }))
+      .sort((a: Option, b: Option) => a.name.localeCompare(b.name));
     texOptions.value = leafs.map((node: any) => node.to("html")).sort();
   }
 
@@ -808,37 +815,37 @@ const calculatePoints = (): number => {
 
 // Watchers
 watch(
-    () => booleanExpr.value,
-    (node) => {
-      if (node && typeof node.to === "function") {
-        expression.value = (nodeId.value === 0 ? "<span class=\"var\">&phi;</span> = " : "") + node.to("html", { color: true });
-      }
+  () => booleanExpr.value,
+  (node) => {
+    if (node && typeof node.to === "function") {
+      expression.value = (nodeId.value === 0 ? '<span class="var">&phi;</span> = ' : "") + node.to("html", { color: true });
     }
+  }
 );
 
 watch(
-    () => showTitleAnimation.value,
-    (newVal) => {
-      if (newVal) {
-        // Animation will complete in 1.5s, then reset
-        setTimeout(() => {
-          showTitleAnimation.value = false;
-        }, 1500);
-      }
+  () => showTitleAnimation.value,
+  (newVal) => {
+    if (newVal) {
+      // Animation will complete in 1.5s, then reset
+      setTimeout(() => {
+        showTitleAnimation.value = false;
+      }, 1500);
     }
+  }
 );
 
 watch(
-    () => isRerolling.value,
-    (newVal) => {
-      if (newVal) {
-        // Animation will complete in 1s, then reset
-        setTimeout(() => {
-          isRerolling.value = false;
-          success.value = false;
-        }, 1000);
-      }
+  () => isRerolling.value,
+  (newVal) => {
+    if (newVal) {
+      // Animation will complete in 1s, then reset
+      setTimeout(() => {
+        isRerolling.value = false;
+        success.value = false;
+      }, 1000);
     }
+  }
 );
 
 // Prevent page reload/close during the active game
@@ -858,6 +865,11 @@ onMounted(() => {
       keyboard: false,
     });
   }
+
+  // Preload party horn audio
+  partyHornAudio.volume = 0.7;
+  partyHornAudio.preload = "auto";
+  partyHornAudio.load();
 
   // Add beforeunload listener
   window.addEventListener("beforeunload", handleBeforeUnload);
@@ -899,29 +911,36 @@ onBeforeRouteLeave((to, from, next) => {
 });
 </script>
 
-<style>
-body {
-  overflow-y: hidden;
-}
-
-.btn-variable <{
-  font-family: 'EB Garamond';
-  src: url('/fonts/EB_Garamond/EBGaramond-VariableFont_wght.ttf') format('truetype');
+<style scoped>
+.btn-variable {
+  font-family: "EB Garamond";
+  src: url("/fonts/EB_Garamond/EBGaramond-VariableFont_wght.ttf") format("truetype");
   font-weight: 400;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-style: italic;
   font-display: swap;
-  padding-top: 0.5rem !important;
+  padding-top: 0.375rem !important;
+}
+
+@media (min-width: 768px) {
+  .btn-variable {
+    font-size: 1.5rem;
+    padding-top: 0.5rem !important;
+  }
 }
 
 /* Main Layout - Flexbox approach */
 .game-wrapper {
   display: flex;
   flex-direction: column;
-  min-height: calc(84vh); /* Subtract navbar height */
-  max-height: calc(84vh);
-  gap: 0.5rem;
+  height: calc(100% - var(--safe-area-inset-bottom, 0px));
+  min-height: calc(100% - var(--safe-area-inset-bottom, 0px));
+  max-height: calc(100% - var(--safe-area-inset-bottom, 0px));
+  gap: 0.75rem;
   overflow: hidden;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  touch-action: none; /* Prevent pull-to-refresh and other gestures */
 }
 
 /* Adjust for larger navbar on desktop */
@@ -929,6 +948,8 @@ body {
   .game-wrapper {
     min-height: calc(100vh - 60px);
     max-height: calc(100vh - 60px);
+    gap: 1rem;
+    padding: 0;
   }
 }
 
@@ -939,25 +960,48 @@ body {
   gap: 1.25rem;
 }
 
+@media (min-width: 768px) {
+  .game-header {
+    gap: 1.5rem;
+  }
+}
+
 .game-middle {
   flex: 1 1 0; /* Grow to fill available space */
   min-height: 0; /* Important: allows flex item to shrink below content size */
-  max-height: 50vh;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+@media (min-width: 768px) {
+  .game-middle {
+    max-height: 50vh;
+  }
+}
+
 .game-footer {
   flex: 0 0 auto; /* Don't grow, don't shrink, auto size */
-  padding-bottom: 0rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-bottom: 0.25rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 
 .game-footer .btn {
-  padding: 0.75rem 1.25rem;
+  padding: 0.5rem 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .game-footer {
+    padding-bottom: 0rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .game-footer .btn {
+    padding: 0.75rem 1.25rem;
+  }
 }
 
 /* Card styling */
@@ -966,42 +1010,60 @@ body {
 }
 
 .card-body {
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.75rem;
 }
 
 .card-header {
-  padding: 0.5rem 0.75rem;
-  font-size: 1rem;
+  padding: 0.375rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+@media (min-width: 768px) {
+  .card-body {
+    padding: 0.75rem 1rem;
+  }
+
+  .card-header {
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+  }
 }
 
 /* Block bar */
 .game-header .flex-grow-1 {
-  height: 2rem;
+  height: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .game-header .flex-grow-1 {
+    height: 2rem;
+  }
 }
 
 /* Typography */
 .tex {
-  font-size: 1.5em;
+  font-size: 1.25em;
 }
 
-/* Responsive adjustments */
-@media (max-height: 700px) {
-  .game-wrapper {
-    padding: 0.25rem;
-    gap: 0.25rem;
+@media (min-width: 768px) {
+  .tex {
+    font-size: 1.5em;
   }
+}
 
+/* Responsive adjustments for very small screens */
+@media (max-height: 600px) {
   .game-header {
     gap: 0.25rem;
   }
 
   .card-body {
-    padding: 0.5rem;
+    padding: 0.375rem 0.5rem;
   }
 
   .card-header {
-    padding: 0.375rem 0.5rem;
-    font-size: 0.8rem;
+    padding: 0.25rem 0.375rem;
+    font-size: 0.75rem;
   }
 
   .tex {
@@ -1010,6 +1072,10 @@ body {
 
   .game-header .flex-grow-1 {
     height: 1.25rem;
+  }
+
+  .btn-variable {
+    font-size: 1rem;
   }
 }
 

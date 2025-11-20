@@ -147,18 +147,23 @@ const renderTree = (data: TreeData) => {
 
   // Create dagre graph
   const g = new dagre.graphlib.Graph();
+
+  // Add nodes and edges to dagre
+  const nodeRadius = 15; // Visual radius of the circle
+  const nodeSize = nodeRadius * 2; // Layout size should match visual size
+  const spacing = Math.max(nodeSize * 1.5, 30); // Spacing proportional to node size
+
   g.setGraph({
     rankdir: "TB",
-    ranksep: 30,
-    nodesep: 30,
-    marginx: 0,
-    marginy: 0,
+    ranksep: spacing,
+    nodesep: spacing,
+    marginx: 20,
+    marginy: 20,
   });
   g.setDefaultEdgeLabel(() => ({}));
 
-  // Add nodes and edges to dagre
   data.nodes.forEach((node) => {
-    g.setNode(node.id, { label: node.label, width: 50, height: 50 });
+    g.setNode(node.id, { label: node.label, width: nodeSize, height: nodeSize });
   });
 
   data.edges.forEach((edge) => {
@@ -208,7 +213,7 @@ const renderTree = (data: TreeData) => {
       const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
       circle.setAttribute("cx", String(node.x));
       circle.setAttribute("cy", String(node.y));
-      circle.setAttribute("r", "22.5");
+      circle.setAttribute("r", String(nodeRadius));
       circle.setAttribute("fill", color);
       circle.setAttribute("class", "tree-node");
       circle.setAttribute("data-id", String(nodeId));
@@ -217,8 +222,8 @@ const renderTree = (data: TreeData) => {
 
       // Node label using foreignObject for HTML styling
       const foreignObject = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
-      const labelWidth = 50;
-      const labelHeight = 50;
+      const labelWidth = nodeSize;
+      const labelHeight = nodeSize;
       foreignObject.setAttribute("x", String(node.x - labelWidth / 2));
       foreignObject.setAttribute("y", String(node.y - labelHeight / 2));
       foreignObject.setAttribute("width", String(labelWidth));
@@ -227,6 +232,9 @@ const renderTree = (data: TreeData) => {
 
       const div = document.createElement("div");
       div.className = "tree-node-label";
+      // Scale font size proportionally, with minimum readable size
+      const fontSize = Math.max(nodeRadius * 0.75, 10);
+      div.style.fontSize = `${fontSize}px`;
       div.innerHTML = label;
       foreignObject.appendChild(div);
       svgGroup.appendChild(foreignObject);
@@ -242,7 +250,7 @@ const renderTree = (data: TreeData) => {
     if (sourceNode && targetNode && edge.points) {
       // Draw a smooth curved line through all points
       const points = edge.points;
-      const radius = 22.5;
+      const radius = nodeRadius;
 
       // Adjust start point to circle edge
       const startEdge = getCircleEdgePoint(

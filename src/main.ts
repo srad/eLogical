@@ -25,6 +25,7 @@ import 'animate.css';
 import App from './App.vue';
 import router from './router';
 import { ElogicalApi } from './services/elogical';
+import { SafeArea } from 'capacitor-plugin-safe-area';
 
 // Configure FontAwesome
 library.add(
@@ -69,6 +70,17 @@ app.provide('$log', logger);
 if (!localStorage.trackingAllowed) {
   localStorage.trackingAllowed = 'true'; // Enable tracking by default
 }
+
+// Get safe area insets and set CSS variables
+SafeArea.getSafeAreaInsets().then(({ insets }) => {
+  console.log('Safe area insets:', insets);
+  for (const [key, value] of Object.entries(insets)) {
+    document.documentElement.style.setProperty(
+      `--safe-area-inset-${key}`,
+      `${value}px`
+    );
+  }
+});
 
 // Mount app
 app.mount('#app');

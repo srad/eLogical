@@ -9,6 +9,7 @@ onlyBuiltDependencies:
   - esbuild
   - node-sass
   - nodent-runtime
+  - sharp
   - vis-data
   - vis-network
   - vue-demi
