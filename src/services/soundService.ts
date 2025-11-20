@@ -3,6 +3,7 @@ import wrongSoundFile from "/sounds/wrong.mp3";
 import partyHornSoundFile from "/sounds/party-horn.mp3";
 import diceSoundFile from "/sounds/dice.mp3";
 import clickSoundFile from "/sounds/click-button.mp3";
+import gameOverSoundFile from "/sounds/game-over.mp3";
 
 /**
  * Enum of all available audio files in the application
@@ -13,6 +14,7 @@ export enum SoundType {
   PARTY_HORN = "partyHorn",
   DICE = "dice",
   CLICK = "click",
+  GAME_OVER = "gameOver",
 }
 
 /**
@@ -33,6 +35,7 @@ class SoundService {
       [SoundType.PARTY_HORN]: partyHornSoundFile,
       [SoundType.DICE]: diceSoundFile,
       [SoundType.CLICK]: clickSoundFile,
+      [SoundType.GAME_OVER]: gameOverSoundFile,
     };
   }
 

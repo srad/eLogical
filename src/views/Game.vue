@@ -117,7 +117,7 @@
       <div class="d-flex justify-content-between align-items-center w-100">
         <div class="d-flex gap-2 flex-wrap">
           <button v-for="(node, index) in options" :key="index" :class="node.selected ? 'btn-primary' : 'btn-danger'" class="btn btn-variable" @click="toggleVariable(node.name, index)">
-            <span>{{ formatLabelWithSubscripts(node.name) }}</span>
+            <span>{{ formatLabelWithSubscripts(node.name) }}={{ (node.selected ? 1 : 0) }}</span>
           </button>
         </div>
 
@@ -716,6 +716,9 @@ const gameOver = () => {
   modalState.value = ModalState.gameOver;
   modalText.value = "Game Over!";
   modal.value?.show();
+
+  // Play game over sound
+  soundService.play(SoundType.GAME_OVER);
 
   $api.saveTrack({
     data: {

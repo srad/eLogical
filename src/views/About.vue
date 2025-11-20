@@ -1,5 +1,5 @@
 <template>
-  <div class="about">
+  <div class="about pb-2">
     <h2 class="text-center">About this app</h2>
     <p>
       The original version of this app was designed &amp; developed at the Goethe-University Frankfurt/Main
@@ -33,6 +33,9 @@
         </li>
         <li>
           Sound Effect by <a href="https://pixabay.com/de/users/666herohero-25759907/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=131479">666HeroHero</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=131479">Pixabay</a>
+        </li>
+        <li>
+          Sound Effect by <a href="https://pixabay.com/de/users/alphix-52619918/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=417465">Alphix</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=417465">Pixabay</a>
         </li>
       </ol>
     </p>
