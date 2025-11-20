@@ -73,7 +73,6 @@ if (!localStorage.trackingAllowed) {
 
 // Get safe area insets and set CSS variables
 SafeArea.getSafeAreaInsets().then(({ insets }) => {
-  console.log('Safe area insets:', insets);
   for (const [key, value] of Object.entries(insets)) {
     document.documentElement.style.setProperty(
       `--safe-area-inset-${key}`,

@@ -203,6 +203,8 @@ import EventType from "@/services/events";
 import { Modal } from "bootstrap";
 import confetti from "canvas-confetti";
 import { TreeNode } from "@/lib/compiler/tree.ts";
+import { soundService, SoundType } from "@/services/soundService.ts";
+import { musicService } from "@/services/musicService";
 
 const router = useRouter();
 
@@ -337,7 +339,6 @@ const drop = reactive({
 const modal = ref<Modal | null>(null);
 const stopwatch = ref<any>(null);
 const modalElement = ref<HTMLElement | null>(null);
-const partyHornAudio = new Audio("/sounds/party-horn.mp3");
 
 // Inject API
 const $api = inject("$api") as any;
@@ -432,16 +433,17 @@ const tutorialData = computed(() => {
 
 // Methods
 const toggleVariable = (node: string, index: number) => {
+  soundService.play(SoundType.CLICK);
   options.value[index].selected = !options.value[index].selected;
 };
 
 const handleNodeClick = (data: { node: unknown; id: string; rawNode: any }) => {
   // Extract the variable name from the data-name attribute in the label HTML
   const labelHtml = data.rawNode.label;
-  const tempDiv = document.createElement('div');
+  const tempDiv = document.createElement("div");
   tempDiv.innerHTML = labelHtml;
-  const spanElement = tempDiv.querySelector('[data-name]');
-  const variableName = spanElement?.getAttribute('data-name') || '';
+  const spanElement = tempDiv.querySelector("[data-name]");
+  const variableName = spanElement?.getAttribute("data-name") || "";
 
   // Find the index of this variable in options
   const index = options.value.findIndex((opt) => opt.name === variableName);
@@ -453,6 +455,9 @@ const handleNodeClick = (data: { node: unknown; id: string; rawNode: any }) => {
 
 const rerollExpression = () => {
   if (rerolls.current > 0) {
+    // Play dice sound
+    soundService.play(SoundType.DICE);
+
     isRerolling.value = true;
     if (info.currentExercise === info.totalExercises - 1) {
       stopwatch.value?.stopTimer();
@@ -523,11 +528,8 @@ const hideFeedback = () => {
 };
 
 const triggerConfetti = () => {
-  // Play cached party horn sound
-  partyHornAudio.currentTime = 0;
-  partyHornAudio.play().catch(() => {
-    // Silently fail if audio can't be played
-  });
+  // Play party horn sound
+  soundService.play(SoundType.PARTY_HORN);
 
   const confetti_burst = confetti.create(undefined, {
     resize: true,
@@ -864,6 +866,18 @@ watch(
   }
 );
 
+// Watch gameStarted to control background music
+watch(
+  () => gameStarted.value,
+  (isGameActive) => {
+    if (isGameActive) {
+      musicService.play();
+    } else {
+      musicService.stop();
+    }
+  }
+);
+
 // Prevent page reload/close during the active game
 const handleBeforeUnload = (event: BeforeUnloadEvent) => {
   if (isGameInProgress.value) {
@@ -881,11 +895,6 @@ onMounted(() => {
       keyboard: false,
     });
   }
-
-  // Preload party horn audio
-  partyHornAudio.volume = 0.7;
-  partyHornAudio.preload = "auto";
-  partyHornAudio.load();
 
   // Add beforeunload listener
   window.addEventListener("beforeunload", handleBeforeUnload);
@@ -905,6 +914,9 @@ onMounted(() => {
 onBeforeUnmount(() => {
   // Remove beforeunload listener
   window.removeEventListener("beforeunload", handleBeforeUnload);
+
+  // Stop background music when leaving the page
+  musicService.stop();
 
   // Hide modal when leaving the route
   if (modal.value) {

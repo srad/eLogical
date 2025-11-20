@@ -15,8 +15,9 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits, watch, ref, onMounted } from "vue";
+import { defineProps, defineEmits, watch } from "vue";
 import CheckmarkAnimation from "./CheckmarkAnimation.vue";
+import { soundService, SoundType } from "@/services/soundService.ts";
 
 interface Props {
   isVisible: boolean;
@@ -28,58 +29,13 @@ defineEmits<{
   hide: [];
 }>();
 
-const correctSound = ref<HTMLAudioElement | null>(null);
-const wrongSound = ref<HTMLAudioElement | null>(null);
-const audioLoaded = ref({ correct: false, wrong: false });
-
-// Preload audio on component mount
-onMounted(() => {
-  // Create and preload correct sound
-  correctSound.value = new Audio("/sounds/correct.mp3");
-  correctSound.value.volume = 0.7;
-  correctSound.value.preload = "auto";
-  correctSound.value.addEventListener("canplaythrough", () => {
-    audioLoaded.value.correct = true;
-  }, { once: true });
-  correctSound.value.load();
-
-  // Create and preload wrong sound
-  wrongSound.value = new Audio("/sounds/wrong.mp3");
-  wrongSound.value.volume = 0.7;
-  wrongSound.value.preload = "auto";
-  wrongSound.value.addEventListener("canplaythrough", () => {
-    audioLoaded.value.wrong = true;
-  }, { once: true });
-  wrongSound.value.load();
-});
-
 // Play sound when feedback is shown
 watch(
   () => [props.isVisible, props.isCorrect] as const,
   ([isVisible, isCorrect]) => {
     if (isVisible) {
-      const audio = isCorrect ? correctSound.value : wrongSound.value;
-      const loaded = isCorrect ? audioLoaded.value.correct : audioLoaded.value.wrong;
-
-      if (audio) {
-        // Reset playback position
-        audio.currentTime = 0;
-
-        // Play immediately if loaded, otherwise wait for load
-        if (loaded) {
-          audio.play().catch((err) => {
-            console.warn("Could not play sound:", err);
-          });
-        } else {
-          // Wait for audio to be ready
-          const playWhenReady = () => {
-            audio.play().catch((err) => {
-              console.warn("Could not play sound:", err);
-            });
-          };
-          audio.addEventListener("canplaythrough", playWhenReady, { once: true });
-        }
-      }
+      const track = isCorrect ? SoundType.CORRECT : SoundType.WRONG;
+      soundService.play(track);
     }
   }
 );

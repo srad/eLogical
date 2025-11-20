@@ -138,8 +138,10 @@ const menuItems = computed(() => router.getRoutes());
 </style>
 
 <style>
-/* Override container height for game view */
-#app-root.game-view-active .app-container {
+#app-root .app-container {
   height: 100dvh !important;
+}
+#app-root:not(.game-view-active) {
+  padding-bottom: calc(var(--safe-area-inset-bottom, 0px) + 2rem);
 }
 </style>

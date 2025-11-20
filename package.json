@@ -46,7 +46,7 @@
     "@typescript-eslint/eslint-plugin": "^8.47.0",
     "@typescript-eslint/parser": "^8.47.0",
     "@vitejs/plugin-vue": "^6.0.2",
-    "@vitest/ui": "^4.0.10",
+    "@vitest/ui": "^4.0.12",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.6.0",
     "@vue/test-utils": "^2.4.6",
@@ -58,10 +58,10 @@
     "happy-dom": "^20.0.10",
     "prettier": "^3.6.2",
     "rollup-plugin-visualizer": "^6.0.5",
-    "sass": "^1.94.1",
+    "sass": "^1.94.2",
     "typescript": "^5.9.3",
-    "vite": "^7.2.2",
-    "vitest": "^4.0.10",
+    "vite": "^7.2.4",
+    "vitest": "^4.0.12",
     "vue-eslint-parser": "^10.2.0",
     "vue-tsc": "^3.1.4"
   }
