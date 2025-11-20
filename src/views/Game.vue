@@ -91,7 +91,7 @@
 
     <!-- Game middle section (tree) -->
     <div class="game-middle">
-      <Tree :treeData="treeData"></Tree>
+      <Tree :treeData="treeData" @click-node="handleNodeClick"></Tree>
 
       <!-- Stopwatch section (final level only) -->
       <div id="countdown" class="d-flex text-start gap-2 position-absolute top-0 start-0 w-100 py-2" style="max-width: 50%" v-if="info.currentExercise === info.totalExercises - 1">
@@ -433,6 +433,22 @@ const tutorialData = computed(() => {
 // Methods
 const toggleVariable = (node: string, index: number) => {
   options.value[index].selected = !options.value[index].selected;
+};
+
+const handleNodeClick = (data: { node: unknown; id: string; rawNode: any }) => {
+  // Extract the variable name from the data-name attribute in the label HTML
+  const labelHtml = data.rawNode.label;
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = labelHtml;
+  const spanElement = tempDiv.querySelector('[data-name]');
+  const variableName = spanElement?.getAttribute('data-name') || '';
+
+  // Find the index of this variable in options
+  const index = options.value.findIndex((opt) => opt.name === variableName);
+
+  if (index !== -1) {
+    toggleVariable(variableName, index);
+  }
 };
 
 const rerollExpression = () => {

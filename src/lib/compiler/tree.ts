@@ -209,7 +209,7 @@ class ConstNode extends TreeNode {
     }
     if (type === "html") {
       const match = this.v.match(/^([a-z])(\d+)$/i);
-      return match ? `<span class="var">${match[1]}<sub>${match[2]}</sub></span>` : `<span class="var">${this.v}</span>`;
+      return match ? `<span class="var" data-name="${this.v}">${match[1]}<sub>${match[2]}</sub></span>` : `<span class="var" data-name="${this.v}">${this.v}</span>`;
     }
     return this.v;
   }

@@ -119,16 +119,25 @@ const updateTransform = () => {
 
 const handleSvgClick = (e: MouseEvent) => {
   const target = e.target as SVGElement;
+
   if (target.classList.contains("tree-node")) {
     const nodeId = target.getAttribute("data-id");
+
     if (nodeId && currentTreeData) {
-      const rawNode = currentTreeData.nodes.find((n) => n.id === nodeId);
+      const rawNode = currentTreeData.nodes.find((n) => String(n.id) === String(nodeId));
+
       if (rawNode) {
-        emit("click-node", {
-          node: rawNode.type,
-          id: nodeId,
-          rawNode: rawNode,
-        });
+        // Check if this is a leaf node by checking if it has no outgoing edges
+        const hasChildren = currentTreeData.edges.some((edge) => String(edge.from) === String(nodeId));
+
+        if (!hasChildren) {
+          // This is a leaf node (variable), emit the click event
+          emit("click-node", {
+            node: rawNode.type,
+            id: nodeId,
+            rawNode: rawNode,
+          });
+        }
       }
     }
   }
@@ -209,15 +218,18 @@ const renderTree = (data: TreeData) => {
 
       const label = node.label || treeNode?.label || String(nodeId);
 
+      // Check if this is a leaf node
+      const isLeafNode = !data.edges.some((edge) => edge.from === nodeId);
+
       // Node circle
       const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
       circle.setAttribute("cx", String(node.x));
       circle.setAttribute("cy", String(node.y));
       circle.setAttribute("r", String(nodeRadius));
       circle.setAttribute("fill", color);
-      circle.setAttribute("class", "tree-node");
+      circle.setAttribute("class", isLeafNode ? "tree-node tree-node-leaf" : "tree-node");
       circle.setAttribute("data-id", String(nodeId));
-      circle.style.cursor = "pointer";
+      circle.style.cursor = isLeafNode ? "pointer" : "default";
       svgGroup.appendChild(circle);
 
       // Node label using foreignObject for HTML styling
