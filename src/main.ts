@@ -26,6 +26,8 @@ import App from './App.vue';
 import router from './router';
 import { ElogicalApi } from './services/elogical';
 import { SafeArea } from 'capacitor-plugin-safe-area';
+import { App as CapacitorApp } from '@capacitor/app';
+import { musicService } from './services/musicService';
 
 // Configure FontAwesome
 library.add(
@@ -78,6 +80,21 @@ SafeArea.getSafeAreaInsets().then(({ insets }) => {
       `--safe-area-inset-${key}`,
       `${value}px`
     );
+  }
+});
+
+// Handle app lifecycle events for music playback
+CapacitorApp.addListener('appStateChange', ({ isActive }) => {
+  if (isActive) {
+    // App came to foreground - resume music if it was playing
+    if (musicService.isCurrentlyPaused()) {
+      musicService.play();
+    }
+  } else {
+    // App went to background - pause music
+    if (musicService.isCurrentlyPlaying()) {
+      musicService.pause();
+    }
   }
 });
 
