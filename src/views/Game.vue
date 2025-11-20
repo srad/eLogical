@@ -59,7 +59,7 @@
     <div class="game-header">
       <!-- Exercise progress section -->
       <div class="d-flex align-items-center gap-2 justify-content-center">
-        <div class="fw-bold">Wins</div>
+        <div class="fs-5">Points</div>
         <div class="flex-grow-1">
           <BlockBar :colors="blockBarColors" :current="info.currentExercise" :max="info.totalExercises"/>
         </div>
@@ -81,9 +81,9 @@
           }"
             class="card shadow-sm border-dark"
         >
-          <div class="card-header" :class="success === false ? 'bg-danger' : 'bg-primary'" style="color: white">Make this formula true</div>
+          <div class="card-header text-center text-white fw-semibold" :class="success === false ? 'bg-danger' : 'bg-primary'">Make this formula true</div>
           <div class="card-body text-center">
-            <tex :expression="expression"></tex>
+            <logic-text :expression="expression"></logic-text>
           </div>
         </div>
       </div>
@@ -91,7 +91,7 @@
 
     <!-- Game middle section (tree) -->
     <div class="game-middle">
-      <Tree :treeData="treeData" class="w-100 h-100"></Tree>
+      <Tree :treeData="treeData"></Tree>
 
       <!-- Stopwatch section (final level only) -->
       <div id="countdown" class="d-flex text-start gap-2 position-absolute top-0 start-0 w-100 py-2" style="max-width: 50%" v-if="info.currentExercise === info.totalExercises - 1">
@@ -116,12 +116,12 @@
     <div class="game-footer">
       <div class="d-flex justify-content-between align-items-center w-100">
         <div class="d-flex gap-2 flex-wrap">
-          <button v-for="(node, index) in options" :key="node.name" :class="node.selected ? 'btn-primary' : 'btn-danger'" class="btn" @click="toggleVariable(node.name, index)">
-            {{ formatLabelWithSubscripts(node.name) }}
+          <button v-for="(node, index) in options" :key="index" :class="node.selected ? 'btn-primary' : 'btn-danger'" class="btn btn-variable" @click="toggleVariable(node.name, index)">
+            <span>{{ formatLabelWithSubscripts(node.name) }}</span>
           </button>
         </div>
 
-        <button class="btn btn-dark ms-2" @click="confirm">
+        <button class="btn btn-success ms-2" style="background: mediumseagreen" @click="confirm">
           <font-awesome-icon icon="check" size="lg"/>
         </button>
       </div>
@@ -129,6 +129,9 @@
 
     <!-- Answer feedback component -->
     <AnswerFeedback :isVisible="showFeedback" :isCorrect="feedbackIsCorrect" @hide="hideFeedback"/>
+
+    <!-- Game start overlay -->
+    <GameStartOverlay :isVisible="modalState === ModalState.ready" @start="startGame"/>
 
     <!-- Modal dialog -->
     <div class="modal fade" ref="modalElement" tabindex="-1" role="dialog">
@@ -149,7 +152,7 @@
               <div v-if="rerolls.current === rerolls.max && health.current === health.max" class="text-center">
                 <font-awesome-icon size="6x" class="trophy-icon" icon="trophy"></font-awesome-icon>
               </div>
-              <div v-if="rerolls.current === rerolls.max && health.current === health.max" class="text-center">WOW! Your ressources are still maxed out! Keep it up!</div>
+              <div v-if="rerolls.current === rerolls.max && health.current === health.max" class="text-center">WOW! Your ressources are still maxed out! Keep it up!<br/></div>
               <div class="loot-selection d-flex justify-content-center gap-4">
                 <div class="text-center" v-if="rerolls.current < rerolls.max">
                   <div class="loot-item-wrapper">
@@ -177,17 +180,6 @@
                 <button class="btn btn-danger flex-grow-1" @click="skipTutorial">No</button>
               </div>
             </div>
-
-            <!-- Game start confirmation modal -->
-            <div v-if="modalState === ModalState.ready" class="d-flex flex-column gap-4">
-              <div class="text-center">
-                <h4>Are you ready to start?</h4>
-              </div>
-              <div class="d-flex gap-3 justify-content-center">
-                <button class="btn btn-success" @click="startGame">Let's Go!</button>
-                <button class="btn btn-secondary" @click="cancelGameStart">Cancel</button>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -199,16 +191,18 @@
 import { computed, inject, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
 import { onBeforeRouteLeave, useRouter } from "vue-router";
 import { randBoolExpr } from "@/lib/compiler/generator";
-import Tree from "../components/Tree.vue";
-import Tex from "../components/Tex.vue";
 import Stopwatch from "../components/Stopwatch.vue";
 import Ressource from "../components/Ressource.vue";
 import BlockBar from "../components/BlockBar.vue";
 import AnswerFeedback from "../components/AnswerFeedback.vue";
+import LogicText from "../components/LogicText.vue";
+import Tree from "../components/TreeSvg.vue";
+import GameStartOverlay from "../components/GameStartOverlay.vue";
 import colors from "@/lib/colors";
 import EventType from "@/services/events";
 import { Modal } from "bootstrap";
 import confetti from "canvas-confetti";
+import { TreeNode } from "@/lib/compiler/tree.ts";
 
 const router = useRouter();
 
@@ -336,6 +330,7 @@ const drop = reactive({
 const modal = ref<Modal | null>(null);
 const stopwatch = ref<any>(null);
 const modalElement = ref<HTMLElement | null>(null);
+const partyHornAudio = new Audio('/sounds/party-horn.mp3');
 
 // Inject API
 const $api = inject("$api") as any;
@@ -505,7 +500,13 @@ const hideFeedback = () => {
 };
 
 const triggerConfetti = () => {
-  const confetti_burst = confetti.create(null, {
+  // Play cached party horn sound
+  partyHornAudio.currentTime = 0;
+  partyHornAudio.play().catch(() => {
+    // Silently fail if audio can't be played
+  });
+
+  const confetti_burst = confetti.create(undefined, {
     resize: true,
     useWorker: true,
   });
@@ -600,7 +601,7 @@ const nextLevel = () => {
 const generateExercise = () => {
   nodeId.value = 0;
 
-  let generatedTree;
+  let generatedTree: TreeNode;
   let currentExpressionStr = "";
   let attempts = 0;
   const maxAttempts = 50; // Prevent infinite loop
@@ -614,7 +615,7 @@ const generateExercise = () => {
       expWhiteList: functions.value,
     });
     generatedTree = result.tree;
-    currentExpressionStr = generatedTree.to("tex");
+    currentExpressionStr = generatedTree.to("html");
     attempts++;
   } while (currentExpressionStr === previousExpression.value && attempts < maxAttempts);
 
@@ -634,7 +635,7 @@ const generateExercise = () => {
           selected: false,
         }))
         .sort((a: Option, b: Option) => a.name.localeCompare(b.name));
-    texOptions.value = leafs.map((node: any) => node.to("tex")).sort();
+    texOptions.value = leafs.map((node: any) => node.to("html")).sort();
   }
 
   emptyBackpack();
@@ -760,22 +761,14 @@ const startTutorial = () => {
 
 const showGameStartModal = () => {
   modalState.value = ModalState.ready;
-  modalText.value = "Ready to Play?";
-  modal.value?.show();
 };
 
 const startGame = () => {
   gameStarted.value = true;
-  modal.value?.hide();
+  modalState.value = ModalState.default;
   previousExpression.value = ""; // Clear previous expression for the new game
   generateExercise();
   slideInTitle();
-};
-
-const cancelGameStart = () => {
-  modalState.value = ModalState.default;
-  modalText.value = "";
-  modal.value?.hide();
 };
 
 const progressTutorial = () => {
@@ -818,7 +811,7 @@ watch(
     () => booleanExpr.value,
     (node) => {
       if (node && typeof node.to === "function") {
-        expression.value = (nodeId.value === 0 ? "\\phi = " : "") + node.to("tex", { color: true });
+        expression.value = (nodeId.value === 0 ? "<span class=\"var\">&phi;</span> = " : "") + node.to("html", { color: true });
       }
     }
 );
@@ -907,13 +900,26 @@ onBeforeRouteLeave((to, from, next) => {
 </script>
 
 <style>
+body {
+  overflow-y: hidden;
+}
+
+.btn-variable <{
+  font-family: 'EB Garamond';
+  src: url('/fonts/EB_Garamond/EBGaramond-VariableFont_wght.ttf') format('truetype');
+  font-weight: 400;
+  font-size: 1.5rem;
+  font-style: italic;
+  font-display: swap;
+  padding-top: 0.5rem !important;
+}
+
 /* Main Layout - Flexbox approach */
 .game-wrapper {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 66px); /* Subtract navbar height */
-  max-height: calc(100vh - 66px);
-  padding: 0.5rem 0.5rem 1rem 0.5rem; /* Extra padding at bottom */
+  min-height: calc(84vh); /* Subtract navbar height */
+  max-height: calc(84vh);
   gap: 0.5rem;
   overflow: hidden;
 }
@@ -936,6 +942,7 @@ onBeforeRouteLeave((to, from, next) => {
 .game-middle {
   flex: 1 1 0; /* Grow to fill available space */
   min-height: 0; /* Important: allows flex item to shrink below content size */
+  max-height: 50vh;
   position: relative;
   display: flex;
   align-items: center;
@@ -944,7 +951,7 @@ onBeforeRouteLeave((to, from, next) => {
 
 .game-footer {
   flex: 0 0 auto; /* Don't grow, don't shrink, auto size */
-  padding-bottom: 1rem;
+  padding-bottom: 0rem;
   padding-left: 1rem;
   padding-right: 1rem;
 }

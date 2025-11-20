@@ -1,21 +1,17 @@
 <template>
-  <div class="imprint">
-    <div class="container py-2">
+  <div class="terms">
+    <div class="container">
       <!-- Imprint Section -->
       <div class="d-flex flex-column gap-2">
-        <h2>Imprint</h2>
-
-        <div>
-          <h5>Developer</h5>
-          <p class="mb-2">
-            Saman Sedighi Rad<br>
-            Contact: <a href="mailto:saman.sr@gmail.com">sama.sr@gmail.com</a><br/>
-            Website: <a target="_blank" href="https://www.sedrad.com">https://sedrad.com</a>
-          </p>
-        </div>
+        <h5>Developer</h5>
+        <p class="mb-2">
+          Saman Sedighi Rad<br>
+          Contact: <a href="mailto:saman.sr@gmail.com">sama.sr@gmail.com</a><br/>
+          Website: <a target="_blank" href="https://www.sedrad.com">https://sedrad.com</a>
+        </p>
       </div>
 
-      <hr class="my-2">
+      <br/>
 
       <!-- Data Privacy Section -->
       <div class="d-flex flex-column gap-2">
@@ -141,12 +137,12 @@
 </script>
 
 <style scoped>
-.imprint {
+.terms {
   background-color: #f8f9fa;
   min-height: 100vh;
 }
 
-.imprint h2 {
+.terms h2 {
   color: #333;
   font-weight: 600;
   margin-bottom: 0rem;
@@ -154,32 +150,32 @@
   padding-bottom: 0.5rem;
 }
 
-.imprint h5 {
+.terms h5 {
   color: #495057;
   font-weight: 600;
   margin-top: 0.5rem;
 }
 
-.imprint p {
+.terms p {
   color: #666;
   line-height: 1.6;
 }
 
-.imprint ul {
+.terms ul {
   color: #666;
   line-height: 1.6;
   padding-left: 1.5rem;
 }
 
-.imprint li {
+.terms li {
   margin-bottom: 0.5rem;
 }
 
-.imprint hr {
+.terms hr {
   border-color: #dee2e6;
 }
 
-.imprint .alert {
+.terms .alert {
   border-radius: 6px;
 }
 </style>

@@ -80,12 +80,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, defineAsyncComponent } from 'vue';
 import AnalyticsCard from '../components/AnalyticsCard.vue';
-import BarChart from '../lib/charts/BarChart.vue';
-import DoughnutChart from '../lib/charts/DoughnutChart.vue';
-import LineChart from '../lib/charts/LineChart.vue';
 import { useApi } from '@/composables/useApi';
+
+// Lazy load chart components since they import Chart.js library
+const BarChart = defineAsyncComponent(() => import('../lib/charts/BarChart.vue'));
+const DoughnutChart = defineAsyncComponent(() => import('../lib/charts/DoughnutChart.vue'));
+const LineChart = defineAsyncComponent(() => import('../lib/charts/LineChart.vue'));
 
 // Types
 interface ChartDataset {

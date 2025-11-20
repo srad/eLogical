@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">elogical</string>
+    <string name="title_activity_main">elogical</string>
+    <string name="package_name">com.github.srad.elogical</string>
+    <string name="custom_url_scheme">com.github.srad.elogical</string>
+</resources>

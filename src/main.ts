@@ -1,5 +1,4 @@
 import { createApp } from 'vue';
-import { createPinia } from 'pinia';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
   faAward,
@@ -49,10 +48,6 @@ library.add(
 
 // Create the app instance
 const app = createApp(App);
-
-// Setup Pinia
-const pinia = createPinia();
-app.use(pinia);
 
 // Setup Router
 app.use(router);

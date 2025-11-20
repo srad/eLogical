@@ -7,6 +7,13 @@ function texColor(color: string | undefined, template: string): string {
   return template;
 }
 
+function htmlColor(color: string | undefined, html: string): string {
+  if (color) {
+    return `<span style="color: ${color}">${html}</span>`;
+  }
+  return html;
+}
+
 // |========================================================|
 // | Binary functions
 // |========================================================|
@@ -23,6 +30,8 @@ const fnOr = new FnWrapper({
     obj: ({ l }) => ({ name: '\u2228', children: l }),
     py: ({ l }) => `${l[0]} or ${l[1]}`,
     array: ({ l }) => ['or', l],
+    html: ({ l, color }) =>
+      htmlColor(color, `${l[0]} <span class="op">&or;</span> ${l[1]}`),
   },
 });
 
@@ -38,6 +47,8 @@ const fnAnd = new FnWrapper({
     obj: ({ l }) => ({ name: '\u2227', children: l }),
     py: ({ l }) => `${l[0]} and ${l[1]}`,
     array: ({ l }) => ['and', l],
+    html: ({ l, color }) =>
+      htmlColor(color, `${l[0]} <span class="op">&and;</span> ${l[1]}`),
   },
 });
 
@@ -54,6 +65,8 @@ const fnXor = new FnWrapper({
     obj: ({ l }) => ({ name: '\u2295', children: l }),
     py: ({ l }) => `${l[0]} != ${l[1]}`,
     array: ({ l }) => ['xor', l],
+    html: ({ l, color }) =>
+      htmlColor(color, `${l[0]} <span class="op">&oplus;</span> ${l[1]}`),
   },
 });
 
@@ -69,6 +82,8 @@ const fnImpl = new FnWrapper({
     obj: ({ l }) => ({ name: '\u2192', children: l }),
     py: ({ l }) => `${l[0]} and (not ${l[1]})`,
     array: ({ l }) => ['implication', l],
+    html: ({ l, color }) =>
+      htmlColor(color, `${l[0]} <span class="op">&rarr;</span> ${l[1]}`),
   },
 });
 
@@ -85,6 +100,8 @@ const fnEq = new FnWrapper({
     obj: ({ l }) => ({ name: '\u27F7', children: l }),
     py: ({ l }) => `${l[0]} == ${l[1]}`,
     array: ({ l }) => ['eq', l],
+    html: ({ l, color }) =>
+      htmlColor(color, `${l[0]} <span class="op">&harr;</span> ${l[1]}`),
   },
 });
 
@@ -102,6 +119,7 @@ const fnStart = new FnWrapper({
     obj: ({ l }) => ({ name: 'start', children: l }),
     py: ({ l, vars }) => `lambda ${vars.join(', ')}: ${l[0]}`,
     array: ({ l }) => l,
+    html: ({ l }) => `${l[0]}`,
   },
 });
 
@@ -115,6 +133,7 @@ const fnParens = new FnWrapper({
     obj: ({ l }) => ({ name: 'paren', children: l }),
     py: ({ l }) => `(${l[0]})`,
     array: ({ l }) => l,
+    html: ({ l }) => `<span class="paren">(</span>${l[0]}<span class="paren">)</span>`,
   },
 });
 
@@ -130,6 +149,8 @@ const fnNot = new FnWrapper({
     obj: ({ l }) => ({ name: '\u00AC', children: l }),
     py: ({ l }) => `(not ${l[0]})`,
     array: ({ l }) => ['not', l],
+    html: ({ l, color }) =>
+      htmlColor(color, `<span class="op">&not;</span>${l[0]}`),
   },
 });
 
@@ -147,6 +168,7 @@ const fnTrue = new FnWrapper({
     obj: () => ({ name: '1', children: [] }),
     py: () => 'True',
     array: ({ l }) => 'true',
+    html: ({ color }) => htmlColor(color, '1'),
   },
 });
 
@@ -160,6 +182,7 @@ const fnFalse = new FnWrapper({
     obj: () => ({ name: '0', children: [] }),
     py: () => 'False',
     array: ({ l }) => 'false',
+    html: ({ color }) => htmlColor(color, '0'),
   },
 });
 

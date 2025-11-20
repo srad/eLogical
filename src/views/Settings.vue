@@ -1,67 +1,66 @@
 <template>
-  <div class="settings">
-    <div class="container-fluid d-flex flex-column gap-3">
-      <!-- Database Size Section -->
-      <div class="settings-card ">
-        <h5>Database Storage</h5>
-        <p class="text-muted">Current database size</p>
-        <div class="alert alert-info">
-          <strong>{{ dbSizeFormatted }}</strong>
-        </div>
-        <button class="btn btn-sm btn-outline-primary" @click="refreshDatabaseSize" :disabled="isLoadingSize">
-          <span v-if="!isLoadingSize">Refresh Size</span>
-          <span v-else>
+  <div class="d-flex flex-column gap-3">
+    <!-- Database Size Section -->
+    <div class="settings-card ">
+      <h5>Database Storage</h5>
+      <p class="text-muted">Current database size</p>
+      <div class="alert alert-info">
+        <strong>{{ dbSizeFormatted }}</strong>
+      </div>
+      <br/>
+      <button class="btn btn-sm btn-outline-primary" @click="refreshDatabaseSize" :disabled="isLoadingSize">
+        <span v-if="!isLoadingSize">Refresh Size</span>
+        <span v-else>
             <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
             Loading...
           </span>
-        </button>
-      </div>
+      </button>
+    </div>
 
-      <!-- Tracking Section -->
-      <div class="settings-card">
-        <h5>Data Tracking</h5>
-        <p class="text-muted">Allow tracking of gameplay events for analytics</p>
-        <div class="form-check form-switch d-flex gap-1 align-items-center">
-          <input
+    <!-- Tracking Section -->
+    <div class="settings-card">
+      <h5>Data Tracking</h5>
+      <p class="text-muted">Allow tracking of gameplay events for analytics</p>
+      <div class="form-check form-switch d-flex gap-1 align-items-center">
+        <input
             class="form-check-input"
             type="checkbox"
             id="trackingToggle"
             v-model="trackingEnabled"
             @change="updateTracking"
-          />
-          <label class="form-check-label" for="trackingToggle">
-            {{ trackingEnabled ? 'Tracking Enabled' : 'Tracking Disabled' }}
-          </label>
-        </div>
-        <small class="text-muted d-block mt-2">
-          Disable this to stop recording gameplay events. Existing data will not be affected.
-        </small>
+        />
+        <label class="form-check-label" for="trackingToggle">
+          {{ trackingEnabled ? "Tracking Enabled" : "Tracking Disabled" }}
+        </label>
       </div>
+      <small class="text-muted d-block mt-2">
+        Disable this to stop recording gameplay events. Existing data will not be affected.
+      </small>
+    </div>
 
-      <!-- Clear Data Section -->
-      <div class="settings-card">
-        <h5>Danger Zone</h5>
-        <p class="text-muted">Permanently delete all data</p>
-        <div v-if="!showClearConfirmation">
-          <button class="btn btn-danger" @click="openClearConfirmation">
-            Clear All Data
-          </button>
-        </div>
-        <div v-else class="alert alert-warning">
-          <p class="mb-3"><strong>Are you sure you want to delete all data?</strong></p>
-          <p class="text-muted mb-3">This action cannot be undone. All game scores, tracking events, and preferences will be permanently deleted.</p>
-          <div class="d-flex gap-2">
-            <button class="btn btn-danger" @click="clearAllData" :disabled="isClearing">
-              <span v-if="!isClearing">Yes, Delete All</span>
-              <span v-else>
+    <!-- Clear Data Section -->
+    <div class="settings-card">
+      <h5>Danger Zone</h5>
+      <p class="text-muted">Permanently delete all data</p>
+      <div v-if="!showClearConfirmation">
+        <button class="btn btn-danger" @click="openClearConfirmation">
+          Clear All Data
+        </button>
+      </div>
+      <div v-else class="alert alert-warning">
+        <p class="mb-3"><strong>Are you sure you want to delete all data?</strong></p>
+        <p class="text-muted mb-3">This action cannot be undone. All game scores, tracking events, and preferences will be permanently deleted.</p>
+        <div class="d-flex gap-2">
+          <button class="btn btn-danger" @click="clearAllData" :disabled="isClearing">
+            <span v-if="!isClearing">Yes, Delete All</span>
+            <span v-else>
                 <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                 Deleting...
               </span>
-            </button>
-            <button class="btn btn-secondary" @click="cancelClearConfirmation" :disabled="isClearing">
-              Cancel
-            </button>
-          </div>
+          </button>
+          <button class="btn btn-secondary" @click="cancelClearConfirmation" :disabled="isClearing">
+            Cancel
+          </button>
         </div>
       </div>
     </div>
@@ -69,8 +68,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-import { localStorageService } from '../services/localStorage';
+import { computed, onMounted, ref } from "vue";
+import { localStorageService } from "../services/localStorage";
 
 const dbSize = ref(0);
 const isLoadingSize = ref(false);
@@ -79,9 +78,9 @@ const isClearing = ref(false);
 const trackingEnabled = ref(true);
 
 const dbSizeFormatted = computed(() => {
-  if (dbSize.value === 0) return '0 B';
+  if (dbSize.value === 0) return "0 B";
 
-  const units = ['B', 'KB', 'MB', 'GB'];
+  const units = [ "B", "KB", "MB", "GB" ];
   let size = dbSize.value;
   let unitIndex = 0;
 
@@ -106,7 +105,7 @@ const refreshDatabaseSize = async () => {
 
     dbSize.value = size;
   } catch (error) {
-    console.error('Failed to calculate database size:', error);
+    console.error("Failed to calculate database size:", error);
   } finally {
     isLoadingSize.value = false;
   }
@@ -127,23 +126,23 @@ const clearAllData = async () => {
     dbSize.value = 0;
     showClearConfirmation.value = false;
     // Show success message
-    alert('All data has been deleted successfully.');
+    alert("All data has been deleted successfully.");
   } catch (error) {
-    console.error('Failed to clear data:', error);
-    alert('Failed to delete data. Please try again.');
+    console.error("Failed to clear data:", error);
+    alert("Failed to delete data. Please try again.");
   } finally {
     isClearing.value = false;
   }
 };
 
 const updateTracking = () => {
-  const value = trackingEnabled.value ? 'true' : 'false';
+  const value = trackingEnabled.value ? "true" : "false";
   localStorage.trackingAllowed = value;
 };
 
 onMounted(() => {
   // Load tracking preference
-  const trackingAllowed = localStorage.trackingAllowed !== 'false';
+  const trackingAllowed = localStorage.trackingAllowed !== "false";
   trackingEnabled.value = trackingAllowed;
 
   // Load database size

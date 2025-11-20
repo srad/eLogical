@@ -1,20 +1,33 @@
-// Bootstrap variable overrides
-$primary: #2abb79;
-$secondary: #9e9e9e;
-$light: #eeeeee;
-$body-bg: #fafafa;
-//$border-radius: 2px;
-$table-cell-padding: 0.3rem;
+@forward "./custom-bootstrap";
 
-// Import Bootstrap 5
-@import 'bootstrap/scss/bootstrap';
+// EB Garamond Font Face
+@font-face {
+  font-family: 'EB Garamond';
+  src: url('/fonts/EB_Garamond/EBGaramond-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'EB Garamond';
+  src: url('/fonts/EB_Garamond/EBGaramond-Italic-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
 
 // Global body and html styles
 html, body {
   overflow-x: hidden;
   overflow-y: scroll;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 #app {
   min-height: 100vh;
+  touch-action: manipulation;
 }

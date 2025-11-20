@@ -1,14 +1,15 @@
 <template>
-  <div>
+  <div class="chart-container">
     <canvas ref="chartCanvas"></canvas>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import './charts.css';
+import { ArcElement, Chart as ChartJS, Legend, PieController, Tooltip } from 'chart.js';
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(PieController, ArcElement, Tooltip, Legend);
 
 interface Props {
   chartData?: any;
@@ -21,12 +22,43 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const chartCanvas = ref<HTMLCanvasElement | null>(null);
+let chartInstance: ChartJS | null = null;
+
+const createChart = () => {
+  if (!chartCanvas.value) return;
+
+  // Destroy existing chart if it exists
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
+
+  // Create new chart
+  chartInstance = new ChartJS(chartCanvas.value, {
+    type: 'pie',
+    data: props.chartData,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      ...props.options,
+    },
+  });
+};
 
 watch(
   () => props.chartData,
   () => {
-    // Update chart when data changes
+    createChart();
   },
   { deep: true }
 );
+
+onMounted(() => {
+  createChart();
+});
+
+onBeforeUnmount(() => {
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
+});
 </script>

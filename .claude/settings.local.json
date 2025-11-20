@@ -20,7 +20,9 @@
       "Bash(npm run build:*)",
       "WebFetch(domain:www.chartjs.org)",
       "WebSearch",
-      "WebFetch(domain:stackoverflow.com)"
+      "WebFetch(domain:stackoverflow.com)",
+      "Bash(npm test)",
+      "Bash(npm run assets:*)"
     ],
     "deny": [],
     "ask": []

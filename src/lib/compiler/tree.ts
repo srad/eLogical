@@ -40,7 +40,7 @@ class FnWrapper {
   }
 }
 
-class TreeNode {
+export class TreeNode {
   output(...args: any[]): void {
     console.log(...args);
   }
@@ -68,13 +68,13 @@ class Node extends TreeNode {
       environment = params;
     }
 
-    const results = this.children.map((node) =>
+    const results = this.children.map((node: TreeNode) =>
       node.evaluate(environment as Record<string, boolean>)
     );
     return this.fw.fn(results);
   }
 
-  to(type: string = 'str', { depth = -1, color = false }: any = {}): any {
+  to(type: string = "str", { depth = -1, color = false }: any = {}): any {
     const results = this.children.map((node) =>
       node.to(type, { depth: depth + 1 })
     );
@@ -88,25 +88,25 @@ class Node extends TreeNode {
   }
 
   ops(): string[] {
-    return (this.to('array') as any)
+    return (this.to("array") as any)
       .join()
-      .split(',')
+      .split(",")
       .filter((node: string) => !/^v\d+$/.test(node));
   }
 
   display(depth: number = 0, indent: number = 2): void {
-    const space = new Array((depth + 1) * indent).join(' ');
+    const space = new Array((depth + 1) * indent).join(" ");
 
     if (depth === 0) {
       this.output(`(defn expresion [${this.vars}]`);
     }
 
     this.output(`${space}(${this.fw.name}`);
-    this.children.forEach((node) => node.display(depth + 1, indent));
+    this.children.forEach((node: Node) => node.display(depth + 1, indent));
     this.output(`${space})`);
 
     if (depth === 0) {
-      this.output(')');
+      this.output(")");
     }
   }
 
@@ -117,15 +117,6 @@ class Node extends TreeNode {
     const lookupLeaf: Record<string, boolean> = {};
 
     let id_counter = 0;
-
-    const formatLabel = (label: string): string => {
-      // Convert v0 -> v₀, v1 -> v₁, etc. using Unicode subscripts
-      const subscripts: Record<string, string> = {
-        '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄',
-        '5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉'
-      };
-      return label.replace(/(\d)/g, (match) => subscripts[match] || match);
-    };
 
     const graph = (
       node: TreeNode,
@@ -143,7 +134,7 @@ class Node extends TreeNode {
         edges.push({ from: parentId, to: depth });
       }
 
-      if (!(node instanceof ConstNode) && (node as Node).fw.name === 'parens') {
+      if (!(node instanceof ConstNode) && (node as Node).fw.name === "parens") {
         node = (node as Node).children[0];
       }
 
@@ -152,14 +143,31 @@ class Node extends TreeNode {
           ? parentNode?.fw.color
           : (node as Node).fw.color;
 
-      const baseLabel = (node.to('obj') as any)?.name || (node as any).v;
-      const label = formatLabel(baseLabel);
+      // Get just the operator/variable symbol, not the full expression
+      let label: string;
+      if (node instanceof ConstNode) {
+        label = node.to("html");
+      } else {
+        const objLabel = (node.to("obj") as any)?.name || "";
+        // Convert Unicode symbols to HTML entities with styling
+        const symbolMap: Record<string, string> = {
+          '∨': '<span class="op">&or;</span>',
+          '∧': '<span class="op">&and;</span>',
+          '⊕': '<span class="op">&oplus;</span>',
+          '→': '<span class="op">&rarr;</span>',
+          '↔': '<span class="op">&harr;</span>',
+          '¬': '<span class="op">&not;</span>',
+          '1': '1',
+          '0': '0',
+        };
+        label = symbolMap[objLabel] || objLabel;
+      }
 
       nodes.push({
         id: depth,
         label: label,
         type: node,
-        color: { background: color || '#000000' },
+        color: { background: color || "#000000" },
       });
 
       if (Array.isArray((node as Node).children)) {
@@ -181,7 +189,7 @@ class ConstNode extends TreeNode {
   constructor(v: string) {
     super();
     if (!/^[a-z]\d*$/i.test(v)) {
-      throw new Error('Invalid ConstNode value');
+      throw new Error("Invalid ConstNode value");
     }
     this.v = v;
   }
@@ -191,16 +199,20 @@ class ConstNode extends TreeNode {
   }
 
   display(depth: number = 0, indent: number = 2): void {
-    this.output(new Array((depth + 1) * indent).join(' ') + this.v);
+    this.output(new Array((depth + 1) * indent).join(" ") + this.v);
   }
 
-  to(type: string = ''): string {
-    if (type === 'tex') {
+  to(type: string = ""): string {
+    if (type === "tex") {
       const match = this.v.match(/\d+/);
       return match ? `v_{${match[0]}}` : this.v;
+    }
+    if (type === "html") {
+      const match = this.v.match(/^([a-z])(\d+)$/i);
+      return match ? `<span class="var">${match[1]}<sub>${match[2]}</sub></span>` : `<span class="var">${this.v}</span>`;
     }
     return this.v;
   }
 }
 
-export { Node, ConstNode, FnWrapper, FnWrapperConfig };
+export { Node, ConstNode, FnWrapper, type FnWrapperConfig };

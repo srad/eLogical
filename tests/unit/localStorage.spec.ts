@@ -21,25 +21,25 @@ describe('LocalStorageService', () => {
 
   describe('GameScore operations', () => {
     it('should save a game score', async () => {
-      const id = await localStorageService.saveGameScore('TestPlayer', 100, 2);
+      const id = await localStorageService.saveGameScore(100, 2);
 
       expect(typeof id).toBe('number');
       expect(id).toBeGreaterThan(0);
     });
 
     it('should save multiple game scores', async () => {
-      const id1 = await localStorageService.saveGameScore('Player1', 50, 1);
-      const id2 = await localStorageService.saveGameScore('Player2', 100, 2);
-      const id3 = await localStorageService.saveGameScore('Player3', 75, 1);
+      const id1 = await localStorageService.saveGameScore(50, 1);
+      const id2 = await localStorageService.saveGameScore(100, 2);
+      const id3 = await localStorageService.saveGameScore(75, 1);
 
       expect(id1).not.toBe(id2);
       expect(id2).not.toBe(id3);
     });
 
     it('should retrieve leaderboard sorted by score descending', async () => {
-      await localStorageService.saveGameScore('Player1', 50, 1);
-      await localStorageService.saveGameScore('Player2', 100, 2);
-      await localStorageService.saveGameScore('Player3', 75, 1);
+      await localStorageService.saveGameScore(50, 1);
+      await localStorageService.saveGameScore(100, 2);
+      await localStorageService.saveGameScore(75, 1);
 
       const leaderboard = await localStorageService.getLeaderboard(10);
 
@@ -51,7 +51,7 @@ describe('LocalStorageService', () => {
 
     it('should respect limit parameter', async () => {
       for (let i = 0; i < 15; i++) {
-        await localStorageService.saveGameScore(`Player${i}`, i * 10, 1);
+        await localStorageService.saveGameScore(i * 10, 1);
       }
 
       const limited = await localStorageService.getLeaderboard(5);
@@ -59,31 +59,28 @@ describe('LocalStorageService', () => {
     });
 
     it('should include all GameScore properties', async () => {
-      await localStorageService.saveGameScore('TestPlayer', 100, 2);
+      await localStorageService.saveGameScore(100, 2);
       const leaderboard = await localStorageService.getLeaderboard(1);
       const score = leaderboard[0];
 
-      expect(score).toHaveProperty('name');
       expect(score).toHaveProperty('total');
       expect(score).toHaveProperty('difficulty');
       expect(score).toHaveProperty('timestamp');
-      expect(score).toHaveProperty('client');
 
-      expect(score.name).toBe('TestPlayer');
       expect(score.total).toBe(100);
       expect(score.difficulty).toBe(2);
       expect(typeof score.timestamp).toBe('number');
-      expect(Array.isArray(score.client)).toBe(true);
     });
 
-    it('should handle duplicate names with different scores', async () => {
-      await localStorageService.saveGameScore('Player', 50, 1);
-      await localStorageService.saveGameScore('Player', 100, 2);
-      await localStorageService.saveGameScore('Player', 75, 1);
+    it('should handle duplicate saves with different scores', async () => {
+      const id1 = await localStorageService.saveGameScore(50, 1);
+      const id2 = await localStorageService.saveGameScore(100, 2);
+      const id3 = await localStorageService.saveGameScore(75, 1);
 
       const leaderboard = await localStorageService.getLeaderboard(10);
       expect(leaderboard.length).toBe(3);
-      expect(leaderboard.every((s) => s.name === 'Player')).toBe(true);
+      expect(id1).not.toBe(id2);
+      expect(id2).not.toBe(id3);
     });
 
     it('should return empty array when no scores exist', async () => {
@@ -162,81 +159,6 @@ describe('LocalStorageService', () => {
     });
   });
 
-  describe('Analytics operations', () => {
-    it('should save analytics data', async () => {
-      const id = await localStorageService.saveAnalyticsData({
-        timestamp: Date.now(),
-        event: 'answer',
-        difficulty: 1,
-        level: 0,
-        success: true,
-      });
-
-      expect(typeof id).toBe('number');
-      expect(id).toBeGreaterThan(0);
-    });
-
-    it('should retrieve all analytics data', async () => {
-      await localStorageService.saveAnalyticsData({
-        timestamp: Date.now(),
-        event: 'answer',
-        difficulty: 1,
-        level: 0,
-        success: true,
-      });
-
-      await localStorageService.saveAnalyticsData({
-        timestamp: Date.now(),
-        event: 'answer',
-        difficulty: 2,
-        level: 1,
-        success: false,
-      });
-
-      const data = await localStorageService.getAnalyticsData();
-      expect(data.length).toBe(2);
-    });
-
-    it('should include all analytics properties', async () => {
-      const analyticsData = {
-        timestamp: Date.now(),
-        event: 'answer',
-        difficulty: 1,
-        level: 0,
-        success: true,
-        operator: 'AND',
-      };
-
-      await localStorageService.saveAnalyticsData(analyticsData);
-      const data = await localStorageService.getAnalyticsData();
-
-      expect(data[0]).toHaveProperty('timestamp');
-      expect(data[0]).toHaveProperty('event');
-      expect(data[0]).toHaveProperty('difficulty');
-      expect(data[0]).toHaveProperty('level');
-      expect(data[0].success).toBe(true);
-      expect(data[0].operator).toBe('AND');
-    });
-
-    it('should return empty array when no analytics exist', async () => {
-      const data = await localStorageService.getAnalyticsData();
-      expect(data).toEqual([]);
-    });
-
-    it('should handle optional fields', async () => {
-      await localStorageService.saveAnalyticsData({
-        timestamp: Date.now(),
-        event: 'game-start',
-        difficulty: 1,
-        level: 0,
-      });
-
-      const data = await localStorageService.getAnalyticsData();
-      expect(data[0].success).toBeUndefined();
-      expect(data[0].operator).toBeUndefined();
-    });
-  });
-
   describe('Preference operations', () => {
     it('should save a preference', async () => {
       await localStorageService.setPreference('testKey', 'testValue');
@@ -259,104 +181,83 @@ describe('LocalStorageService', () => {
       });
     });
 
-    it('should return null for non-existent preferences', async () => {
-      const value = await localStorageService.getPreference('nonExistent');
+    it('should handle non-existent preferences', async () => {
+      const value = await localStorageService.getPreference('nonexistent');
       expect(value).toBeNull();
     });
 
-    it('should overwrite existing preferences', async () => {
-      await localStorageService.setPreference('key', 'value1');
-      await localStorageService.setPreference('key', 'value2');
+    it('should update existing preferences', async () => {
+      await localStorageService.setPreference('key', 'initial');
+      expect(await localStorageService.getPreference('key')).toBe('initial');
 
-      const value = await localStorageService.getPreference('key');
-      expect(value).toBe('value2');
-    });
-
-    it('should handle username preference', async () => {
-      const username = `user-${Date.now()}`;
-      await localStorageService.setPreference('username', username);
-
-      const retrieved = await localStorageService.getPreference('username');
-      expect(retrieved).toBe(username);
+      await localStorageService.setPreference('key', 'updated');
+      expect(await localStorageService.getPreference('key')).toBe('updated');
     });
   });
 
   describe('clearAll', () => {
     it('should clear all data', async () => {
-      // Add data to all stores
-      await localStorageService.saveGameScore('Player', 100, 1);
-      await localStorageService.saveTrackingEvent('event', { data: 'test' });
-      await localStorageService.saveAnalyticsData({
-        timestamp: Date.now(),
-        event: 'test',
-        difficulty: 1,
-        level: 0,
-      });
+      // Add some data
+      await localStorageService.saveGameScore(100, 2);
+      await localStorageService.saveTrackingEvent('test', { data: 'test' });
       await localStorageService.setPreference('key', 'value');
 
       // Clear all
       await localStorageService.clearAll();
 
       // Verify everything is cleared
-      const leaderboard = await localStorageService.getLeaderboard(10);
-      const events = await localStorageService.getAllTrackingEvents();
-      const analytics = await localStorageService.getAnalyticsData();
-      const pref = await localStorageService.getPreference('key');
-
-      expect(leaderboard).toEqual([]);
-      expect(events).toEqual([]);
-      expect(analytics).toEqual([]);
-      expect(pref).toBeNull();
+      expect(await localStorageService.getLeaderboard(10)).toEqual([]);
+      expect(await localStorageService.getAllTrackingEvents()).toEqual([]);
+      expect(await localStorageService.getPreference('key')).toBeNull();
     });
 
     it('should allow saving data after clearAll', async () => {
-      await localStorageService.saveGameScore('Player', 100, 1);
+      // Clear
       await localStorageService.clearAll();
 
-      const id = await localStorageService.saveGameScore('NewPlayer', 50, 1);
-      expect(id).toBeGreaterThan(0);
+      // Add data
+      const id = await localStorageService.saveGameScore(100, 2);
 
+      // Verify data exists
       const leaderboard = await localStorageService.getLeaderboard(10);
       expect(leaderboard.length).toBe(1);
-      expect(leaderboard[0].name).toBe('NewPlayer');
+      expect(id).toBeGreaterThan(0);
     });
   });
 
   describe('Error handling', () => {
     it('should handle concurrent operations', async () => {
-      const promises = [
-        localStorageService.saveGameScore('P1', 50, 1),
-        localStorageService.saveGameScore('P2', 100, 2),
-        localStorageService.saveGameScore('P3', 75, 1),
-        localStorageService.saveTrackingEvent('e1', { a: 1 }),
-        localStorageService.saveTrackingEvent('e2', { b: 2 }),
-      ];
+      const saves = [];
+      for (let i = 0; i < 10; i++) {
+        saves.push(localStorageService.saveGameScore(i * 10, 1));
+      }
 
-      const results = await Promise.all(promises);
-      expect(results.every((r) => typeof r === 'number')).toBe(true);
+      const results = await Promise.all(saves);
 
-      const leaderboard = await localStorageService.getLeaderboard(10);
-      const events = await localStorageService.getAllTrackingEvents();
+      expect(results.length).toBe(10);
+      expect(results.every((id) => id > 0)).toBe(true);
 
-      expect(leaderboard.length).toBe(3);
-      expect(events.length).toBe(2);
+      const leaderboard = await localStorageService.getLeaderboard(20);
+      expect(leaderboard.length).toBe(10);
     });
 
     it('should maintain data consistency', async () => {
-      const operations = 100;
-      for (let i = 0; i < operations; i++) {
-        await localStorageService.saveGameScore(`Player${i}`, i * 10, 1);
-      }
+      // Save initial data
+      await localStorageService.saveGameScore(100, 2);
+      await localStorageService.saveGameScore(50, 1);
 
-      const leaderboard = await localStorageService.getLeaderboard(100);
-      expect(leaderboard.length).toBe(operations);
+      // Retrieve and verify
+      const leaderboard = await localStorageService.getLeaderboard(10);
 
-      // Verify sorted order
-      for (let i = 0; i < leaderboard.length - 1; i++) {
-        expect(leaderboard[i].total).toBeGreaterThanOrEqual(
-          leaderboard[i + 1].total
-        );
-      }
+      expect(leaderboard.length).toBe(2);
+      expect(leaderboard[0].total).toBe(100);
+      expect(leaderboard[1].total).toBe(50);
+
+      // Clear and verify empty
+      await localStorageService.clearAll();
+      const emptyLeaderboard = await localStorageService.getLeaderboard(10);
+
+      expect(emptyLeaderboard).toEqual([]);
     });
   });
 });

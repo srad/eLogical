@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 
 import Game from './views/Game.vue';
-import Leaderboard from './views/Leaderboard.vue';
+import Highscore from './views/Highscore.vue';
 import Analytics from './views/Analytics.vue';
 import Help from './views/Help.vue';
 import About from './views/About.vue';
-import Imprint from './views/Imprint.vue';
+import Terms from './views/Terms.vue';
 import Settings from './views/Settings.vue';
 
 const routes: Array<RouteRecordRaw> = [
@@ -24,7 +24,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/highscores',
     name: 'highscores',
-    component: Leaderboard,
+    component: Highscore,
     meta: { title: 'High Score' },
   },
   {
@@ -34,22 +34,22 @@ const routes: Array<RouteRecordRaw> = [
     meta: { title: 'Analytics' },
   },
   {
+    path: '/settings',
+    name: 'settings',
+    component: Settings,
+    meta: { title: 'Settings' },
+  },
+  {
     path: '/help',
     name: 'help',
     component: Help,
     meta: { title: 'Help' },
   },
   {
-    path: '/imprint',
-    name: 'imprint',
-    component: Imprint,
-    meta: { title: 'Imprint & Data Privacy' },
-  },
-  {
-    path: '/settings',
-    name: 'settings',
-    component: Settings,
-    meta: { title: 'Settings' },
+    path: '/terms',
+    name: 'terms',
+    component: Terms,
+    meta: { title: 'Terms & Data Privacy' },
   },
   {
     path: '/about',

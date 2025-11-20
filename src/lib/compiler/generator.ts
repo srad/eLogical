@@ -1,4 +1,4 @@
-import { ConstNode, Node, TreeNode } from './tree';
+import { ConstNode, Node, TreeNode } from "./tree";
 import {
   fnAnd,
   fnEq,
@@ -10,10 +10,10 @@ import {
   fnStart,
   fnTrue,
   fnXor,
-} from './language';
-import { pick, truthTable } from '../math';
+} from "./language";
+import { pick, truthTable } from "../math";
 
-const fnList = [fnAnd, fnNot, fnOr, fnTrue, fnXor, fnImpl, fnFalse, fnEq];
+const fnList = [ fnAnd, fnNot, fnOr, fnTrue, fnXor, fnImpl, fnFalse, fnEq ];
 
 interface RandTreeConfig {
   depth?: number;
@@ -24,26 +24,19 @@ interface RandTreeConfig {
   usedVars?: Set<string>;
 }
 
-interface RandBoolExprConfig {
-  setSize?: number;
-  maxDepth?: number;
-  vars?: string[];
-  expWhiteList?: string[];
-}
-
 interface RandBoolExprResult {
   tree: TreeNode;
   solution: boolean[];
 }
 
 function randTree({
-  depth = 0,
-  maxDepth = 3,
-  vars = [],
-  fpr = 1.0,
-  expWhiteList = new Set<string>(),
-  usedVars = new Set<string>(),
-}: RandTreeConfig): TreeNode {
+                    depth = 0,
+                    maxDepth = 3,
+                    vars = [],
+                    fpr = 1.0,
+                    expWhiteList = new Set<string>(),
+                    usedVars = new Set<string>(),
+                  }: RandTreeConfig): TreeNode {
   if (depth >= maxDepth) {
     return new ConstNode(pick(vars));
   }
@@ -101,7 +94,7 @@ function randTree({
     const node = new Node({ fw: rand_f, children: children, vars });
 
     if (addParens) {
-      return new Node({ fw: fnParens, children: [node], vars });
+      return new Node({ fw: fnParens, children: [ node ], vars });
     }
 
     return node;
@@ -111,26 +104,26 @@ function randTree({
 }
 
 function randBoolExpr({
-  setSize = 2,
-  maxDepth = 1,
-  vars = ['v0', 'v1', 'v2'],
-  expWhiteList = [
-    fnOr.name,
-    fnNot.name,
-    fnAnd.name,
-    fnTrue.name,
-    fnXor.name,
-    fnImpl.name,
-    fnFalse.name,
-    fnEq.name,
-    fnStart.name,
-    fnParens.name,
-  ],
-} = {}): RandBoolExprResult {
+                        setSize = 2,
+                        maxDepth = 1,
+                        vars = [ "v0", "v1", "v2" ],
+                        expWhiteList = [
+                          fnOr.name,
+                          fnNot.name,
+                          fnAnd.name,
+                          fnTrue.name,
+                          fnXor.name,
+                          fnImpl.name,
+                          fnFalse.name,
+                          fnEq.name,
+                          fnStart.name,
+                          fnParens.name,
+                        ],
+                      } = {}): RandBoolExprResult {
   const table = truthTable(setSize, vars.length);
 
   // Keep generating until one satisfiable function is found
-  for (;;) {
+  for (; ;) {
     // maxDepth + 1 because the root node is the start symbol
     const tree = randTree({
       depth: 0,
@@ -139,7 +132,7 @@ function randBoolExpr({
       expWhiteList: new Set(expWhiteList),
     });
 
-    // Check for every generated expression that is has at least one satisfiable solution
+    // Check for every generated expression that is having at least one satisfiable solution
     for (let i = table.length - 1; i >= 0; i--) {
       const row = table[i];
       const args: Record<string, boolean> = {};
@@ -154,4 +147,4 @@ function randBoolExpr({
   }
 }
 
-export { truthTable, randTree, randBoolExpr, RandBoolExprResult };
+export { truthTable, randTree, randBoolExpr, type RandBoolExprResult };

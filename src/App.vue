@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <!-- Top Navigation Bar -->
-    <nav class="navbar bg-primary sticky-top">
+    <nav ref="navbarRef" class="navbar bg-primary fixed-top pt-5">
       <div class="container-fluid">
         <!-- Mobile/Tablet Toggle Button -->
         <button
@@ -40,7 +40,7 @@
     <!-- App Drawer Component -->
     <AppDrawer :isOpen="isMenuOpen" @close="isMenuOpen = false"/>
 
-    <div class="app-container vh-100" style="background-color: #f8f9fa">
+    <div class="app-container" style="background-color: #f8f9fa">
       <RouterView/>
     </div>
   </div>
@@ -63,7 +63,6 @@ const menuItems = computed(() => {
 /* Navbar Styling */
 .navbar {
   padding: 0.75rem 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .navbar-toggler-mobile {
@@ -111,6 +110,7 @@ const menuItems = computed(() => {
   width: 100%;
   display: flex;
   flex-direction: column;
+  padding-top: 95px; /* Accommodate for fixed navbar height */
 }
 
 .app-container > :deep(:first-child):not([class*='home']) {

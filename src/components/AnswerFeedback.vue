@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
+import { defineProps, defineEmits, watch, ref } from "vue";
 import CheckmarkAnimation from "./CheckmarkAnimation.vue";
 
 interface Props {
@@ -23,10 +23,43 @@ interface Props {
   isCorrect: boolean;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
 defineEmits<{
   hide: [];
 }>();
+
+const correctSound = ref<HTMLAudioElement | null>(null);
+const wrongSound = ref<HTMLAudioElement | null>(null);
+
+// Initialize audio elements
+const initializeAudio = () => {
+  if (!correctSound.value) {
+    correctSound.value = new Audio("/sounds/correct.mp3");
+    correctSound.value.volume = 0.7;
+  }
+  if (!wrongSound.value) {
+    wrongSound.value = new Audio("/sounds/wrong.mp3");
+    wrongSound.value.volume = 0.7;
+  }
+};
+
+// Play sound when feedback is shown
+watch(
+  () => [props.isVisible, props.isCorrect] as const,
+  ([isVisible, isCorrect]) => {
+    if (isVisible) {
+      initializeAudio();
+      const audio = isCorrect ? correctSound.value : wrongSound.value;
+      if (audio) {
+        // Reset and play
+        audio.currentTime = 0;
+        audio.play().catch((err) => {
+          console.warn("Could not play sound:", err);
+        });
+      }
+    }
+  }
+);
 </script>
 
 <style scoped>

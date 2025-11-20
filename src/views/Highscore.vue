@@ -42,7 +42,7 @@ onMounted(async () => {
     if (!api) {
       throw new Error("API not available");
     }
-    const response: LeaderboardResponse = await api.getUserHighScores();
+    const response: LeaderboardResponse = await api.getUserHighScores(10);
     entries.value = response.data.map((item: GameScore, i: number) => {
       return {
         No: i + 1,
