@@ -1,5 +1,8 @@
 <template>
   <div class="game-wrapper d-flex flex-column">
+    <!-- Falling operators background animation -->
+    <FallingOperators />
+
     <!-- Tutorial notification (fixed) -->
     <div class="notification tutorial-text-row row align-items-center ml-0" :class="showNotification ? 'notification-visible' : 'notification-hidden'" @click="progressTutorial">
       <div class="col-12 text-center">{{ tutorial.currentText }}</div>
@@ -199,6 +202,7 @@ import AnswerFeedback from "../components/AnswerFeedback.vue";
 import LogicText from "../components/LogicText.vue";
 import Tree from "../components/TreeSvg.vue";
 import GameStartOverlay from "../components/GameStartOverlay.vue";
+import FallingOperators from "../components/FallingOperators.vue";
 import colors from "@/lib/colors";
 import EventType from "@/services/events";
 import { Modal } from "bootstrap";
@@ -970,6 +974,7 @@ onBeforeRouteLeave((to, from, next) => {
 
 /* Main Layout - Flexbox approach */
 .game-wrapper {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: calc(100% - var(--safe-area-inset-bottom, 0px));
@@ -993,6 +998,8 @@ onBeforeRouteLeave((to, from, next) => {
 }
 
 .game-header {
+  position: relative;
+  z-index: 1;
   flex: 0 0 auto; /* Don't grow, don't shrink, auto size */
   display: flex;
   flex-direction: column;
@@ -1006,9 +1013,10 @@ onBeforeRouteLeave((to, from, next) => {
 }
 
 .game-middle {
+  position: relative;
+  z-index: 1;
   flex: 1 1 0; /* Grow to fill available space */
   min-height: 0; /* Important: allows flex item to shrink below content size */
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1021,6 +1029,8 @@ onBeforeRouteLeave((to, from, next) => {
 }
 
 .game-footer {
+  position: relative;
+  z-index: 1;
   flex: 0 0 auto; /* Don't grow, don't shrink, auto size */
   padding-bottom: 0.25rem;
   padding-left: 0.5rem;
