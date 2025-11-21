@@ -117,8 +117,8 @@
       <div class="d-flex justify-content-between align-items-center w-100">
         <div class="d-flex gap-2 flex-wrap">
           <button v-for="(node, index) in options" :key="index" :class="node.selected ? 'btn-primary' : 'btn-danger'" class="btn btn-variable" @click="toggleVariable(node.name, index)">
-            <span>{{ formatLabelWithSubscripts(node.name) }}</span>
-            <span class="fst-normal">&equals;{{ (node.selected ? 1 : 0) }}</span>
+            <span class="node-name">{{ formatLabelWithSubscripts(node.name) }}</span>
+            <span class="node-value">&equals;{{ (node.selected ? 1 : 0) }}</span>
           </button>
         </div>
 
@@ -946,15 +946,19 @@ onBeforeRouteLeave((to, from, next) => {
 <style scoped>
 .btn-variable {
   padding-top: 0.375rem !important;
-}
-
-.btn-variable:first-child {
-  font-family: "EB Garamond";
-  src: url("/fonts/EB_Garamond/EBGaramond-VariableFont_wght.ttf") format("truetype");
   font-weight: 400;
   font-size: 1.25rem;
+}
+
+.btn-variable .node-name {
+  font-family: "EB Garamond";
+  src: url("/fonts/EB_Garamond/EBGaramond-VariableFont_wght.ttf") format("truetype");
   font-style: italic;
   font-display: swap;
+}
+
+.btn-variable .node-value {
+  font-style: normal;
 }
 
 @media (min-width: 768px) {

@@ -17,6 +17,16 @@
 
 
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
+        <!-- Splash screen background color (Android 12+) -->
+        <item name="android:windowSplashScreenBackground">@color/splashBackground</item>
+
+        <!-- Splash screen icon (Android 12+) -->
+        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
+
+        <!-- Optional: Icon background for better contrast (Android 12+) -->
+        <!-- <item name="android:windowSplashScreenIconBackgroundColor">@color/white</item> -->
+
+        <!-- Legacy splash for Android 11 and below -->
         <item name="android:background">@drawable/splash</item>
     </style>
 </resources>
