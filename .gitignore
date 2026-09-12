@@ -5,6 +5,11 @@ node_modules
 # Bundle analysis output (npm run build with ANALYZE=1)
 /stats.html
 
+# Release artifacts from build-release.ps1
+/release/
+*.aab
+*.apk
+
 # local env files. The app reads no VITE_* variables at all, so a .env here would be
 # either dead or a secret that should never have been committed -- ignore the lot.
 .env

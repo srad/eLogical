@@ -9,6 +9,16 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   server: {
     androidScheme: 'https'
+  },
+  plugins: {
+    SystemBars: {
+      // "LIGHT" means dark content, for a light background -- correct for the navigation
+      // bar, which overlaps the near-white page. Pinning it here rather than leaving the
+      // "DEFAULT" (follow-the-device-theme) value stops a dark-mode phone from drawing
+      // white-on-white. The status bar overlaps the dark navy navbar and needs the
+      // opposite, so src/main.ts flips that one at startup.
+      style: 'LIGHT'
+    }
   }
 };
 

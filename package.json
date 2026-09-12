@@ -17,7 +17,7 @@
     "lint": "eslint . --fix",
     "format": "prettier --write .",
     "sync": "npm run build && npx cap sync",
-    "assets": "npx capacitor-assets generate"
+    "assets": "node scripts/gen-assets.mjs && npx capacitor-assets generate"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.2",

@@ -26,6 +26,7 @@ import App from './App.vue';
 import router from './router';
 import { ElogicalApi } from './services/elogical';
 import { App as CapacitorApp } from '@capacitor/app';
+import { SystemBars, SystemBarsStyle, SystemBarType } from '@capacitor/core';
 import { musicService } from './services/musicService';
 
 // Configure FontAwesome
@@ -75,6 +76,19 @@ if (!localStorage.trackingAllowed) {
 // Safe area insets are injected as --safe-area-inset-{top,right,bottom,left} by
 // Capacitor 8's built-in SystemBars plugin (insetsHandling defaults to "css" on Android),
 // which is why no plugin call is needed here. See App.vue and Game.vue for the consumers.
+
+// The two system bars sit on opposite backgrounds: the status bar overlaps the navbar,
+// which is the icon's dark navy, while the navigation bar overlaps the near-white page.
+// So they need opposite content colours, which a single config-wide `style` cannot
+// express. capacitor.config.ts sets the navigation bar's from first paint; this only
+// flips the status bar. Style names are inverted by convention: "Dark" means light
+// content *for* a dark background.
+SystemBars.setStyle({
+  style: SystemBarsStyle.Dark,
+  bar: SystemBarType.StatusBar,
+}).catch(() => {
+  /* No system bars in a browser; the web implementation is a no-op. */
+});
 
 // Handle app lifecycle events for music playback
 CapacitorApp.addListener('appStateChange', ({ isActive }) => {

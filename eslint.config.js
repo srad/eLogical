@@ -68,6 +68,15 @@ export default [
       'vue/multi-word-component-names': 'off',
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': unusedVars,
+      // A component imported as `Stopwatch` but used as <stopwatch> reads as an unused
+      // import, and deleting it leaves the tag unresolved — it renders as a bare DOM
+      // element, so a `ref` on it yields an Element and any method call on that ref
+      // throws at runtime. This rule flags the tag, so the two findings can't disagree.
+      'vue/no-undef-components': [
+        'error',
+        // Registered globally in src/main.ts, so it never appears as a local import.
+        { ignorePatterns: ['font-awesome-icon', 'FontAwesomeIcon', 'router-link', 'router-view', 'RouterLink', 'RouterView'] },
+      ],
     },
   },
   {

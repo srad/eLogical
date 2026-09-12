@@ -84,7 +84,7 @@
           }"
           class="card shadow-sm border-dark"
         >
-          <div class="card-header text-center text-white fw-semibold" :class="success === false ? 'bg-danger' : 'bg-primary'">Make this formula true</div>
+          <div class="card-header text-center fw-semibold" :class="success === false ? 'bg-danger text-white' : 'bg-brand-gradient'">Make this formula true</div>
           <div class="card-body text-center">
             <logic-text :expression="expression"></logic-text>
           </div>
@@ -102,7 +102,7 @@
           <font-awesome-icon icon="stopwatch" size="2x" />
         </div>
         <div class="flex-grow-1">
-          <stopwatch ref="stopwatch" class="stopwatch" :time="stopwatchTime" :countingDown="true" @timer-ended="gameOver"></stopwatch>
+          <Stopwatch ref="stopwatch" class="stopwatch" :time="stopwatchTime" :countingDown="true" @timer-ended="gameOver"></Stopwatch>
         </div>
       </div>
 
@@ -133,9 +133,6 @@
 
     <!-- Answer feedback component -->
     <AnswerFeedback :isVisible="showFeedback" :isCorrect="feedbackIsCorrect" @hide="hideFeedback" />
-
-    <!-- Game start overlay -->
-    <GameStartOverlay :isVisible="modalState === ModalState.ready" @start="startGame" />
 
     <!-- Modal dialog -->
     <div class="modal fade" ref="modalElement" tabindex="-1" role="dialog">
@@ -195,12 +192,14 @@
 import { computed, inject, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
 import { onBeforeRouteLeave, useRouter } from "vue-router";
 import { randBoolExpr } from "@/lib/compiler/generator";
+// Used by the <Stopwatch> tag in the countdown block; deleting this import leaves the tag
+// unresolved, and the ref on it then yields a DOM element instead of the component.
+import Stopwatch from "../components/Stopwatch.vue";
 import Ressource from "../components/Ressource.vue";
 import BlockBar from "../components/BlockBar.vue";
 import AnswerFeedback from "../components/AnswerFeedback.vue";
 import LogicText from "../components/LogicText.vue";
 import Tree from "../components/TreeSvg.vue";
-import GameStartOverlay from "../components/GameStartOverlay.vue";
 import FallingOperators from "../components/FallingOperators.vue";
 import colors from "@/lib/colors";
 import EventType from "@/services/events";
@@ -216,7 +215,6 @@ enum ModalState {
   gameOver,
   won,
   default,
-  ready,
   tutorial,
   welcome,
 }
@@ -366,7 +364,7 @@ const formatLabelWithSubscripts = (label: string): string => {
   return label.replace(/(\d)/g, (match) => subscripts[match] || match);
 };
 
-const blockBarColors = computed(() => colors.gradient.purple.slice());
+const blockBarColors = computed(() => colors.gradient.brand.slice());
 
 const vars = computed(() => {
   return new Array(info.currentExercise + 1).fill(0).map((_, index) => `v${index}`);
@@ -531,6 +529,10 @@ const hideFeedback = () => {
   showFeedback.value = false;
 };
 
+// The icon's node colours. These are saturated enough to read against the near-white
+// page the confetti falls over.
+const confettiColors = ["#28b327", "#00a9b6", "#02b490", "#77cf51"];
+
 const triggerConfetti = () => {
   // Play party horn sound
   soundService.play(SoundType.PARTY_HORN);
@@ -544,7 +546,7 @@ const triggerConfetti = () => {
     particleCount: 100,
     spread: 70,
     origin: { x: 0.5, y: 0.5 },
-    colors: ["#2abb79", "#1e8a5c", "#28a745", "#20c997"],
+    colors: confettiColors,
   });
 
   setTimeout(
@@ -554,7 +556,7 @@ const triggerConfetti = () => {
         angle: 60,
         spread: 55,
         origin: { x: 0, y: 0.5 },
-        colors: ["#2abb79", "#1e8a5c", "#28a745"],
+        colors: confettiColors,
       }),
     150
   );
@@ -566,7 +568,7 @@ const triggerConfetti = () => {
         angle: 120,
         spread: 55,
         origin: { x: 1, y: 0.5 },
-        colors: ["#2abb79", "#1e8a5c", "#28a745"],
+        colors: confettiColors,
       }),
     300
   );
@@ -780,7 +782,7 @@ const highlightElement = (el: HTMLElement | null) => {
 const skipTutorial = () => {
   localStorage.tutorialProposed = "true";
   modal.value?.hide();
-  showGameStartModal();
+  startGame();
 };
 
 const startTutorial = () => {
@@ -789,10 +791,6 @@ const startTutorial = () => {
   modal.value?.hide();
   showNotification.value = true;
   progressTutorial();
-};
-
-const showGameStartModal = () => {
-  modalState.value = ModalState.ready;
 };
 
 const startGame = () => {
@@ -821,7 +819,7 @@ const stopTutorial = () => {
   drop.bottom.display = false;
   drop.left.display = false;
   drop.right.display = false;
-  showGameStartModal();
+  startGame();
 };
 
 const addLeaderboardEntry = (points: number) => {
@@ -906,16 +904,9 @@ onMounted(() => {
   // Add beforeunload listener
   window.addEventListener("beforeunload", handleBeforeUnload);
 
-  // if (!tutorial.proposed) {
-  //   // First time user - show welcome/tutorial modal
-  //   modalState.value = ModalState.tutorial;
-  //   modalText.value = "Welcome!";
-  //   modal.value?.show();
-  // } else {
-  //   // Returning user - show game start confirmation
-  //   showGameStartModal();
-  // }
-  showGameStartModal();
+  // The game is the app's landing route, so start playing straight away rather than
+  // gating it behind a start screen.
+  startGame();
 });
 
 onBeforeUnmount(() => {
@@ -976,9 +967,10 @@ onBeforeRouteLeave((_to, _from, next) => {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: calc(100% - var(--safe-area-inset-bottom, 0px));
-  min-height: calc(100% - var(--safe-area-inset-bottom, 0px));
-  max-height: calc(100% - var(--safe-area-inset-bottom, 0px));
+  /* The safe-area inset is already subtracted from .app-container's height in App.vue. */
+  height: 100%;
+  min-height: 100%;
+  max-height: 100%;
   gap: 0.75rem;
   overflow: hidden;
   padding: 0.5rem;

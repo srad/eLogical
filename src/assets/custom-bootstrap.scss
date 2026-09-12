@@ -1,8 +1,33 @@
+// Brand palette, sampled from assets/icons/app_icon_original*.png: a dark navy-teal
+// backdrop behind vivid green/cyan logic nodes.
+$el-navy-top: #01324c; // backdrop, top edge
+$el-navy: #003855; // backdrop, centre
+$el-navy-deep: #002136; // backdrop, bottom corner
+$el-primary: #28b327; // the AND node's green
+$el-cyan: #00a9b6; // the OR node
+$el-teal: #02b490; // the q leaf
+$el-lime: #77cf51; // the r leaf
+
+// White text on the navy surfaces scores 12.4:1, so header chrome can simply be white on
+// navy. The accents are the opposite: as *text* on the near-white page they manage only
+// 2.5-2.7:1, so they are fills and never label text -- navy is the text colour instead.
+$el-ink: $el-navy;
+
+// Header chrome (navbar, card headers, drawer header). Every stop clears 13:1 with white.
+$el-gradient: linear-gradient(
+  135deg,
+  $el-navy-top 0%,
+  $el-navy 50%,
+  $el-navy-deep 100%
+);
+
 // Bootstrap variable overrides
-$primary: #2abb79;
+$primary: $el-primary;
+// Stays a neutral grey: every use of it is a muted state -- inactive resources, a Cancel
+// button, the block bar's empty segments -- so a brand colour here reads as "active".
 $secondary: #9e9e9e;
 $light: #eeeeee;
-$body-bg: #fafafa;
+$body-bg: #fafafa; // neutral page background; the gradient is reserved for the navbar
 //$border-radius: 2px;
 $table-cell-padding: 0.3rem;
 
@@ -57,3 +82,33 @@ $table-cell-padding: 0.3rem;
 // Utilities
 @import "bootstrap/scss/utilities/api";
 // scss-docs-end import-stack
+
+// Re-export the palette as custom properties so components reference one definition
+// instead of hardcoding hexes.
+:root {
+  --el-navy-top: #{$el-navy-top};
+  --el-navy: #{$el-navy};
+  --el-navy-deep: #{$el-navy-deep};
+  --el-primary: #{$el-primary};
+  --el-cyan: #{$el-cyan};
+  --el-teal: #{$el-teal};
+  --el-lime: #{$el-lime};
+  --el-ink: #{$el-ink};
+  --el-gradient: #{$el-gradient};
+
+  // Height of the Android navigation bar / iOS home indicator. Capacitor 8's SystemBars
+  // plugin injects --safe-area-inset-* onto documentElement, while a current WebView also
+  // answers env() directly (index.html sets viewport-fit=cover); take whichever is larger
+  // so the app is correct on both paths and falls back to 0 if neither is present.
+  --el-safe-bottom: max(
+    env(safe-area-inset-bottom, 0px),
+    var(--safe-area-inset-bottom, 0px)
+  );
+}
+
+// Brand surface for header chrome, matching the navbar. It sets its own text colour:
+// the navy is dark, so white reads at 12.4:1.
+.bg-brand-gradient {
+  background: $el-gradient !important;
+  color: #fff !important;
+}

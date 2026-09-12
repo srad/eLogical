@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#2abb79</color>
-    <color name="colorPrimaryDark">#229963</color>
-    <color name="colorAccent">#2abb79</color>
-    <color name="splashBackground">#2abb79</color>
+    <!-- Sampled from assets/app_icon_1024.png. colorPrimaryDark is the only shade in the
+         family that clears 4.5:1 against white text. splashBackground must be a single
+         colour (the Android 12+ splash API takes no drawable), so it uses the gradient's
+         mid tone. -->
+    <color name="colorPrimary">#28b327</color>
+    <color name="colorPrimaryDark">#003855</color>
+    <color name="colorAccent">#00a9b6</color>
+    <!-- Must match the splash bitmap's backdrop (assets/icons/app_icon_original_background)
+         or the Android 12+ splash shows a seam between the two. -->
+    <color name="splashBackground">#003855</color>
     <color name="white">#FFFFFF</color>
 </resources>

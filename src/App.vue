@@ -1,7 +1,9 @@
 <template>
   <div id="app-root" :class="{ 'game-view-active': $route.name === 'game' }">
     <!-- Top Navigation Bar -->
-    <nav ref="navbarRef" class="navbar bg-primary fixed-top pt-5">
+    <!-- Carries the icon's navy backdrop, extending under the status bar (edge-to-edge).
+         White on navy reads at 12.4:1. -->
+    <nav ref="navbarRef" class="navbar navbar-brand-gradient fixed-top pt-5">
       <div class="container-fluid">
         <!-- Mobile/Tablet Toggle Button -->
         <button
@@ -14,7 +16,7 @@
         </button>
 
         <!-- Brand -->
-        <router-link to="/" class="navbar-brand fw-bold text-white d-flex gap-3 align-items-center flex-grow-1 justify-content-center navbar-brand-mobile">
+        <router-link to="/" class="navbar-brand fw-bold d-flex gap-3 align-items-center flex-grow-1 justify-content-center navbar-brand-mobile">
           <span>eLogical</span>
           <font-awesome-icon icon="robot"/>
         </router-link>
@@ -27,7 +29,7 @@
           <li v-for="route in menuItems" :key="route.path" class="nav-item">
             <router-link
                 :to="route.path"
-                class="nav-link text-white"
+                class="nav-link"
                 :class="{ active: $route.path === route.path }"
             >
               {{ route.meta?.title }}
@@ -40,7 +42,8 @@
     <!-- App Drawer Component -->
     <AppDrawer :isOpen="isMenuOpen" @close="isMenuOpen = false"/>
 
-    <div class="app-container" style="background-color: #f8f9fa">
+    <!-- Transparent on purpose: the brand gradient is painted on body::before. -->
+    <div class="app-container">
       <RouterView/>
     </div>
   </div>
@@ -63,6 +66,15 @@ const menuItems = computed(() => router.getRoutes());
   padding: 0.75rem 0;
 }
 
+.navbar-brand-gradient {
+  background: var(--el-gradient);
+}
+
+.navbar-brand-gradient .navbar-brand,
+.navbar-brand-gradient .nav-link {
+  color: #fff;
+}
+
 .navbar-toggler-mobile {
   padding: 0.5rem 1rem;
   border: none;
@@ -75,7 +87,8 @@ const menuItems = computed(() => router.getRoutes());
 }
 
 .navbar-toggler-icon {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2.5' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+  /* White, to match the navbar text on the navy backdrop. */
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2.5' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
   width: 1.5rem;
   height: 1.5rem;
 }
@@ -138,10 +151,22 @@ const menuItems = computed(() => router.getRoutes());
 </style>
 
 <style>
-#app-root .app-container {
-  height: 100dvh !important;
+/* Nothing in the app sits under the Android navigation bar. The app is edge-to-edge, so
+   100dvh spans the whole display including the strip behind the bar. */
+#app-root {
+  padding-bottom: var(--el-safe-bottom);
 }
-#app-root:not(.game-view-active) {
-  padding-bottom: calc(var(--safe-area-inset-bottom, 0px) + 2rem);
+
+/* Content pages must grow with their content: a fixed height would let long pages overflow
+   the container, and an overflowing child escapes the padding meant to clear the nav bar.
+   min-height still fills the screen on short pages. */
+#app-root .app-container {
+  height: auto;
+  min-height: calc(100dvh - var(--el-safe-bottom));
+}
+
+/* The game is a fixed, non-scrolling layout, so it is pinned to the available height. */
+#app-root.game-view-active .app-container {
+  height: calc(100dvh - var(--el-safe-bottom));
 }
 </style>

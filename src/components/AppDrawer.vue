@@ -101,8 +101,9 @@ const currentRoute = computed(() => {
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  background: linear-gradient(135deg, #2abb79 0%, #1e8a5c 100%);
-  color: white;
+  /* The icon's navy backdrop, matching the navbar and card headers. White reads 12.4:1. */
+  background: var(--el-gradient);
+  color: #fff;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
 }
@@ -118,7 +119,8 @@ const currentRoute = computed(() => {
   background-color: transparent;
   border: none;
   cursor: pointer;
-  color: white;
+  /* btn-close-white inverts Bootstrap's glyph for the dark navy header. */
+  color: #fff;
 }
 
 .btn-close:hover {
@@ -130,6 +132,9 @@ const currentRoute = computed(() => {
   flex: 1;
   overflow-y: auto;
   padding-top: 0.5rem;
+  /* The drawer is position:fixed and spans to bottom:0, so it sits outside #app-root's
+     padding and needs the nav-bar inset of its own to keep the last item reachable. */
+  padding-bottom: var(--el-safe-bottom);
 }
 
 /* Drawer Menu Items */
@@ -153,14 +158,18 @@ const currentRoute = computed(() => {
 
 .drawer-item:hover {
   background-color: #f5f5f5;
-  color: #2abb79;
-  border-left-color: #2abb79;
+  /* The accents manage only ~2.7:1 as text on these near-white rows, so the label takes
+     the navy ink (11.9:1) and the accent stays where it works: as a decorative fill. */
+  color: var(--el-ink);
+  border-left-color: var(--el-cyan);
 }
 
 .drawer-item-active {
-  background-color: #e8f5e9;
-  color: #2abb79;
-  border-left-color: #2abb79;
+  /* A 10% tint of the icon's cyan (navy ink on it reads 11.1:1). Distinct from the
+     neutral grey hover above, so "selected" and "hovered" stay tellable apart. */
+  background-color: #e6f6f8;
+  color: var(--el-ink);
+  border-left-color: var(--el-cyan);
   font-weight: 600;
 }
 

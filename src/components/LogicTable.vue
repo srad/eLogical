@@ -1,6 +1,6 @@
 <template>
   <div class="card logic-table shadow-sm border-primary">
-    <div class="card-header bg-primary text-white pt-2 pb-0 ps-2">
+    <div class="card-header bg-brand-gradient pt-2 pb-0 ps-2">
       <h5 v-html="header"></h5>
     </div>
     <div class="card-body p-0">

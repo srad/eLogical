@@ -3,7 +3,7 @@
     <div
       v-for="index in props.max"
       :key="index"
-      class="flex-grow-1 rounded-1 h-100 border-end border-white block-item bg-secondary"
+      class="flex-grow-1 rounded-1 h-100 border-end border-white block-item"
       :class="{ 'fill-animation': index <= props.current }"
       :style="{
         '--fill-color': index <= current ? props.colors[index - 1] : '',
@@ -32,6 +32,9 @@ const props = withDefaults(defineProps<Props>(), {
 .block-item {
   position: relative;
   overflow: hidden;
+  /* Empty segments are a plain light neutral, so a filled one is unmistakable. Tinting
+     them (this used to be bg-secondary) made every segment look partly earned. */
+  background-color: #e9ecef;
 }
 
 .fill-animation::before {

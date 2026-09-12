@@ -43,6 +43,23 @@ Set `ANALYZE=1` on a build to emit a `stats.html` bundle treemap.
 .\run-android.ps1 -Release     # signed release APK instead of debug
 ```
 
+### Release build for Google Play
+
+```powershell
+.\release.ps1            # bump the build number, then build a signed app bundle
+.\release.ps1 -DryRun    # say what the bump would be and stop
+```
+
+It bumps `versionCode` in `android/app/build.gradle`, builds, and then confirms the bundle
+is actually signed. That last check matters: `bundleRelease` writes an **unsigned** bundle
+under the same `app-release.aab` filename, and `jarsigner` exits 0 either way — so neither
+the filename nor the exit code tells you.
+
+The signing config is validated before anything is written. Note that Gradle reads
+`key.properties` as a Java properties file, where `\` is an escape character: write
+`storeFile` with forward slashes (or doubled backslashes), or the path arrives mangled and
+Gradle reports a missing keystore without explaining why.
+
 Or by hand:
 
 ```bash
@@ -67,26 +84,33 @@ which injects `--safe-area-inset-{top,right,bottom,left}` CSS variables — cons
 
 ### Release signing
 
-`android/app/build.gradle` reads signing credentials from `android/keystore.properties`
-(preferred), falling back to `android/local.properties` and then environment variables. All of
-these are gitignored — **no keystore or password belongs in the repository**. Without them the
+`android/app/build.gradle` reads signing credentials from `android/key.properties`,
+`android/keystore.properties` or `android/local.properties`, then environment variables. All
+are gitignored — **no keystore or password belongs in the repository**. Without them the
 release build still succeeds, but produces an *unsigned* bundle and logs a warning.
 
-Create `android/keystore.properties`:
+Create `android/key.properties`:
 
 ```properties
-RELEASE_STORE_FILE=/absolute/path/to/elogical.jks
-RELEASE_STORE_PASSWORD=…
-RELEASE_KEY_ALIAS=…
-RELEASE_KEY_PASSWORD=…
+storeFile=C:/path/to/upload-keystore.jks
+storePassword=…
+keyAlias=upload
+keyPassword=…
 ```
 
-Flutter's key names (`storeFile`, `storePassword`, `keyAlias`, `keyPassword`) are accepted
-too, so an existing `key.properties` from another project can be copied across unchanged.
-Point `storeFile` at the keystore where it already lives rather than copying the `.jks` into
-the repo. Under Play App Signing this is only the *upload* key, and it is registered per app —
-check its SHA-256 against Play Console → App integrity → Upload key certificate before relying
-on it.
+The `RELEASE_STORE_FILE` / `RELEASE_STORE_PASSWORD` / `RELEASE_KEY_ALIAS` /
+`RELEASE_KEY_PASSWORD` spellings work too. Point `storeFile` at the keystore where it already
+lives rather than copying the `.jks` into the repo.
+
+To create a keystore:
+
+```
+keytool -genkey -v -keystore upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+```
+
+Keep a backup of it somewhere safe: lose it and the app can never be updated again. Under
+Play App Signing this is only the *upload* key, and it is registered per app — check its
+SHA-256 against Play Console → App integrity → Upload key certificate before relying on it.
 
 Bump `versionCode` in `android/app/build.gradle` before every Play upload; it must be strictly
 greater than the last published one (currently 3).

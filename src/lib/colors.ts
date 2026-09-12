@@ -1,7 +1,11 @@
 const colors = {
   gradient: {
-    purple: ['#FACCFF', '#DCB0FF', '#BE93FD', '#A178DF', '#845EC2'],
-    cyan: ['#4DB4C4', '#198F9F', '#006C7C', '#004B5A', '#002C3A'],
+    /**
+     * Exercise-progress ramp, in the app icon's node colours: the cyan OR node through
+     * the teal and green leaves to the lime one. Each step is a fill with a dark numeral
+     * over it, which all of them clear comfortably (>= 7.3:1 against black).
+     */
+    brand: ['#00A9B6', '#02B490', '#28B327', '#5CC63F', '#77CF51'],
   },
 } as const;
 

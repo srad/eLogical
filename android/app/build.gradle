@@ -9,7 +9,7 @@ apply plugin: 'com.android.application'
 //   RELEASE_STORE_FILE / RELEASE_STORE_PASSWORD / RELEASE_KEY_ALIAS / RELEASE_KEY_PASSWORD
 //   storeFile          / storePassword          / keyAlias          / keyPassword
 def keystoreProps = new Properties()
-["local.properties", "keystore.properties"].each { name ->
+["local.properties", "keystore.properties", "key.properties"].each { name ->
     def propsFile = rootProject.file(name)
     if (propsFile.exists()) {
         propsFile.withInputStream { keystoreProps.load(it) }
@@ -42,7 +42,7 @@ android {
         applicationId "com.github.srad.elogical"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
+        versionCode 5
         versionName "1.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
