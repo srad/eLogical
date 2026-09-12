@@ -1,15 +1,19 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import pluginVue from 'eslint-plugin-vue'
-import pluginTypeScript from '@typescript-eslint/eslint-plugin'
-import parserTypeScript from '@typescript-eslint/parser'
-import vueParser from 'vue-eslint-parser'
-import prettier from 'eslint-config-prettier'
+import js from '@eslint/js';
+import globals from 'globals';
+import pluginVue from 'eslint-plugin-vue';
+import pluginTypeScript from '@typescript-eslint/eslint-plugin';
+import parserTypeScript from '@typescript-eslint/parser';
+import prettier from 'eslint-config-prettier';
+
+const unusedVars = ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }];
 
 export default [
   {
-    ignores: ['node_modules/', 'dist/', '.git/', '.vscode/', '.eslintrc.cjs', '.eslintrc.js'],
+    // `android/app/src/main/assets/public` holds the built web bundle, `dist/` the
+    // build output — neither is source.
+    ignores: ['node_modules/', 'dist/', 'android/', 'stats.html'],
   },
+  js.configs.recommended,
   {
     languageOptions: {
       globals: {
@@ -18,7 +22,6 @@ export default [
       },
     },
   },
-  js.configs.recommended,
   {
     files: ['**/*.{js,mjs,cjs}'],
     languageOptions: {
@@ -38,55 +41,41 @@ export default [
     },
     rules: {
       ...pluginTypeScript.configs.recommended.rules,
-      '@typescript-eslint/no-unused-vars': [
-        'warn',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-        },
-      ],
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': unusedVars,
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-empty-object-type': 'off',
-      semi: ['error', 'always'],
     },
   },
+  // Sets up vue-eslint-parser for .vue files; this is an array of configs, not a rules bag.
+  ...pluginVue.configs['flat/essential'],
   {
     files: ['**/*.vue'],
     languageOptions: {
-      parser: vueParser,
-      ecmaVersion: 'latest',
-      sourceType: 'module',
       parserOptions: {
         parser: parserTypeScript,
+        ecmaVersion: 'latest',
+        sourceType: 'module',
       },
       globals: {
         ...globals.browser,
       },
     },
     plugins: {
-      vue: pluginVue,
       '@typescript-eslint': pluginTypeScript,
     },
     rules: {
-      ...pluginVue.configs['vue3-essential'].rules,
       'vue/multi-word-component-names': 'off',
-      'no-unused-vars': [
-        'warn',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-        },
-      ],
-      'no-prototype-builtins': 'warn',
-      semi: ['error', 'always'],
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': unusedVars,
     },
   },
   {
-    files: ['**/*.{js,ts}'],
+    files: ['**/*.{js,ts,vue}'],
     rules: {
       'no-prototype-builtins': 'warn',
-      semi: ['error', 'always'],
     },
   },
+  // Must stay last: switches off every rule Prettier already handles (`semi` included).
   prettier,
-]
+];

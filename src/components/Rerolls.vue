@@ -22,7 +22,7 @@ export default {
     return {};
   },
   methods: {
-    fireEvent(i) {
+    fireEvent(_i) {
       this.$refs[this.current][0].addEventListener('animationend', () => {
         this.$emit('reroll-consumed');
       });

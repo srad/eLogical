@@ -97,13 +97,13 @@ interface ChartDataset {
   data: number[];
 }
 
+// Chart.js v4 axis shape. This was previously declared with the v2 `scales.yAxes[]`
+// shape, which never matched what the call sites below actually pass.
 interface ChartOptions {
   scales?: {
-    yAxes: Array<{
-      ticks: {
-        beginAtZero: boolean;
-      };
-    }>;
+    y?: {
+      beginAtZero?: boolean;
+    };
   };
 }
 

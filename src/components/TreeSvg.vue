@@ -1,5 +1,5 @@
 <template>
-  <div ref="containerRef" class="tree-svg-container">
+  <div class="tree-svg-container">
     <svg ref="svgRef" @click="handleSvgClick"></svg>
   </div>
 </template>
@@ -44,7 +44,6 @@ const emit = defineEmits<{
   "click-node": [ data: { node: unknown; id: string; rawNode: TreeNode } ];
 }>();
 
-const containerRef = ref<HTMLDivElement | null>(null);
 const svgRef = ref<SVGSVGElement | null>(null);
 let currentTreeData: TreeData | undefined;
 let nodeMap: Map<string, TreeNode> = new Map();
@@ -54,60 +53,12 @@ let scale = 1;
 
 onMounted(() => {
   if (svgRef.value) {
-    // Set up SVG interactions
-    // svgRef.value.addEventListener("wheel", handleZoom);
-    // if (props.moveView) {
-    //   svgRef.value.addEventListener("mousedown", startPan);
-    //   document.addEventListener("mousemove", handlePan);
-    //   document.addEventListener("mouseup", stopPan);
-    // }
-
     // Render initial tree data if available
     if (props.treeData && props.treeData.nodes.length > 0) {
       renderTree(props.treeData);
     }
   }
 });
-
-let isPanning = false;
-let startPanX = 0;
-let startPanY = 0;
-
-const startPan = (e: MouseEvent) => {
-  isPanning = true;
-  startPanX = e.clientX - panX;
-  startPanY = e.clientY - panY;
-};
-
-const handlePan = (e: MouseEvent) => {
-  if (!isPanning || !svgRef.value) return;
-  panX = e.clientX - startPanX;
-  panY = e.clientY - startPanY;
-  updateTransform();
-};
-
-const stopPan = () => {
-  isPanning = false;
-};
-
-const handleZoom = (e: WheelEvent) => {
-  if (!svgRef.value) return;
-  e.preventDefault();
-
-  const oldScale = scale;
-  scale *= e.deltaY > 0 ? 0.9 : 1.1;
-  scale = Math.max(0.1, Math.min(3, scale));
-
-  // Zoom towards the cursor
-  const rect = svgRef.value.getBoundingClientRect();
-  const cursorX = e.clientX - rect.left;
-  const cursorY = e.clientY - rect.top;
-
-  panX = cursorX - (cursorX - panX) * (scale / oldScale);
-  panY = cursorY - (cursorY - panY) * (scale / oldScale);
-
-  updateTransform();
-};
 
 const updateTransform = () => {
   if (!svgRef.value) return;

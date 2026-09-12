@@ -25,7 +25,6 @@ import 'animate.css';
 import App from './App.vue';
 import router from './router';
 import { ElogicalApi } from './services/elogical';
-import { SafeArea } from 'capacitor-plugin-safe-area';
 import { App as CapacitorApp } from '@capacitor/app';
 import { musicService } from './services/musicService';
 
@@ -73,15 +72,9 @@ if (!localStorage.trackingAllowed) {
   localStorage.trackingAllowed = 'true'; // Enable tracking by default
 }
 
-// Get safe area insets and set CSS variables
-SafeArea.getSafeAreaInsets().then(({ insets }) => {
-  for (const [key, value] of Object.entries(insets)) {
-    document.documentElement.style.setProperty(
-      `--safe-area-inset-${key}`,
-      `${value}px`
-    );
-  }
-});
+// Safe area insets are injected as --safe-area-inset-{top,right,bottom,left} by
+// Capacitor 8's built-in SystemBars plugin (insetsHandling defaults to "css" on Android),
+// which is why no plugin call is needed here. See App.vue and Game.vue for the consumers.
 
 // Handle app lifecycle events for music playback
 CapacitorApp.addListener('appStateChange', ({ isActive }) => {

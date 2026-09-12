@@ -289,14 +289,14 @@ describe('ElogicalApi', () => {
       const result = await api.getAnalytics();
       const difficultyData = result.data.groupByGameEndAndDifficulty;
 
-      // Should have one entry per game (4 games total)
-      expect(difficultyData.length).toBe(4);
-      // Verify each difficulty is represented
-      expect(difficultyData.some((d) => d._id.difficulty === 1)).toBe(true);
-      expect(difficultyData.some((d) => d._id.difficulty === 2)).toBe(true);
-      expect(difficultyData.some((d) => d._id.difficulty === 3)).toBe(true);
-      // Each entry should have frequency 1
-      expect(difficultyData.every((d) => d.frequency === 1)).toBe(true);
+      // Grouped by difficulty, not by game: the 4 games span 3 distinct difficulties.
+      // Analytics.vue renders one bar per difficulty from this, with frequency as its value.
+      expect(difficultyData.length).toBe(3);
+
+      const byDifficulty = Object.fromEntries(
+        difficultyData.map((d) => [d._id.difficulty, d.frequency])
+      );
+      expect(byDifficulty).toEqual({ 1: 1, 2: 2, 3: 1 });
     });
 
     it('should aggregate games by date correctly', async () => {

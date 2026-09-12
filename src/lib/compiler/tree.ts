@@ -40,7 +40,21 @@ class FnWrapper {
   }
 }
 
-export class TreeNode {
+interface ToOptions {
+  depth?: number;
+}
+
+/**
+ * Shared surface of every tree node. Both subclasses already implemented these; declaring
+ * them here is what lets callers walk a `TreeNode[]` without casting.
+ */
+export abstract class TreeNode {
+  abstract evaluate(environment: Record<string, boolean>): boolean;
+
+  abstract to(type?: string, options?: ToOptions): any;
+
+  abstract display(depth?: number, indent?: number): void;
+
   output(...args: any[]): void {
     console.log(...args);
   }
@@ -63,7 +77,7 @@ class Node extends TreeNode {
     if (Array.isArray(environment)) {
       const params: Record<string, boolean> = {};
       environment.forEach((val, index) => {
-        params[`v${index}`] = environment[index];
+        params[`v${index}`] = val;
       });
       environment = params;
     }
@@ -74,7 +88,7 @@ class Node extends TreeNode {
     return this.fw.fn(results);
   }
 
-  to(type: string = "str", { depth = -1, color = false }: any = {}): any {
+  to(type: string = "str", { depth = -1 }: ToOptions = {}): any {
     const results = this.children.map((node) =>
       node.to(type, { depth: depth + 1 })
     );
@@ -102,7 +116,7 @@ class Node extends TreeNode {
     }
 
     this.output(`${space}(${this.fw.name}`);
-    this.children.forEach((node: Node) => node.display(depth + 1, indent));
+    this.children.forEach((node: TreeNode) => node.display(depth + 1, indent));
     this.output(`${space})`);
 
     if (depth === 0) {

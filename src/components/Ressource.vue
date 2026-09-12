@@ -36,7 +36,8 @@ const props = withDefaults(defineProps<RessourceProps>(), {
   size: '2x',
 });
 
-const emit = defineEmits<{
+// Declares the emit contract; the template fires it directly via $emit('click').
+defineEmits<{
   click: [];
 }>();
 

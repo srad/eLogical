@@ -119,7 +119,7 @@
     <div class="game-footer">
       <div class="d-flex justify-content-between align-items-center w-100">
         <div class="d-flex gap-2 flex-wrap">
-          <button v-for="(node, index) in options" :key="index" :class="node.selected ? 'btn-primary' : 'btn-danger'" class="btn btn-variable" @click="toggleVariable(node.name, index)">
+          <button v-for="(node, index) in options" :key="index" :class="node.selected ? 'btn-primary' : 'btn-danger'" class="btn btn-variable" @click="toggleVariable(index)">
             <span class="node-name">{{ formatLabelWithSubscripts(node.name) }}</span>
             <span class="node-value">&equals;{{ (node.selected ? 1 : 0) }}</span>
           </button>
@@ -195,7 +195,6 @@
 import { computed, inject, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
 import { onBeforeRouteLeave, useRouter } from "vue-router";
 import { randBoolExpr } from "@/lib/compiler/generator";
-import Stopwatch from "../components/Stopwatch.vue";
 import Ressource from "../components/Ressource.vue";
 import BlockBar from "../components/BlockBar.vue";
 import AnswerFeedback from "../components/AnswerFeedback.vue";
@@ -437,7 +436,7 @@ const tutorialData = computed(() => {
 });
 
 // Methods
-const toggleVariable = (node: string, index: number) => {
+const toggleVariable = (index: number) => {
   soundService.play(SoundType.CLICK);
   options.value[index].selected = !options.value[index].selected;
 };
@@ -454,7 +453,7 @@ const handleNodeClick = (data: { node: unknown; id: string; rawNode: any }) => {
   const index = options.value.findIndex((opt) => opt.name === variableName);
 
   if (index !== -1) {
-    toggleVariable(variableName, index);
+    toggleVariable(index);
   }
 };
 
@@ -632,7 +631,7 @@ const generateExercise = () => {
   nodeId.value = 0;
 
   let generatedTree: TreeNode;
-  let currentExpressionStr = "";
+  let currentExpressionStr: string;
   let attempts = 0;
   const maxAttempts = 50; // Prevent infinite loop
 
@@ -933,7 +932,7 @@ onBeforeUnmount(() => {
 });
 
 // Prevent navigation away during the active game
-onBeforeRouteLeave((to, from, next) => {
+onBeforeRouteLeave((_to, _from, next) => {
   if (isGameInProgress.value) {
     const confirmed = window.confirm("You have a game in progress. Are you sure you want to leave?");
     if (confirmed) {

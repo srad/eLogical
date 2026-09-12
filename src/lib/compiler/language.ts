@@ -24,7 +24,7 @@ const fnOr = new FnWrapper({
   fn: (l) => l[0] === true || l[1] === true,
   color: '#1b95af',
   template: {
-    tex: ({ l, vars, depth, color }) =>
+    tex: ({ l, color }) =>
       texColor(color, `${l[0]} \\vee ${l[1]}`),
     str: ({ l }) => `${l[0]} || ${l[1]}`,
     obj: ({ l }) => ({ name: '\u2228', children: l }),
@@ -41,7 +41,7 @@ const fnAnd = new FnWrapper({
   fn: (l) => l[0] === true && l[1] === true,
   color: '#7cb24a',
   template: {
-    tex: ({ l, vars, depth, color }) =>
+    tex: ({ l, color }) =>
       texColor(color, `${l[0]} \\wedge ${l[1]}`),
     str: ({ l }) => `${l[0]} && ${l[1]}`,
     obj: ({ l }) => ({ name: '\u2227', children: l }),
@@ -59,7 +59,7 @@ const fnXor = new FnWrapper({
     typeof l[0] === 'boolean' && typeof l[1] === 'boolean' && l[0] !== l[1],
   color: '#8B5A99',
   template: {
-    tex: ({ l, vars, depth, color }) =>
+    tex: ({ l, color }) =>
       texColor(color, `${l[0]} \\oplus ${l[1]}`),
     str: ({ l }) => `${l[0]} !== ${l[1]}`,
     obj: ({ l }) => ({ name: '\u2295', children: l }),
@@ -76,7 +76,7 @@ const fnImpl = new FnWrapper({
   fn: (l) => !(l[0] === true && l[1] === false),
   color: '#00745E',
   template: {
-    tex: ({ l, vars, depth, color }) =>
+    tex: ({ l, color }) =>
       texColor(color, `${l[0]} \\rightarrow ${l[1]}`),
     str: ({ l }) => `!(${l[0]} && !${l[1]})`,
     obj: ({ l }) => ({ name: '\u2192', children: l }),
@@ -94,7 +94,7 @@ const fnEq = new FnWrapper({
     typeof l[0] === 'boolean' && typeof l[1] === 'boolean' && l[0] === l[1],
   color: '#402E32',
   template: {
-    tex: ({ l, vars, depth, color }) =>
+    tex: ({ l, color }) =>
       texColor(color, `${l[0]} \\leftrightarrow ${l[1]}`),
     str: ({ l }) => `${l[0]} === ${l[1]}`,
     obj: ({ l }) => ({ name: '\u27F7', children: l }),
@@ -128,7 +128,7 @@ const fnParens = new FnWrapper({
   arity: 1,
   fn: (l) => l[0],
   template: {
-    tex: ({ l, vars, depth }) => `(${l[0]})`,
+    tex: ({ l }) => `(${l[0]})`,
     str: ({ l }) => `(${l[0]})`,
     obj: ({ l }) => ({ name: 'paren', children: l }),
     py: ({ l }) => `(${l[0]})`,
@@ -143,7 +143,7 @@ const fnNot = new FnWrapper({
   fn: (l) => !l[0],
   color: '#FF605C',
   template: {
-    tex: ({ l, vars, depth, children, color }) =>
+    tex: ({ l, color }) =>
       texColor(color, `\\neg ${l[0]}`),
     str: ({ l }) => `!(${l[0]})`,
     obj: ({ l }) => ({ name: '\u00AC', children: l }),
@@ -167,7 +167,7 @@ const fnTrue = new FnWrapper({
     str: () => 'true',
     obj: () => ({ name: '1', children: [] }),
     py: () => 'True',
-    array: ({ l }) => 'true',
+    array: () => 'true',
     html: ({ color }) => htmlColor(color, '1'),
   },
 });
@@ -181,7 +181,7 @@ const fnFalse = new FnWrapper({
     str: () => 'false',
     obj: () => ({ name: '0', children: [] }),
     py: () => 'False',
-    array: ({ l }) => 'false',
+    array: () => 'false',
     html: ({ color }) => htmlColor(color, '0'),
   },
 });

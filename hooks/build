@@ -1,3 +1,0 @@
-#!/bin/bash
-
-docker build -t $IMAGE_NAME --build-arg API_URL=$API_URL --build-arg ENCRYPT_KEY=$ENCRYPT_KEY .

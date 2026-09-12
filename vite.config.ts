@@ -3,14 +3,14 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { visualizer } from 'rollup-plugin-visualizer'
 
+// The app is fully offline — it talks to IndexedDB only, so there is no dev proxy.
 export default defineConfig({
   plugins: [
     vue(),
-    // visualizer({
-    //   open: true,
-    //   gzipSize: true,
-    //   brotliSize: true
-    // })
+    // ANALYZE=1 npm run build -> writes stats.html (gitignored)
+    ...(process.env.ANALYZE
+      ? [visualizer({ open: true, gzipSize: true, brotliSize: true })]
+      : [])
   ],
   resolve: {
     alias: {
@@ -18,17 +18,12 @@ export default defineConfig({
     }
   },
   server: {
-    port: 8080,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
-      }
-    }
+    port: 8080
   },
   build: {
     outDir: 'dist',
+    // minSdk 31 means an Android 12+ WebView; keep this in step with tsconfig target.
+    target: 'es2022',
     sourcemap: false
   }
 })

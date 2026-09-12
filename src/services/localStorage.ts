@@ -25,16 +25,6 @@ function toPlainObject<T>(obj: unknown): T {
   return obj as T;
 }
 
-/**
- * Validate required fields in an object
- */
-function validateRequired(obj: Record<string, unknown>, requiredFields: string[], context: string): void {
-  const missingFields = requiredFields.filter(field => obj[field] === undefined || obj[field] === null);
-  if (missingFields.length > 0) {
-    throw new Error(`${context}: Missing required fields: ${missingFields.join(', ')}`);
-  }
-}
-
 interface GameScore {
   id?: number;
   total: number;
@@ -155,16 +145,14 @@ class LocalStorageService {
 
       const request = index.getAll();
 
-      request.onsuccess = (event: Event) => {
-        const result = (event.target as IDBRequest).result as GameScore[];
+      request.onsuccess = () => {
+        const result = request.result as GameScore[];
         const sorted = result
           .sort((a, b) => b.total - a.total)
           .slice(0, limit);
         resolve(sorted);
       };
-      request.onerror = (event: Event) => {
-        reject((event.target as IDBRequest).error);
-      };
+      request.onerror = () => reject(request.error);
     });
   }
 
@@ -199,13 +187,8 @@ class LocalStorageService {
 
       const request = store.getAll();
 
-      request.onsuccess = (event: Event) => {
-        const result = (event.target as IDBRequest).result as TrackingEvent[];
-        resolve(result);
-      };
-      request.onerror = (event: Event) => {
-        reject((event.target as IDBRequest).error);
-      };
+      request.onsuccess = () => resolve(request.result as TrackingEvent[]);
+      request.onerror = () => reject(request.error);
     });
   }
 
@@ -269,4 +252,5 @@ class LocalStorageService {
 }
 
 export const localStorageService = new LocalStorageService();
-export { LocalStorageService, GameScore, TrackingEvent };
+export { LocalStorageService };
+export type { GameScore, TrackingEvent };

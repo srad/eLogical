@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <!-- Overrides the main source set so the debug build is distinguishable on the
+         launcher from the Play build installed next to it. -->
+    <string name="app_name">eLogical dev</string>
+    <string name="title_activity_main">eLogical dev</string>
+</resources>

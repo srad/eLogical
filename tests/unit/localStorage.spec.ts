@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { localStorageService, type GameScore, type TrackingEvent } from '@/services/localStorage';
+import { localStorageService } from '@/services/localStorage';
 
 describe('LocalStorageService', () => {
   beforeEach(async () => {

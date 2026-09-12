@@ -1,23 +1,78 @@
 apply plugin: 'com.android.application'
 
+// Release signing credentials, resolved from (in increasing precedence):
+//   android/local.properties  ->  android/keystore.properties  ->  environment variables
+// Both files are gitignored; no secret belongs in this file or anywhere else in the repo.
+//
+// Either naming scheme works, so a key.properties from a Flutter project can be copied
+// across unchanged:
+//   RELEASE_STORE_FILE / RELEASE_STORE_PASSWORD / RELEASE_KEY_ALIAS / RELEASE_KEY_PASSWORD
+//   storeFile          / storePassword          / keyAlias          / keyPassword
+def keystoreProps = new Properties()
+["local.properties", "keystore.properties"].each { name ->
+    def propsFile = rootProject.file(name)
+    if (propsFile.exists()) {
+        propsFile.withInputStream { keystoreProps.load(it) }
+    }
+}
+def ksValue = { String key, String altKey ->
+    keystoreProps.getProperty(key) ?: keystoreProps.getProperty(altKey) ?:
+            System.getenv(key) ?: System.getenv(altKey)
+}
+
+def releaseStoreFile = ksValue('RELEASE_STORE_FILE', 'storeFile')
+def releaseStorePassword = ksValue('RELEASE_STORE_PASSWORD', 'storePassword')
+def releaseKeyAlias = ksValue('RELEASE_KEY_ALIAS', 'keyAlias')
+def releaseKeyPassword = ksValue('RELEASE_KEY_PASSWORD', 'keyPassword')
+def hasReleaseSigning = releaseStoreFile && releaseStorePassword && releaseKeyAlias && releaseKeyPassword
+
+if (hasReleaseSigning && !rootProject.file(releaseStoreFile).exists()) {
+    throw new GradleException("Keystore not found at '${releaseStoreFile}' " +
+            "(from android/keystore.properties). Fix the path or remove the file.")
+}
+if (!hasReleaseSigning) {
+    logger.lifecycle("No release signing config found; release builds will be UNSIGNED. " +
+            "See README.md for the keys to set in android/keystore.properties.")
+}
+
 android {
-    namespace "com.github.srad.elogical"
-    compileSdk rootProject.ext.compileSdkVersion
+    namespace = "com.github.srad.elogical"
+    compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "com.github.srad.elogical"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "1.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
-            ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    signingConfigs {
+        if (hasReleaseSigning) {
+            release {
+                storeFile = rootProject.file(releaseStoreFile)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
         }
     }
     buildTypes {
+        debug {
+            // Installs alongside the Play build instead of colliding with it: the two are
+            // signed with different keys, so same-id installs fail outright. The debug app
+            // gets its own name from src/debug/res/values/strings.xml and its own storage,
+            // which also keeps test games out of the real app's highscores.
+            applicationIdSuffix = ".debug"
+        }
         release {
+            if (hasReleaseSigning) {
+                signingConfig = signingConfigs.release
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -40,7 +95,6 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
-    implementation "androidx.core:core-splashscreen:1.2.0"
 }
 
 apply from: 'capacitor.build.gradle'
