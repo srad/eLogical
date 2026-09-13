@@ -1,8 +1,5 @@
 <template>
   <div class="game-wrapper d-flex flex-column">
-    <!-- Falling operators background animation -->
-    <FallingOperators />
-
     <!-- Tutorial notification (fixed) -->
     <div class="notification tutorial-text-row row align-items-center ml-0" :class="showNotification ? 'notification-visible' : 'notification-hidden'" @click="progressTutorial">
       <div class="col-12 text-center">{{ tutorial.currentText }}</div>
@@ -60,18 +57,31 @@
 
     <!-- Game header section -->
     <div class="game-header">
-      <!-- Exercise progress section -->
-      <div class="d-flex align-items-center gap-2 justify-content-center">
-        <div class="fs-5">Points</div>
-        <div class="flex-grow-1">
-          <BlockBar :colors="blockBarColors" :current="info.currentExercise" :max="info.totalExercises" />
+      <!-- HUD status panel -->
+      <div class="hud-panel card shadow-sm border-dark">
+        <div class="d-flex gap-3">
+          <div class="hud-item">
+            <div class="hud-item-label text-muted">Level</div>
+            <div class="hud-level-badge bg-brand-gradient">{{ info.level }}</div>
+          </div>
+          <div class="hud-item flex-grow-1">
+            <div class="hud-item-label text-muted">Points</div>
+            <div class="hud-bar">
+              <BlockBar :colors="blockBarColors" :current="info.currentExercise" :max="info.totalExercises" />
+            </div>
+          </div>
         </div>
-      </div>
-
-      <!-- Health and rerolls section -->
-      <div class="d-flex justify-content-between w-100">
-        <ressource animate hide-animation-class="flash" icon="heart" color="darkred" class="text-danger" :max="health.max" :current="health.current" />
-        <ressource animate hide-animation-class="swing" icon="dice" color="goldenrod" class="text-warning" :max="rerolls.max" :current="rerolls.current" />
+        <div class="hud-divider"></div>
+        <div class="d-flex justify-content-between gap-3">
+          <div class="hud-item">
+            <div class="hud-item-label text-muted">Health</div>
+            <ressource animate hide-animation-class="flash" icon="heart" color="darkred" class="text-danger" :max="health.max" :current="health.current" />
+          </div>
+          <div class="hud-item">
+            <div class="hud-item-label text-muted">Rerolls</div>
+            <ressource animate hide-animation-class="swing" icon="dice" color="goldenrod" class="text-warning" :max="rerolls.max" :current="rerolls.current" />
+          </div>
+        </div>
       </div>
 
       <!-- Expression card -->
@@ -200,12 +210,11 @@ import BlockBar from "../components/BlockBar.vue";
 import AnswerFeedback from "../components/AnswerFeedback.vue";
 import LogicText from "../components/LogicText.vue";
 import Tree from "../components/TreeSvg.vue";
-import FallingOperators from "../components/FallingOperators.vue";
 import colors from "@/lib/colors";
 import EventType from "@/services/events";
 import { Modal } from "bootstrap";
 import confetti from "canvas-confetti";
-import { TreeNode } from "@/lib/compiler/tree.ts";
+import { TreeNode, ConstNode } from "@/lib/compiler/tree.ts";
 import { soundService, SoundType } from "@/services/soundService.ts";
 import { musicService } from "@/services/musicService";
 
@@ -434,9 +443,23 @@ const tutorialData = computed(() => {
 });
 
 // Methods
+const updateNodeColors = () => {
+  treeData.nodes.forEach((node: any) => {
+    if (node.type instanceof ConstNode) {
+      const option = options.value.find((o) => o.name === node.type.v);
+      if (option) {
+        const state = option.selected ? colors.truthValue.true : colors.truthValue.false;
+        node.color = { background: state.fill };
+        node.textColor = state.text;
+      }
+    }
+  });
+};
+
 const toggleVariable = (index: number) => {
   soundService.play(SoundType.CLICK);
   options.value[index].selected = !options.value[index].selected;
+  updateNodeColors();
 };
 
 const handleNodeClick = (data: { node: unknown; id: string; rawNode: any }) => {
@@ -668,6 +691,8 @@ const generateExercise = () => {
       .sort((a: Option, b: Option) => a.name.localeCompare(b.name));
     texOptions.value = leafs.map((node: any) => node.to("html")).sort();
   }
+
+  updateNodeColors();
 
   emptyBackpack();
 
@@ -1069,13 +1094,51 @@ onBeforeRouteLeave((_to, _from, next) => {
   }
 }
 
+/* HUD status panel */
+.hud-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.hud-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.hud-item-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.hud-level-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  min-width: 2.25rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+}
+
+.hud-divider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.1);
+  margin: 0 -0.75rem;
+}
+
 /* Block bar */
-.game-header .flex-grow-1 {
+.game-header .hud-bar {
   height: 1.5rem;
 }
 
 @media (min-width: 768px) {
-  .game-header .flex-grow-1 {
+  .game-header .hud-bar {
     height: 2rem;
   }
 }
@@ -1110,8 +1173,21 @@ onBeforeRouteLeave((_to, _from, next) => {
     font-size: 1em;
   }
 
-  .game-header .flex-grow-1 {
+  .game-header .hud-bar {
     height: 1.25rem;
+  }
+
+  .hud-panel {
+    padding: 0.35rem 0.5rem;
+    gap: 0.35rem;
+  }
+
+  .hud-item {
+    gap: 0.05rem;
+  }
+
+  .hud-item-label {
+    font-size: 0.6rem;
   }
 
   .btn-variable {

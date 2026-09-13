@@ -21,6 +21,20 @@ $el-gradient: linear-gradient(
   $el-navy-deep 100%
 );
 
+// Page backdrop: a faint decorative "plasma" mesh (soft blue/cyan/purple/yellow blobs fading
+// into a near-white base) -- explicitly a departure from the navy/cyan brand chrome, requested
+// as a lighter, more colourful full-screen backdrop than either the brand gradient or a plain
+// tint. Every blended stop clears >=8.5:1 with default body text ($body-color #212529,
+// unmodified) at its most concentrated corner -- verified with a WCAG contrast script -- so
+// it's safe behind the plain, un-card-wrapped text some pages use (Help.vue, Terms.vue,
+// About.vue, Highscore.vue).
+$el-page-gradient:
+  radial-gradient(at 0% 0%, rgba(110, 193, 255, 0.5) 0%, transparent 55%),
+  radial-gradient(at 100% 0%, rgba(185, 140, 240, 0.5) 0%, transparent 55%),
+  radial-gradient(at 100% 100%, rgba(255, 224, 102, 0.45) 0%, transparent 55%),
+  radial-gradient(at 0% 100%, rgba(77, 224, 214, 0.5) 0%, transparent 55%),
+  #fafafa;
+
 // Bootstrap variable overrides
 // UI chrome (buttons, text-primary, borders) uses the cyan accent, not $el-primary --
 // that one stays reserved for the AND node's identity colour in-game (Game.vue, confetti).
@@ -97,6 +111,7 @@ $table-cell-padding: 0.3rem;
   --el-lime: #{$el-lime};
   --el-ink: #{$el-ink};
   --el-gradient: #{$el-gradient};
+  --el-page-gradient: #{$el-page-gradient};
 
   // Height of the Android navigation bar / iOS home indicator. Capacitor 8's SystemBars
   // plugin injects --safe-area-inset-* onto documentElement, while a current WebView also

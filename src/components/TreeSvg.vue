@@ -12,6 +12,7 @@ interface TreeNode {
   id: string;
   label: string;
   color?: string;
+  textColor?: string;
   font?: Record<string, unknown>;
 
   [key: string]: unknown;
@@ -198,6 +199,9 @@ const renderTree = (data: TreeData) => {
       // Scale font size proportionally, with minimum readable size
       const fontSize = Math.max(nodeRadius * 0.75, 10);
       div.style.fontSize = `${fontSize}px`;
+      if (treeNode?.textColor) {
+        div.style.color = String(treeNode.textColor);
+      }
       div.innerHTML = label;
       foreignObject.appendChild(div);
       svgGroup.appendChild(foreignObject);

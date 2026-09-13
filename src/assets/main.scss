@@ -27,6 +27,11 @@ html, body {
   -webkit-touch-callout: none;
 }
 
+body {
+  background: var(--el-page-gradient);
+  background-attachment: fixed;
+}
+
 #app {
   min-height: 100vh;
   touch-action: manipulation;

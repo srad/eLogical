@@ -42,7 +42,7 @@
     <!-- App Drawer Component -->
     <AppDrawer :isOpen="isMenuOpen" @close="isMenuOpen = false"/>
 
-    <!-- Transparent on purpose: the brand gradient is painted on body::before. -->
+    <!-- Transparent on purpose: the page gradient is painted on body's own background. -->
     <div class="app-container">
       <RouterView/>
     </div>
