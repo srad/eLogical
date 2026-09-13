@@ -22,7 +22,9 @@ $el-gradient: linear-gradient(
 );
 
 // Bootstrap variable overrides
-$primary: $el-primary;
+// UI chrome (buttons, text-primary, borders) uses the cyan accent, not $el-primary --
+// that one stays reserved for the AND node's identity colour in-game (Game.vue, confetti).
+$primary: $el-cyan;
 // Stays a neutral grey: every use of it is a muted state -- inactive resources, a Cancel
 // button, the block bar's empty segments -- so a brand colour here reads as "active".
 $secondary: #9e9e9e;

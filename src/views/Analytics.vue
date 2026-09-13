@@ -145,7 +145,7 @@ const charts = reactive<ChartsState>({
       labels: ['Correct', 'Wrong'],
       datasets: [
         {
-          backgroundColor: ['rgb(77, 186, 135)', 'rgb(255, 99, 132)'],
+          backgroundColor: ['#00a9b6', 'rgb(255, 99, 132)'],
           data: [0, 0],
         },
       ],
@@ -158,6 +158,7 @@ const charts = reactive<ChartsState>({
       datasets: [
         {
           label: 'Game Overs',
+          backgroundColor: 'rgb(255, 99, 132)',
           data: [],
         },
       ],
@@ -176,7 +177,7 @@ const charts = reactive<ChartsState>({
       datasets: [
         {
           label: 'Number of games played',
-          borderColor: 'rgb(77, 186, 135)',
+          borderColor: '#00a9b6',
           data: [],
         },
       ],
@@ -195,7 +196,7 @@ const charts = reactive<ChartsState>({
       datasets: [
         {
           label: 'answered correctly',
-          backgroundColor: 'rgb(77, 186, 135)',
+          backgroundColor: '#00a9b6',
           data: [0, 0, 0, 0, 0, 0],
         },
         {
@@ -218,7 +219,7 @@ const charts = reactive<ChartsState>({
       labels: ['life', 'reroll', 'none'],
       datasets: [
         {
-          backgroundColor: ['rgb(77, 186, 135)', 'rgb(255, 99, 132)', 'rgb(60, 60, 60)'],
+          backgroundColor: ['#00a9b6', '#02b490', 'rgb(60, 60, 60)'],
           data: [0, 0, 0],
         },
       ],
